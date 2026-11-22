@@ -1996,6 +1996,285 @@
         }
       }
     },
+    "/manage/option-groups": {
+      "get": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}": {
+      "get": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}/image": {
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}/choices/{choiceId}/image": {
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "choiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/orders/quote": {
       "post": {
         "tags": [
@@ -4867,6 +5146,10 @@
             "minLength": 1,
             "type": "string"
           },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "ingredientId": {
             "type": "string",
             "format": "uuid",
@@ -4922,10 +5205,12 @@
           "extraChoicePriceCents",
           "freeChoices",
           "id",
+          "isArchived",
           "label",
           "maxChoices",
           "minChoices",
-          "position"
+          "position",
+          "productCount"
         ],
         "type": "object",
         "properties": {
@@ -4936,6 +5221,10 @@
           "label": {
             "minLength": 1,
             "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           },
           "position": {
             "type": "integer",
@@ -4962,6 +5251,69 @@
             "items": {
               "$ref": "#/components/schemas/OptionChoiceDetails"
             }
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "productCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OptionGroupDetailsListResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionGroupDetails"
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OptionGroupDetailsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/OptionGroupDetails"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4973,11 +5325,6 @@
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
           "label": {
             "maxLength": 64,
             "minLength": 1,
@@ -5020,14 +5367,15 @@
       },
       "OptionGroupsUpdate": {
         "required": [
-          "groups"
+          "optionGroupIds"
         ],
         "type": "object",
         "properties": {
-          "groups": {
+          "optionGroupIds": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OptionGroupWrite"
+              "type": "string",
+              "format": "uuid"
             }
           }
         },
@@ -6426,6 +6774,10 @@
             "minLength": 1,
             "type": "string"
           },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "extraPriceCents": {
             "type": "integer",
             "format": "int32"
@@ -6455,6 +6807,10 @@
           "label": {
             "minLength": 1,
             "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           },
           "minChoices": {
             "type": "integer",

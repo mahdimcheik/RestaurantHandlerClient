@@ -15,3 +15,12 @@ export const authGuard: CanActivateFn = (_route, state) => {
 /** Pages de connexion et d'inscription : inutiles une fois connecté. */
 export const guestGuard: CanActivateFn = () =>
   inject(SessionService).isAuthenticated() ? inject(Router).createUrlTree(['/']) : true;
+
+/** Back-office : connexion d'abord, puis rôle Manager (sinon retour à l'accueil). */
+export const managerGuard: CanActivateFn = (route, state) => {
+  const session = inject(SessionService);
+  if (!session.isAuthenticated()) {
+    return authGuard(route, state);
+  }
+  return session.isManager() ? true : inject(Router).createUrlTree(['/']);
+};

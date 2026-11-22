@@ -57,6 +57,8 @@ export type { OpeningStatus } from './models/opening-status';
 export type { OptionChoiceDetails } from './models/option-choice-details';
 export type { OptionChoiceWrite } from './models/option-choice-write';
 export type { OptionGroupDetails } from './models/option-group-details';
+export type { OptionGroupDetailsListResponse } from './models/option-group-details-list-response';
+export type { OptionGroupDetailsResponse } from './models/option-group-details-response';
 export type { OptionGroupsUpdate } from './models/option-groups-update';
 export type { OptionGroupWrite } from './models/option-group-write';
 export type { OrderChannel } from './models/order-channel';

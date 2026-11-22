@@ -11,6 +11,9 @@ import { SessionService } from '../../../core/auth/session.service';
       <nav class="inline-list" aria-label="Navigation principale" i18n-aria-label="@@nav.label">
         <a routerLink="/" fragment="infos" i18n="@@nav.info">Infos</a>
         @if (session.user(); as user) {
+          @if (session.isManager()) {
+            <a routerLink="/gestion" i18n="@@nav.admin">Gestion</a>
+          }
           <span class="site-header__user">{{ user.firstName }}</span>
           <button type="button" class="link-button" (click)="logout()" i18n="@@nav.logout">
             Déconnexion

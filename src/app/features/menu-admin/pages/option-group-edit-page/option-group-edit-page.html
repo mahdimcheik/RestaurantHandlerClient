@@ -1,0 +1,226 @@
+<a class="page-head__back" routerLink="/gestion/options" i18n="@@optionGroup.back">
+  ← Tous les groupes d'options
+</a>
+
+@if (id() && group.hasValue() === false && group.isLoading()) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else {
+  <div class="page-head">
+    <h1>
+      @if (id()) {
+        {{ group.value()?.label }}
+      } @else {
+        <ng-container i18n="@@optionGroup.new">Nouveau groupe d'options</ng-container>
+      }
+    </h1>
+    @if (id() && !archived()) {
+      <app-archive-button
+        [name]="group.value()?.label ?? ''"
+        [busy]="archiving()"
+        (confirmed)="archive()"
+      />
+    }
+  </div>
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  }
+  <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+    {{ notice() }}
+  </p>
+
+  @if (archived()) {
+    <p class="alert" i18n="@@sheet.archived">
+      Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
+    </p>
+  } @else {
+    <form class="sheet" novalidate (submit)="onSubmit($event)">
+      <section class="sheet__section" aria-labelledby="group-info">
+        <h2 id="group-info" i18n="@@sheet.info">Informations</h2>
+        @if (id()) {
+          <p class="sheet__lead">
+            @if (usedBy().length === 0) {
+              <ng-container i18n="@@optionGroup.unused">
+                Proposé sur aucun produit pour l'instant.
+              </ng-container>
+            } @else {
+              <ng-container i18n="@@optionGroup.usedBy">
+                Proposé sur {{ usedBy().length }} produit(s) : chaque modification les concerne
+                tous.
+              </ng-container>
+            }
+          </p>
+          @if (usedBy().length > 0) {
+            <ul class="inline-list">
+              @for (product of usedBy(); track product.id) {
+                <li>
+                  <a [routerLink]="['/gestion/produits', product.id]">{{ product.name }}</a>
+                </li>
+              }
+            </ul>
+          }
+        }
+        <div class="form">
+          <app-text-field
+            [field]="form.label"
+            label="Libellé"
+            i18n-label="@@optionGroup.label"
+            hint="Par exemple « Sauces » ou « Taille »"
+            i18n-hint="@@optionGroup.labelHint"
+          />
+          <div class="form__row form__row--3">
+            <app-number-field
+              [field]="form.minChoices"
+              label="Minimum de choix"
+              i18n-label="@@optionGroup.min"
+              hint="0 = facultatif"
+              i18n-hint="@@optionGroup.minHint"
+            />
+            <app-number-field
+              [field]="form.maxChoices"
+              label="Maximum de choix"
+              i18n-label="@@optionGroup.max"
+            />
+            <app-number-field
+              [field]="form.freeChoices"
+              label="Choix offerts"
+              i18n-label="@@optionGroup.free"
+              hint="Les suivants sont facturés"
+              i18n-hint="@@optionGroup.freeHint"
+            />
+          </div>
+          <app-text-field
+            [field]="form.extraChoicePrice"
+            inputmode="decimal"
+            label="Prix d'un choix au-delà des offerts (€)"
+            i18n-label="@@optionGroup.extraPrice"
+          />
+        </div>
+      </section>
+
+      <section class="sheet__section" aria-labelledby="group-choices">
+        <h2 id="group-choices" i18n="@@optionGroup.choices">Choix</h2>
+        <p class="sheet__lead" i18n="@@optionGroup.choicesLead">
+          Dans l'ordre d'affichage. Lier un ingrédient grise le choix quand il est en rupture. Un
+          choix retiré est archivé à l'enregistrement.
+        </p>
+        <ol class="stack-list">
+          @for (
+            choice of form.choices;
+            track choice;
+            let i = $index, first = $first, last = $last
+          ) {
+            <li class="stack-list__item">
+              <div class="stack-list__head">
+                <span class="stack-list__title" i18n="@@optionGroup.choiceNumber">
+                  Choix {{ i + 1 }}
+                </span>
+                <div class="stack-list__tools">
+                  <button
+                    type="button"
+                    class="icon-button"
+                    [disabled]="first"
+                    (click)="moveChoice(i, -1)"
+                    title="Monter le choix {{ i + 1 }}"
+                    i18n-title="@@optionGroup.choiceUp"
+                  >
+                    <app-icon name="up" />
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-button"
+                    [disabled]="last"
+                    (click)="moveChoice(i, 1)"
+                    title="Descendre le choix {{ i + 1 }}"
+                    i18n-title="@@optionGroup.choiceDown"
+                  >
+                    <app-icon name="down" />
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-button"
+                    (click)="removeChoice(i)"
+                    title="Retirer le choix {{ i + 1 }}"
+                    i18n-title="@@optionGroup.choiceRemove"
+                  >
+                    <app-icon name="remove" />
+                  </button>
+                </div>
+              </div>
+              <div class="form__row form__row--3">
+                <app-text-field [field]="choice.name" label="Nom" i18n-label="@@field.name" />
+                <app-text-field
+                  [field]="choice.extraPrice"
+                  inputmode="decimal"
+                  label="Surcoût (€)"
+                  i18n-label="@@optionGroup.choicePrice"
+                />
+                <app-select-field
+                  [field]="choice.ingredientId"
+                  [options]="ingredientOptions()"
+                  label="Ingrédient lié"
+                  i18n-label="@@optionGroup.ingredient"
+                  placeholder="Aucun"
+                  i18n-placeholder="@@optionGroup.noIngredient"
+                />
+              </div>
+              @if (model().choices[i].id; as choiceId) {
+                @if (choiceUploaders().get(choiceId); as upload) {
+                  <app-image-field
+                    label="Photo du choix"
+                    i18n-label="@@optionGroup.choicePhoto"
+                    [imageUrl]="choiceImages().get(choiceId)"
+                    [alt]="model().choices[i].name"
+                    [upload]="upload"
+                  />
+                }
+              }
+            </li>
+          }
+        </ol>
+        @if (submitted() && form.choices().errors().length > 0) {
+          <ul class="field__errors">
+            @for (error of form.choices().errors(); track error.kind) {
+              <li class="field__error">{{ error.message }}</li>
+            }
+          </ul>
+        }
+        <div class="toolbar">
+          <button type="button" class="btn btn--outline btn--icon" (click)="addChoice()">
+            <app-icon name="plus" />
+            <span i18n="@@optionGroup.addChoice">Ajouter un choix</span>
+          </button>
+        </div>
+      </section>
+
+      @if (id()) {
+        <section class="sheet__section" aria-labelledby="group-photo">
+          <h2 id="group-photo" i18n="@@sheet.photo">Photo</h2>
+          <app-image-field
+            label="Choisir une photo"
+            i18n-label="@@image.choose"
+            [imageUrl]="imageUrl()"
+            [alt]="group.value()?.label ?? ''"
+            [upload]="uploadImage"
+          />
+        </section>
+      } @else {
+        <p class="sheet__lead" i18n="@@optionGroup.photosAfterCreate">
+          Les photos du groupe et des choix s'ajoutent une fois le groupe créé.
+        </p>
+      }
+
+      <div class="form__actions">
+        <button type="submit" [disabled]="form().submitting()">
+          @if (id()) {
+            <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+          } @else {
+            <ng-container i18n="@@optionGroup.create">Créer le groupe</ng-container>
+          }
+        </button>
+      </div>
+    </form>
+  }
+}

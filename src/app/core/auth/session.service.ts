@@ -3,6 +3,8 @@ import { catchError, finalize, firstValueFrom, map, Observable, of, shareReplay,
 import { GoogleLoginRequest, Login, UserDetails, UserLogin } from '../api/generated';
 import { AuthService } from '../../shared/services/auth.service';
 
+export const MANAGER_ROLE = 'Manager';
+
 interface Session {
   token: string;
   user: UserDetails;
@@ -22,6 +24,10 @@ export class SessionService {
   readonly user = computed(() => this.session()?.user ?? null);
   readonly isAuthenticated = computed(() => this.session() !== null);
   readonly needsActivation = computed(() => this.user()?.emailConfirmed === false);
+  /** Sert à masquer l'interface uniquement : le serveur vérifie le rôle à chaque appel. */
+  readonly isManager = computed(
+    () => this.user()?.roles.some((role) => role.name === MANAGER_ROLE) ?? false,
+  );
 
   accessToken(): string | null {
     return this.session()?.token ?? null;

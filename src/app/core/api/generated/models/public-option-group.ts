@@ -7,6 +7,7 @@ export interface PublicOptionGroup {
   extraChoicePriceCents: number;
   freeChoices: number;
   id: string;
+  imageUrl?: string | null;
   label: string;
   maxChoices: number;
   minChoices: number;

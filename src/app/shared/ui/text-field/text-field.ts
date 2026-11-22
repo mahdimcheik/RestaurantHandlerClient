@@ -19,6 +19,7 @@ let nextId = 0;
           [type]="inputType()"
           [formField]="field()"
           [attr.autocomplete]="autocomplete()"
+          [attr.inputmode]="inputmode()"
           [attr.aria-invalid]="showErrors()"
           [attr.aria-describedby]="describedBy()"
         />
@@ -57,6 +58,8 @@ export class TextField {
   readonly type = input<'text' | 'email' | 'password'>('text');
   readonly autocomplete = input('off');
   readonly hint = input('');
+  /** Clavier virtuel adapté, ex. `decimal` pour un prix saisi en texte. */
+  readonly inputmode = input<string | null>(null);
 
   protected readonly id = `field-${nextId++}`;
   protected readonly revealed = signal(false);

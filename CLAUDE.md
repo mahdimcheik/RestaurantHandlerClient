@@ -6,7 +6,7 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 
 - Client web Angular 22 de RestaurantHandler : prise de commande sur tablette, écran cuisine (KDS), encaissement, administration du restaurant.
 - Backend et **documentation de référence** : dépôt frère `../Template` (ASP.NET Core .NET 10, dev avec le profil `https` sur `https://localhost:7113` / `http://localhost:5113`, ou le profil `http` sur `http://localhost:5152`). Lire `../Template/docs/` avant toute fonctionnalité.
-- État : page d'accueil et feature `auth` (connexion, inscription, mot de passe oublié, activation) en place. Les jalons du front (J4, J5) sont décrits dans `../Template/docs/50-feuille-de-route/01-feuille-de-route.md`.
+- État : page d'accueil, feature `auth` (connexion, inscription, mot de passe oublié, activation) et back-office Manager `/gestion` (coquille `shared/ui/admin-layout`, `features/dashboard`, `features/menu-admin` : catégories, produits, groupes d'options partagés, photos) en place. Les jalons du front (J4, J5) sont décrits dans `../Template/docs/50-feuille-de-route/01-feuille-de-route.md`.
 - Interface en **français**, i18n Angular (`@angular/localize`) prête pour d'autres langues.
 
 ## Commandes

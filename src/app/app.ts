@@ -6,13 +6,14 @@ import { ActivationBanner } from './shared/ui/activation-banner/activation-banne
 import { SiteFooter } from './shared/ui/site-footer/site-footer';
 import { SiteHeader } from './shared/ui/site-header/site-header';
 
-/** Vrai si la route affichée demande une page sans en-tête ni pied de page (`data.bare`). */
+/** Vrai si une route de la chaîne affichée demande une page sans en-tête ni pied de page (`data.bare`). */
 function isBare(route: ActivatedRouteSnapshot): boolean {
-  let current = route;
-  while (current.firstChild) {
-    current = current.firstChild;
+  for (let current: ActivatedRouteSnapshot | null = route; current; current = current.firstChild) {
+    if (current.data['bare'] === true) {
+      return true;
+    }
   }
-  return current.data['bare'] === true;
+  return false;
 }
 
 @Component({

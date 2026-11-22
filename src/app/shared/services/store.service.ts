@@ -7,6 +7,8 @@ import {
   IngredientsApi,
   MenuDetails,
   MenusApi,
+  OptionGroupDetails,
+  OptionGroupsApi,
   OpeningRangeDto,
   ProductDetails,
   ProductsApi,
@@ -28,6 +30,7 @@ export class StoreService {
   private readonly productsApi = inject(ProductsApi);
   private readonly ingredientsApi = inject(IngredientsApi);
   private readonly menusApi = inject(MenusApi);
+  private readonly optionGroupsApi = inject(OptionGroupsApi);
   private readonly restaurantApi = inject(RestaurantApi);
   private readonly rolesApi = inject(RolesApi);
 
@@ -41,6 +44,10 @@ export class StoreService {
     [],
   );
   readonly menus = new Cached<MenuDetails[]>(() => this.menusApi.manageMenusGet(), []);
+  readonly optionGroups = new Cached<OptionGroupDetails[]>(
+    () => this.optionGroupsApi.manageOptionGroupsGet(),
+    [],
+  );
   readonly openingHours = new Cached<OpeningRangeDto[]>(
     () => this.restaurantApi.manageRestaurantHoursGet(),
     [],

@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { authGuard, guestGuard } from './auth.guards';
+import { authGuard, guestGuard, managerGuard } from './auth.guards';
 import { safeReturnUrl } from './return-url';
 import { SessionService } from './session.service';
 
@@ -14,14 +14,19 @@ describe('gardes d’authentification', () => {
   const route = {} as ActivatedRouteSnapshot;
   const state = { url: '/commandes' } as RouterStateSnapshot;
   let authenticated = false;
+  let manager = false;
 
   beforeEach(() => {
     authenticated = false;
+    manager = false;
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         provideHttpClient(),
-        { provide: SessionService, useValue: { isAuthenticated: () => authenticated } },
+        {
+          provide: SessionService,
+          useValue: { isAuthenticated: () => authenticated, isManager: () => manager },
+        },
       ],
     });
   });
@@ -40,6 +45,22 @@ describe('gardes d’authentification', () => {
     authenticated = true;
     const result = TestBed.runInInjectionContext(() => guestGuard(route, state)) as UrlTree;
     expect(result.toString()).toBe('/');
+  });
+  it('managerGuard renvoie un visiteur vers la connexion', () => {
+    const result = TestBed.runInInjectionContext(() => managerGuard(route, state)) as UrlTree;
+    expect(result.toString()).toBe('/auth/connexion?returnUrl=%2Fcommandes');
+  });
+
+  it('managerGuard renvoie un client connecté à l’accueil', () => {
+    authenticated = true;
+    const result = TestBed.runInInjectionContext(() => managerGuard(route, state)) as UrlTree;
+    expect(result.toString()).toBe('/');
+  });
+
+  it('managerGuard laisse passer un Manager', () => {
+    authenticated = true;
+    manager = true;
+    expect(TestBed.runInInjectionContext(() => managerGuard(route, state))).toBe(true);
   });
 });
 

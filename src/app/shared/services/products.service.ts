@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import {
   AvailabilityUpdate,
   CompositionUpdate,
-  OptionGroupsUpdate,
   ProductDetails,
   ProductsApi,
   ProductWrite,
@@ -23,8 +22,13 @@ export class ProductsService {
     return this.api.manageProductsGet(params).pipe(unwrap());
   }
 
-  /** Les catégories comptent les produits actifs et les menus affichent leur nom. */
-  private readonly touched = [this.store.products, this.store.categories, this.store.menus];
+  /** Les catégories comptent les produits actifs, les menus affichent leur nom, les groupes leurs produits. */
+  private readonly touched = [
+    this.store.products,
+    this.store.categories,
+    this.store.menus,
+    this.store.optionGroups,
+  ];
 
   /** Détail à jour d'un produit, hors cache. */
   get(id: string): Observable<ProductDetails> {
@@ -61,10 +65,11 @@ export class ProductsService {
       .pipe(unwrap(), refresh(this.store.products));
   }
 
-  setOptionGroups(id: string, body: OptionGroupsUpdate): Observable<ProductDetails> {
+  /** Groupes d'options proposés sur le produit, dans l'ordre d'affichage. */
+  setOptionGroups(id: string, optionGroupIds: string[]): Observable<ProductDetails> {
     return this.api
-      .manageProductsIdOptionGroupsPut({ id, body })
-      .pipe(unwrap(), refresh(this.store.products));
+      .manageProductsIdOptionGroupsPut({ id, body: { optionGroupIds } })
+      .pipe(unwrap(), refresh(this.store.products, this.store.optionGroups));
   }
 
   uploadImage(id: string, file: Blob): Observable<ProductDetails> {

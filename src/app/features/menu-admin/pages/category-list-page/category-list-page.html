@@ -1,0 +1,59 @@
+<div class="page-head">
+  <h1 i18n="@@admin.categories">Catégories</h1>
+  <a class="btn btn--icon" routerLink="nouvelle">
+    <app-icon name="plus" />
+    <span i18n="@@category.add">Ajouter une catégorie</span>
+  </a>
+</div>
+
+<div class="toolbar">
+  <label class="checkbox">
+    <input
+      #archivedBox
+      type="checkbox"
+      [checked]="showArchived()"
+      (change)="showArchived.set(archivedBox.checked)"
+    />
+    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+  </label>
+</div>
+
+@if (error()) {
+  <p class="alert alert--error" role="alert">{{ error() }}</p>
+} @else if (loading() && rows().length === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (rows().length === 0) {
+  <p class="empty" i18n="@@category.empty">Aucune catégorie pour l'instant.</p>
+} @else {
+  <table class="data-table">
+    <caption class="visually-hidden" i18n="@@admin.categories">
+      Catégories
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" i18n="@@field.name">Nom</th>
+        <th scope="col" i18n="@@category.activeProducts">Produits actifs</th>
+        <th scope="col" i18n="@@list.status">Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (category of rows(); track category.id) {
+        <tr>
+          <td class="data-table__main">
+            <a [routerLink]="category.id">{{ category.name }}</a>
+          </td>
+          <td
+            class="data-table__num"
+            data-label="Produits actifs"
+            i18n-data-label="@@category.activeProducts"
+          >
+            {{ category.activeProductCount }}
+          </td>
+          <td data-label="Statut" i18n-data-label="@@list.status">
+            <app-status-badges [archived]="category.isArchived" [active]="category.isActive" />
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

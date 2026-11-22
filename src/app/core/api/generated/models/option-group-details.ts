@@ -7,8 +7,11 @@ export interface OptionGroupDetails {
   extraChoicePriceCents: number;
   freeChoices: number;
   id: string;
+  imageUrl?: string | null;
+  isArchived: boolean;
   label: string;
   maxChoices: number;
   minChoices: number;
   position: number;
+  productCount: number;
 }

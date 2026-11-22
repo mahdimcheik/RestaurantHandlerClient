@@ -4,6 +4,7 @@
 export interface PublicOptionChoice {
   extraPriceCents: number;
   id: string;
+  imageUrl?: string | null;
   isAvailable: boolean;
   name: string;
 }
