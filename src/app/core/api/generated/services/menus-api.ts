@@ -39,7 +39,7 @@ import { MenuDetailsResponse } from '../models/menu-details-response';
 import { ObjectResponse } from '../models/object-response';
 
 @Injectable({ providedIn: 'root' })
-export class MenusService extends BaseService {
+export class MenusApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

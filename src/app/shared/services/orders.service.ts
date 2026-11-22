@@ -1,0 +1,54 @@
+import { inject, Service } from '@angular/core';
+import { Observable } from 'rxjs';
+import {
+  OrderCreate,
+  OrderDetails,
+  OrderReceipt,
+  OrdersApi,
+  OrderSummary,
+  QuoteRequest,
+  QuoteResult,
+} from '../../core/api/generated';
+import { Page, unwrap, unwrapPage } from './api-operators';
+
+/** Commandes côté client. */
+@Service()
+export class OrdersService {
+  private readonly api = inject(OrdersApi);
+
+  quote(body: QuoteRequest): Observable<QuoteResult> {
+    return this.api.ordersQuotePost({ body }).pipe(unwrap());
+  }
+
+  create(body: OrderCreate): Observable<OrderDetails> {
+    return this.api.ordersPost({ body }).pipe(unwrap());
+  }
+
+  pay(id: string): Observable<OrderDetails> {
+    return this.api.ordersIdPaymentPost({ id }).pipe(unwrap());
+  }
+
+  payOnSite(id: string): Observable<OrderDetails> {
+    return this.api.ordersIdPayOnSitePost({ id }).pipe(unwrap());
+  }
+
+  receipt(id: string): Observable<OrderReceipt> {
+    return this.api.ordersIdReceiptGet({ id }).pipe(unwrap());
+  }
+
+  mine(page?: number, pageSize?: number): Observable<Page<OrderSummary>> {
+    return this.api.ordersMineGet({ page, pageSize }).pipe(unwrapPage());
+  }
+
+  mineCurrent(): Observable<OrderSummary[]> {
+    return this.api.ordersMineCurrentGet().pipe(unwrap());
+  }
+
+  get(id: string): Observable<OrderDetails> {
+    return this.api.ordersIdGet({ id }).pipe(unwrap());
+  }
+
+  cancel(id: string): Observable<OrderDetails> {
+    return this.api.ordersIdCancelPost({ id }).pipe(unwrap());
+  }
+}

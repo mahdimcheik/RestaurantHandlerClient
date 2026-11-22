@@ -28,12 +28,15 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 - Structure cible :
   ```
   src/app/core/        auth/ http/ realtime/ i18n/   (session, intercepteurs, SignalR, langue)
+                       api/generated/   client généré (ng-openapi-gen), ne pas éditer
   src/app/shared/ui/   composants génériques accessibles
+  src/app/shared/services/  store + services d'accès aux données partagées
   src/app/features/    floor/ ordering/ kitchen/ billing/ menu-admin/ staff/ settings/ closing/ reports/
                        chacun : routes, pages, composants, data-access/ (API + état en signals)
   ```
   Une feature n'importe jamais une autre feature ; le partagé descend dans `shared/` ou `core/`.
-- Lectures par `httpResource` / `resource`, écritures par `HttpClient` ; types d'API générés depuis l'OpenAPI du backend.
+- Lectures par `httpResource` / `resource` / `rxResource`, écritures par `HttpClient` ; types d'API générés depuis l'OpenAPI du backend. Les composants n'appellent jamais `core/api/generated` directement : chaque service généré (`XxxApi`) a son wrapper `shared/services/xxx.service.ts`, même sans cache, qui renvoie `data` désenveloppé (`unwrap`) ou `Page<T>` pour les listes paginées (`unwrapPage`). Après une régénération, ajouter au wrapper les nouvelles méthodes.
+- Données qui changent rarement (catégories, produits, ingrédients, menus, horaires, fermetures, réglages, rôles) : cache dans `shared/services/store.service.ts`, un `Cached<T>` (`rxResource`) par entité. Un composant appelle `store.x.load()` puis lit `store.x.value()` / `isLoading()` / `error()`. Les écritures passent par le service wrapper de l'entité (`categories.service.ts`…), qui appelle le service généré (`CategoriesApi`), renvoie `data` désenveloppé et recharge via `refresh(...)` tous les caches touchés (ex. produit → produits, catégories, menus).
 - Temps réel : un service `core/realtime` gère la connexion SignalR (`/hubs/restaurant`), la reconnexion, le rattrapage par numéro de séquence et un signal d'état de connexion affiché en permanence. Le hub ne fait que pousser : toutes les actions passent par l'API REST.
 - Nommage v20+ sans suffixe de type : `app.ts`, `app.html`, `app.scss`, `app.spec.ts`. Préfixe de sélecteur `app`, styles SCSS. Fichiers statiques dans `public/`.
 - Tests : globals Vitest (`describe`, `it`, `expect`, `vi`) ; ni `jasmine` ni `karma`.

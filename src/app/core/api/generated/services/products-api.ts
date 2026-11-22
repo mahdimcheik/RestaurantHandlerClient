@@ -35,7 +35,7 @@ import { ProductDetailsListResponse } from '../models/product-details-list-respo
 import { ProductDetailsResponse } from '../models/product-details-response';
 
 @Injectable({ providedIn: 'root' })
-export class ProductsService extends BaseService {
+export class ProductsApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

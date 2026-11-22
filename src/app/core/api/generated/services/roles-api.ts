@@ -15,7 +15,7 @@ import { rolesAllGet } from '../fn/roles/roles-all-get';
 import { RolesAllGet$Params } from '../fn/roles/roles-all-get';
 
 @Injectable({ providedIn: 'root' })
-export class RolesService extends BaseService {
+export class RolesApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

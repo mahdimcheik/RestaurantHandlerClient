@@ -22,7 +22,7 @@ import { usersPost } from '../fn/users/users-post';
 import { UsersPost$Params } from '../fn/users/users-post';
 
 @Injectable({ providedIn: 'root' })
-export class UsersService extends BaseService {
+export class UsersApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

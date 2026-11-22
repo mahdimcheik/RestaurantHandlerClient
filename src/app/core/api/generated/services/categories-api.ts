@@ -27,7 +27,7 @@ import { ManageCategoriesReorderPut$Params } from '../fn/categories/manage-categ
 import { ObjectResponse } from '../models/object-response';
 
 @Injectable({ providedIn: 'root' })
-export class CategoriesService extends BaseService {
+export class CategoriesApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

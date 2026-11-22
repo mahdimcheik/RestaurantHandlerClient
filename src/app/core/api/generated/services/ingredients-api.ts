@@ -25,7 +25,7 @@ import { ManageIngredientsPost$Params } from '../fn/ingredients/manage-ingredien
 import { ObjectResponse } from '../models/object-response';
 
 @Injectable({ providedIn: 'root' })
-export class IngredientsService extends BaseService {
+export class IngredientsApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

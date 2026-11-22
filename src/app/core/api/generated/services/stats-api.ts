@@ -21,7 +21,7 @@ import { PeakHoursReportResponse } from '../models/peak-hours-report-response';
 import { ProductSalesReportResponse } from '../models/product-sales-report-response';
 
 @Injectable({ providedIn: 'root' })
-export class StatsService extends BaseService {
+export class StatsApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

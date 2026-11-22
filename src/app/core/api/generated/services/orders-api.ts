@@ -34,7 +34,7 @@ import { OrderSummaryListResponse } from '../models/order-summary-list-response'
 import { QuoteResultResponse } from '../models/quote-result-response';
 
 @Injectable({ providedIn: 'root' })
-export class OrdersService extends BaseService {
+export class OrdersApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

@@ -15,7 +15,7 @@ import { usermanagementUsersUserIdStatusPatch } from '../fn/user-management/user
 import { UsermanagementUsersUserIdStatusPatch$Params } from '../fn/user-management/usermanagement-users-user-id-status-patch';
 
 @Injectable({ providedIn: 'root' })
-export class UserManagementService extends BaseService {
+export class UserManagementApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

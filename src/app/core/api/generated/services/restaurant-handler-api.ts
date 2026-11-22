@@ -14,7 +14,7 @@ import { versionGet } from '../fn/restaurant-handler/version-get';
 import { VersionGet$Params } from '../fn/restaurant-handler/version-get';
 
 @Injectable({ providedIn: 'root' })
-export class RestaurantHandlerService extends BaseService {
+export class RestaurantHandlerApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

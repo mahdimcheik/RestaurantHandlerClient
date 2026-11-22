@@ -9,5 +9,6 @@
   "enumStyle": "alias",
   "skipJsonSuffix": true,
   "indexFile": true,
-  "endOfLineStyle": "lf"
+  "endOfLineStyle": "lf",
+  "serviceSuffix": "Api"
 }

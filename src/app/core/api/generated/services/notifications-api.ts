@@ -28,7 +28,7 @@ import { ObjectResponse } from '../models/object-response';
 import { StringResponse } from '../models/string-response';
 
 @Injectable({ providedIn: 'root' })
-export class NotificationsService extends BaseService {
+export class NotificationsApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

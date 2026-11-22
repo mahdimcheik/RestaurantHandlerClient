@@ -49,7 +49,7 @@ import { UserDetailsResponse } from '../models/user-details-response';
 import { UserInfosWithtokenResponse } from '../models/user-infos-withtoken-response';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService extends BaseService {
+export class AuthApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

@@ -24,7 +24,7 @@ import { restaurantStatusGet } from '../fn/public/restaurant-status-get';
 import { RestaurantStatusGet$Params } from '../fn/public/restaurant-status-get';
 
 @Injectable({ providedIn: 'root' })
-export class PublicService extends BaseService {
+export class PublicApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }

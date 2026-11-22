@@ -41,7 +41,7 @@ import { RestaurantSettingsDetailsResponse } from '../models/restaurant-settings
 import { RestaurantSettingsHistoryItemListResponse } from '../models/restaurant-settings-history-item-list-response';
 
 @Injectable({ providedIn: 'root' })
-export class RestaurantService extends BaseService {
+export class RestaurantApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
