@@ -12,7 +12,7 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 ## Commandes
 
 - `npm start` (`ng serve`) : serveur de dev sur http://localhost:4200.
-- `npm run build` : build de production dans `dist/` (budgets : 500 kB / 1 MB bundle initial, 4 kB / 8 kB style par composant).
+- `npm run build` : build de production dans `dist/` (budgets : 500 kB / 1 MB bundle initial, 4 kB / 8 kB style par composant si exception).
 - `npm run watch` : build de développement en continu.
 - `npm test` (`ng test`) : tests Vitest via `@angular/build:unit-test` (jsdom).
   - Un fichier : `ng test --include src/app/app.spec.ts` · un test : `ng test --filter "should create"` · sans surveillance : `ng test --watch=false`.
@@ -38,8 +38,12 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 - Lectures par `httpResource` / `resource` / `rxResource`, écritures par `HttpClient` ; types d'API générés depuis l'OpenAPI du backend. Les composants n'appellent jamais `core/api/generated` directement : chaque service généré (`XxxApi`) a son wrapper `shared/services/xxx.service.ts`, même sans cache, qui renvoie `data` désenveloppé (`unwrap`) ou `Page<T>` pour les listes paginées (`unwrapPage`). Après une régénération, ajouter au wrapper les nouvelles méthodes.
 - Données qui changent rarement (catégories, produits, ingrédients, menus, horaires, fermetures, réglages, rôles) : cache dans `shared/services/store.service.ts`, un `Cached<T>` (`rxResource`) par entité. Un composant appelle `store.x.load()` puis lit `store.x.value()` / `isLoading()` / `error()`. Les écritures passent par le service wrapper de l'entité (`categories.service.ts`…), qui appelle le service généré (`CategoriesApi`), renvoie `data` désenveloppé et recharge via `refresh(...)` tous les caches touchés (ex. produit → produits, catégories, menus).
 - Temps réel : un service `core/realtime` gère la connexion SignalR (`/hubs/restaurant`), la reconnexion, le rattrapage par numéro de séquence et un signal d'état de connexion affiché en permanence. Le hub ne fait que pousser : toutes les actions passent par l'API REST.
-- Styles : jetons globaux (couleurs, surfaces, bordures, typo, espacements) en propriétés CSS dans `src/styles/_tokens.scss`, base dans `src/styles/_base.scss`. Mode clair uniquement, monochrome, coins droits, sans ombre. Les composants utilisent `var(--…)`, jamais de couleur en dur ; texte jamais plus clair que `--color-muted`.
-- Nommage v20+ sans suffixe de type : `app.ts`, `app.html`, `app.scss`, `app.spec.ts`. Préfixe de sélecteur `app`, styles SCSS. Fichiers statiques dans `public/`.
+- Styles : **globaux, par classes**. Point d'entrée `src/styles.scss`, qui charge les partiels voisins de `src/styles/` : `_tokens.scss` (propriétés CSS : couleurs, surfaces, bordures, typo, espacements), `_base.scss` (éléments natifs), `_layout.scss` (structure, en-tête, pied de page, sections, `.gutter`), `_components.scss` (`.btn`, `.facts`…). Un nouveau partiel thématique au même endroit si besoin (ex. `_forms.scss`), importé dans `styles.scss`.
+  - Éviter les styles propres aux composants (`styleUrl`, `styles`) : un composant applique des classes globales. Exception à justifier : un style vraiment indissociable d'un seul composant et impossible à exprimer en classe partagée.
+  - Classes nommées en BEM léger (`.bloc`, `.bloc__element`, `.bloc--variante`), réutilisables, sans référence à une page. Réutiliser une classe existante avant d'en créer une.
+  - Mode clair uniquement, monochrome, coins droits, sans ombre. Toujours `var(--…)`, jamais de couleur en dur ; texte jamais plus clair que `--color-muted`.
+- Composants réutilisables privilégiés (en-tête, pied de page, champs, cartes…) dans `shared/ui/`, sans excès : extraire un composant quand un motif revient ou porte un comportement, pas pour un simple élément stylé (une classe suffit).
+- Nommage v20+ sans suffixe de type : `app.ts`, `app.html`, `app.spec.ts`. Préfixe de sélecteur `app`. Fichiers statiques dans `public/`.
 - Tests : globals Vitest (`describe`, `it`, `expect`, `vi`) ; ni `jasmine` ni `karma`.
 - `tsconfig.json` n'active pas encore `strict` ni `strictTemplates` (prévu en M0) : écrire du code qui compile en mode strict.
 
@@ -68,7 +72,7 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 
 ### Composants
 
-- Petits, une seule responsabilité ; gabarits en ligne pour les petits composants ; chemins relatifs au fichier TS pour les gabarits et styles externes.
+- Petits, une seule responsabilité ; gabarits en ligne pour les petits composants ; chemin relatif au fichier TS pour un gabarit externe ; pas de styles de composant (voir Architecture › Styles).
 - `input()` et `output()` plutôt que les décorateurs ; `model()` pour la liaison bidirectionnelle `[(prop)]`.
 - `computed()` pour l'état dérivé ; `linkedSignal()` pour un état dérivé de plusieurs sources qui doit rester synchronisé.
 - Formulaires : **Signal Forms** (`@angular/forms/signals`) ; sinon formulaires réactifs, jamais pilotés par le gabarit.

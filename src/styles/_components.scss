@@ -1,0 +1,56 @@
+// Composants visuels réutilisables, appliqués par classe sur des éléments natifs.
+
+// Lien ou bouton d'action. Le <button> natif a déjà ce style dans _base.scss.
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-5);
+  border: var(--border);
+  background: var(--surface-inverse);
+  color: var(--on-inverse);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--ease),
+    color var(--ease);
+
+  &:hover {
+    background: var(--surface-page);
+    color: var(--color-ink);
+  }
+}
+
+.btn--outline {
+  background: var(--surface-page);
+  color: var(--color-ink);
+
+  &:hover {
+    background: var(--surface-inverse);
+    color: var(--on-inverse);
+  }
+}
+
+// Liste de couples libellé / valeur (<dl>), en colonnes à partir de 48 rem.
+.facts {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 60rem;
+  margin-inline: auto;
+  text-align: center;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+
+  dt {
+    font-weight: var(--weight-bold);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-muted);
+  }
+}
