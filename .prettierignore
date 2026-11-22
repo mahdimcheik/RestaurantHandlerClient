@@ -1,0 +1,3 @@
+# Code et schéma générés : régénérer avec `npm run api:update`, ne pas reformater.
+src/app/core/api/generated/
+openapi/

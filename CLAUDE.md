@@ -18,6 +18,7 @@ Guide lu à chaque session Claude Code. Règles d'abord.
   - Un fichier : `ng test --include src/app/app.spec.ts` · un test : `ng test --filter "should create"` · sans surveillance : `ng test --watch=false`.
 - Formatage : `npx prettier --write <fichiers>` (`printWidth` 100, guillemets simples, parseur Angular pour `*.html`). Pas encore de linter (ESLint prévu en M0).
 - Pas encore d'E2E (Playwright prévu en M2).
+- Client API : `npm run api:update` (backend lancé) télécharge `openapi/swagger.json` puis régénère `src/app/core/api/generated/` (ng-openapi-gen, config `ng-openapi-gen.json`) ; `npm run api:gen` régénère depuis le fichier versionné sans backend. Ne jamais éditer le dossier généré à la main.
 - Serveur MCP Angular CLI dans `.mcp.json` : préférer `list_projects`, `get_best_practices`, `search_documentation`, `devserver_start`, `run_target` aux commandes shell. Projet unique : `RestaurantHandler`.
 
 ## Architecture
