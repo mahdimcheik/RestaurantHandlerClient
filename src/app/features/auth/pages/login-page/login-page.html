@@ -1,0 +1,40 @@
+<app-auth-layout>
+  <h1 class="auth__title" i18n="@@login.title">Connexion</h1>
+  <p class="auth__lead" i18n="@@login.lead">
+    Pas encore de compte ?
+    <a routerLink="/auth/inscription" [queryParams]="{ returnUrl: returnUrl() }">Créer un compte</a>
+  </p>
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  }
+
+  <form class="form" novalidate (submit)="onSubmit($event)">
+    <app-text-field
+      [field]="form.email"
+      type="email"
+      autocomplete="email"
+      label="E-mail"
+      i18n-label="@@field.email"
+    />
+    <app-text-field
+      [field]="form.password"
+      type="password"
+      autocomplete="current-password"
+      label="Mot de passe"
+      i18n-label="@@field.password"
+    />
+    <a class="form__link" routerLink="/auth/mot-de-passe-oublie" i18n="@@login.forgot">
+      Mot de passe oublié ?
+    </a>
+    <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+      @if (form().submitting()) {
+        <ng-container i18n="@@login.submitting">Connexion…</ng-container>
+      } @else {
+        <ng-container i18n="@@login.submit">Se connecter</ng-container>
+      }
+    </button>
+  </form>
+
+  <app-google-sign-in (credential)="onGoogle($event)" />
+</app-auth-layout>

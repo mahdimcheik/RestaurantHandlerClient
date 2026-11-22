@@ -1,0 +1,110 @@
+import { Component, inject, input, signal } from '@angular/core';
+import { form, submit } from '@angular/forms/signals';
+import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { safeReturnUrl } from '../../../../core/auth/return-url';
+import { SessionService } from '../../../../core/auth/session.service';
+import { apiErrorMessage } from '../../../../core/http/api-error';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { AuthLayout } from '../../../../shared/ui/auth-layout/auth-layout';
+import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
+import { TextField } from '../../../../shared/ui/text-field/text-field';
+import {
+  emailRules,
+  focusFirstInvalid,
+  mustBeChecked,
+  nameRules,
+  newPasswordRules,
+  PASSWORD_MIN_LENGTH,
+} from '../../auth-validation';
+import { GoogleSignIn } from '../../components/google-sign-in';
+
+@Component({
+  selector: 'app-register-page',
+  imports: [AuthLayout, TextField, CheckboxField, GoogleSignIn, RouterLink],
+  templateUrl: './register-page.html',
+})
+export class RegisterPage {
+  private readonly auth = inject(AuthService);
+  private readonly session = inject(SessionService);
+  private readonly router = inject(Router);
+
+  readonly returnUrl = input<string>();
+
+  private readonly model = signal({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    termsConsent: false,
+    privacyPolicyConsent: false,
+    dataProcessingConsent: false,
+  });
+  protected readonly form = form(this.model, (path) => {
+    nameRules(path.firstName);
+    nameRules(path.lastName);
+    emailRules(path.email);
+    newPasswordRules(path.password);
+    mustBeChecked(
+      path.termsConsent,
+      $localize`:@@register.termsRequired:Acceptez les conditions générales d'utilisation pour créer un compte.`,
+    );
+    mustBeChecked(
+      path.privacyPolicyConsent,
+      $localize`:@@register.privacyRequired:Acceptez la politique de confidentialité pour créer un compte.`,
+    );
+    mustBeChecked(
+      path.dataProcessingConsent,
+      $localize`:@@register.processingRequired:Acceptez le traitement de vos données pour créer un compte.`,
+    );
+  });
+
+  protected readonly passwordHint = $localize`:@@register.passwordHint:Au moins ${PASSWORD_MIN_LENGTH}:min: caractères.`;
+  protected readonly error = signal('');
+  /** Adresse à laquelle le lien d'activation a été envoyé, une fois le compte créé. */
+  protected readonly registeredEmail = signal<string | null>(null);
+
+  protected async onSubmit(event: Event): Promise<void> {
+    event.preventDefault();
+    this.error.set('');
+    await submit(this.form, {
+      action: async () => {
+        const value = this.model();
+        try {
+          await firstValueFrom(this.auth.register(value));
+          this.registeredEmail.set(value.email);
+        } catch (error) {
+          this.error.set(apiErrorMessage(error));
+        }
+        return undefined;
+      },
+      onInvalid: (tree) => focusFirstInvalid(tree),
+    });
+  }
+
+  /** Un premier login Google crée le compte : l'API exige alors les trois consentements. */
+  protected onGoogle(idToken: string): void {
+    this.error.set('');
+    const consents = [
+      this.form.termsConsent,
+      this.form.privacyPolicyConsent,
+      this.form.dataProcessingConsent,
+    ];
+    consents.forEach((consent) => consent().markAsTouched());
+    const missing = consents.find((consent) => consent().invalid());
+    if (missing) {
+      this.error.set(
+        $localize`:@@register.googleConsents:Cochez les trois consentements avant de continuer avec Google.`,
+      );
+      missing().focusBoundControl();
+      return;
+    }
+    const { termsConsent, privacyPolicyConsent, dataProcessingConsent } = this.model();
+    this.session
+      .loginWithGoogle({ idToken, termsConsent, privacyPolicyConsent, dataProcessingConsent })
+      .subscribe({
+        next: () => void this.router.navigateByUrl(safeReturnUrl(this.returnUrl())),
+        error: (error: unknown) => this.error.set(apiErrorMessage(error)),
+      });
+  }
+}

@@ -112,3 +112,85 @@ main {
   font-size: var(--text-lg);
   color: var(--color-muted);
 }
+
+.site-header__user {
+  color: var(--color-muted);
+}
+
+// Bandeau d'information sous l'en-tête (compte non activé…).
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-3);
+  border-bottom: var(--border);
+  background: var(--color-warning-bg);
+}
+
+.banner__text {
+  flex: 1 1 20rem;
+}
+
+.banner__status:empty {
+  display: none;
+}
+
+// Écrans d'authentification : image et formulaire côte à côte, formulaire seul sur mobile.
+.auth {
+  display: grid;
+  min-height: 100dvh;
+
+  @media (min-width: 64rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.auth__media {
+  position: relative;
+  display: none;
+  border-right: var(--border);
+  background: var(--surface-sunken);
+
+  img {
+    object-fit: cover;
+  }
+
+  @media (min-width: 64rem) {
+    display: block;
+  }
+}
+
+.auth__panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-6);
+  padding-block: var(--space-5) var(--space-7);
+}
+
+.auth__brand {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+.auth__content {
+  display: grid;
+  align-content: center;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+.auth__title {
+  font-size: var(--text-2xl);
+}
+
+.auth__lead {
+  color: var(--color-muted);
+}

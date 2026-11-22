@@ -7,7 +7,6 @@ import {
   GoogleLoginRequest,
   Login,
   PasswordRecovery,
-  PasswordReset,
   ResendConfirmationRequest,
   UserCreate,
   UserDetails,
@@ -37,12 +36,14 @@ export class AuthService {
     return this.api.authEmailConfirmationGet({ userId, confirmationToken });
   }
 
-  resendConfirmation(body: ResendConfirmationRequest): Observable<string> {
-    return this.api.authResendConfirmationPost({ body }).pipe(unwrap());
+  /** L'API ne renvoie qu'un message, sans donnée. */
+  resendConfirmation(body: ResendConfirmationRequest): Observable<void> {
+    return this.api.authResendConfirmationPost({ body }).pipe(toVoid());
   }
 
-  resendMyConfirmation(): Observable<string> {
-    return this.api.authMeResendConfirmationPost().pipe(unwrap());
+  /** L'API ne renvoie qu'un message, sans donnée. */
+  resendMyConfirmation(): Observable<void> {
+    return this.api.authMeResendConfirmationPost().pipe(toVoid());
   }
 
   acceptTerms(): Observable<void> {
@@ -57,12 +58,14 @@ export class AuthService {
     return this.api.authMyInformationsGet().pipe(unwrap());
   }
 
-  forgotPassword(body: ForgotPassword): Observable<PasswordReset> {
-    return this.api.authForgotPasswordPost({ body }).pipe(unwrap());
+  /** Même réponse que l'adresse existe ou non : l'API ne renvoie aucune donnée. */
+  forgotPassword(body: ForgotPassword): Observable<void> {
+    return this.api.authForgotPasswordPost({ body }).pipe(toVoid());
   }
 
-  resetPassword(body: PasswordRecovery): Observable<string> {
-    return this.api.authResetPasswordPost({ body }).pipe(unwrap());
+  /** L'API renvoie une chaîne brute, sans enveloppe. */
+  resetPassword(body: PasswordRecovery): Observable<void> {
+    return this.api.authResetPasswordPost({ body }).pipe(toVoid());
   }
 
   refreshToken(): Observable<Login> {
