@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ThemeSwitcher } from '../theme-switcher/theme-switcher';
 
 @Component({
   selector: 'app-site-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, ThemeSwitcher],
   template: `
     <footer class="site-footer gutter">
       <ul class="inline-list">
@@ -15,6 +16,7 @@ import { RouterLink } from '@angular/router';
         </li>
         <li><a routerLink="/mentions-legales" i18n="@@footer.legal">Mentions légales</a></li>
       </ul>
+      <app-theme-switcher />
       <p class="site-footer__copy" i18n="@@footer.copy">© {{ year }} Le Restaurant</p>
     </footer>
   `,

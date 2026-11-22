@@ -1,33 +1,47 @@
 // Jetons de style globaux : les composants lisent ces variables via var(--…), jamais de couleur en dur.
-// Mode clair uniquement. Texte : jamais plus clair que --color-muted (contraste AA).
+// Thèmes clair et sombre : chaque couleur est déclarée une seule fois avec light-dark(clair, sombre).
+// Le thème suit l'appareil (Système), sauf si data-theme="light" ou "dark" est posé sur <html>.
+// Texte : jamais plus clair que --color-muted (contraste AA vérifié dans les deux thèmes).
+
+:root {
+  color-scheme: light dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
 
 :root {
   // Couleurs
-  --color-ink: #000;
-  --color-ink-soft: #2d2d2d;
-  --color-muted: #5c5c5c;
-  --color-paper: #fff;
-  --color-line: #000;
-  --color-line-mid: #a4a4a4;
-  --color-line-soft: #e7e7e7;
+  --color-ink: light-dark(#000, #f2f2f2);
+  --color-ink-soft: light-dark(#2d2d2d, #d4d4d4);
+  --color-muted: light-dark(#5c5c5c, #a3a3a3);
+  --color-paper: light-dark(#fff, #121212);
+  --color-line: light-dark(#000, #f2f2f2);
+  --color-line-mid: light-dark(#a4a4a4, #6b6b6b);
+  --color-line-soft: light-dark(#e7e7e7, #2e2e2e);
 
   // Surfaces (séparées par des bordures, jamais par des ombres)
   --surface-page: var(--color-paper);
   --surface-raised: var(--color-paper);
-  --surface-sunken: #f4f4f4;
+  --surface-sunken: light-dark(#f4f4f4, #1c1c1c);
   --surface-inverse: var(--color-ink);
   --on-inverse: var(--color-paper);
-  --surface-overlay: rgb(0 0 0 / 0.5);
+  --surface-overlay: light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.7));
 
   // Statuts : toujours accompagnés d'un libellé ou d'une icône
-  --color-danger: #990000;
-  --color-danger-bg: #fbeaea;
-  --color-success: #1e6b34;
-  --color-success-bg: #e8f4ec;
-  --color-warning: #8a5a00;
-  --color-warning-bg: #fdf3e1;
-  --color-info: #1f4e8c;
-  --color-info-bg: #e9f0f9;
+  --color-danger: light-dark(#990000, #ff8a80);
+  --color-danger-bg: light-dark(#fbeaea, #3a1414);
+  --color-success: light-dark(#1e6b34, #7fd99b);
+  --color-success-bg: light-dark(#e8f4ec, #12301c);
+  --color-warning: light-dark(#8a5a00, #f0c36a);
+  --color-warning-bg: light-dark(#fdf3e1, #3a2b0a);
+  --color-info: light-dark(#1f4e8c, #8fb8f6);
+  --color-info-bg: light-dark(#e9f0f9, #13243d);
 
   // Bordures
   --border-width: 1px;

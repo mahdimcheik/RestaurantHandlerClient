@@ -54,3 +54,57 @@
     color: var(--color-muted);
   }
 }
+
+// Choix exclusif en ligne (groupe de radios natifs masqués) : <fieldset class="segmented">.
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.segmented__legend {
+  float: left;
+  margin-inline-end: var(--space-3);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.segmented__option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border);
+  background: var(--surface-page);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color var(--ease),
+    color var(--ease);
+
+  & + & {
+    margin-inline-start: calc(-1 * var(--border-width));
+  }
+
+  &:hover {
+    background: var(--surface-sunken);
+  }
+
+  &:has(input:checked) {
+    background: var(--surface-inverse);
+    color: var(--on-inverse);
+    font-weight: var(--weight-bold);
+  }
+
+  &:has(input:focus-visible) {
+    position: relative;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+}
