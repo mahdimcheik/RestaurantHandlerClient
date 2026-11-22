@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+// Police Barlow auto-hébergée (à activer après `npm install @fontsource/barlow`) :
+// @use '@fontsource/barlow/400.css';
+// @use '@fontsource/barlow/500.css';
+// @use '@fontsource/barlow/700.css';
+@use 'styles/tokens';
+@use 'styles/base';

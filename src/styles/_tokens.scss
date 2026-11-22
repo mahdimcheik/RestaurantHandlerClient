@@ -1,0 +1,75 @@
+// Jetons de style globaux : les composants lisent ces variables via var(--…), jamais de couleur en dur.
+// Mode clair uniquement. Texte : jamais plus clair que --color-muted (contraste AA).
+
+:root {
+  // Couleurs
+  --color-ink: #000;
+  --color-ink-soft: #2d2d2d;
+  --color-muted: #5c5c5c;
+  --color-paper: #fff;
+  --color-line: #000;
+  --color-line-mid: #a4a4a4;
+  --color-line-soft: #e7e7e7;
+
+  // Surfaces (séparées par des bordures, jamais par des ombres)
+  --surface-page: var(--color-paper);
+  --surface-raised: var(--color-paper);
+  --surface-sunken: #f4f4f4;
+  --surface-inverse: var(--color-ink);
+  --on-inverse: var(--color-paper);
+  --surface-overlay: rgb(0 0 0 / 0.5);
+
+  // Statuts : toujours accompagnés d'un libellé ou d'une icône
+  --color-danger: #990000;
+  --color-danger-bg: #fbeaea;
+  --color-success: #1e6b34;
+  --color-success-bg: #e8f4ec;
+  --color-warning: #8a5a00;
+  --color-warning-bg: #fdf3e1;
+  --color-info: #1f4e8c;
+  --color-info-bg: #e9f0f9;
+
+  // Bordures
+  --border-width: 1px;
+  --border-width-strong: 2px;
+  --border: var(--border-width) solid var(--color-line);
+  --border-strong: var(--border-width-strong) solid var(--color-ink-soft);
+  --border-soft: var(--border-width) solid var(--color-line-soft);
+  --radius: 0;
+  --radius-round: 50%;
+
+  // Typographie
+  --font-sans: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 4rem;
+  --text-display: clamp(2.5rem, 8vw, 8rem);
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+  --tracking-caps: 0.04em;
+  --leading: 1.4;
+  --leading-tight: 1;
+
+  // Espacements (base 4px)
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --tap-min: 44px;
+
+  // Interaction
+  --focus-ring: 2px solid var(--color-ink);
+  --focus-offset: 2px;
+  --ease: 150ms ease;
+}
