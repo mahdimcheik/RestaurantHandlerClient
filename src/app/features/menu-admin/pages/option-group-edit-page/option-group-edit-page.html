@@ -67,7 +67,7 @@
             [field]="form.label"
             label="Libellé"
             i18n-label="@@optionGroup.label"
-            hint="Par exemple « Sauces » ou « Taille »"
+            hint="Par exemple « Sauces », « Taille » ou « Suppléments pizza »"
             i18n-hint="@@optionGroup.labelHint"
           />
           <div class="form__row form__row--3">
@@ -82,6 +82,8 @@
               [field]="form.maxChoices"
               label="Maximum de choix"
               i18n-label="@@optionGroup.max"
+              hint="Un produit peut redéfinir ces nombres"
+              i18n-hint="@@optionGroup.maxHint"
             />
             <app-number-field
               [field]="form.freeChoices"
@@ -91,12 +93,21 @@
               i18n-hint="@@optionGroup.freeHint"
             />
           </div>
-          <app-text-field
-            [field]="form.extraChoicePrice"
-            inputmode="decimal"
-            label="Prix d'un choix au-delà des offerts (€)"
-            i18n-label="@@optionGroup.extraPrice"
-          />
+          <div class="form__row">
+            <app-text-field
+              [field]="form.extraChoicePrice"
+              inputmode="decimal"
+              label="Prix d'un choix au-delà des offerts (€)"
+              i18n-label="@@optionGroup.extraPrice"
+            />
+            <app-number-field
+              [field]="form.maxPerChoice"
+              label="Fois max par choix"
+              i18n-label="@@optionGroup.maxPerChoice"
+              hint="2 = un ingrédient peut être doublé ; chaque fois compte comme un choix"
+              i18n-hint="@@optionGroup.maxPerChoiceHint"
+            />
+          </div>
         </div>
       </section>
 

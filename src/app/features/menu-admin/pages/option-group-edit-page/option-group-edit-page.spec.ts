@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { OptionGroupDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, submitForm, text } from '../../testing';
+import { clickButton, control, envelope, fill, submitForm, text } from '../../testing';
 import { OptionGroupEditPage } from './option-group-edit-page';
 
 const sauces: OptionGroupDetails = {
@@ -15,6 +15,7 @@ const sauces: OptionGroupDetails = {
   maxChoices: 3,
   freeChoices: 2,
   extraChoicePriceCents: 50,
+  maxPerChoice: 1,
   isArchived: false,
   productCount: 2,
   choices: [
@@ -52,6 +53,33 @@ describe('OptionGroupEditPage', () => {
     await fixture.whenStable();
   }
 
+  it('reprend le prix de référence de l’ingrédient lié à un choix encore à 0 €', async () => {
+    fixture.detectChanges();
+    http.expectOne('/manage/ingredients').flush(
+      envelope([
+        {
+          id: 'i-cheddar',
+          name: 'Cheddar',
+          priceCents: 80,
+          isOfferedAsReplacement: true,
+          isAvailable: true,
+          isArchived: false,
+        },
+      ]),
+    );
+    http.expectOne('/manage/products').flush(envelope([]));
+    await fixture.whenStable();
+
+    fill(fixture, 'Surcoût (€)', '1,00', 1);
+    fill(fixture, 'Ingrédient lié', 'i-cheddar', 0);
+    fill(fixture, 'Ingrédient lié', 'i-cheddar', 1);
+    await fixture.whenStable();
+
+    expect(control(fixture, 'Surcoût (€)', 0).value).toBe('0,80');
+    // Un surcoût déjà saisi n'est pas écrasé.
+    expect(control(fixture, 'Surcoût (€)', 1).value).toBe('1,00');
+  });
+
   it('crée un groupe avec ses choix, prix convertis en centimes', async () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     fixture.detectChanges();
@@ -72,6 +100,7 @@ describe('OptionGroupEditPage', () => {
       maxChoices: 1,
       freeChoices: 1,
       extraChoicePriceCents: 0,
+      maxPerChoice: 1,
       choices: [
         { id: null, name: '29 cm', extraPriceCents: 0, ingredientId: null },
         { id: null, name: '33 cm', extraPriceCents: 300, ingredientId: null },

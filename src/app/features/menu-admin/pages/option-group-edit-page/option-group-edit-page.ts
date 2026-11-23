@@ -1,4 +1,13 @@
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  signal,
+  untracked,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { applyEach, form, submit, validate } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
@@ -35,6 +44,7 @@ interface GroupModel {
   maxChoices: number;
   freeChoices: number;
   extraChoicePrice: string;
+  maxPerChoice: number;
   choices: ChoiceModel[];
 }
 
@@ -46,6 +56,7 @@ const toModel = (group: OptionGroupDetails | undefined): GroupModel => ({
   maxChoices: group?.maxChoices ?? 1,
   freeChoices: group?.freeChoices ?? 1,
   extraChoicePrice: centsToInput(group?.extraChoicePriceCents ?? 0),
+  maxPerChoice: group?.maxPerChoice ?? 1,
   choices: group?.choices.map((choice) => ({
     id: choice.id,
     name: choice.name,
@@ -60,6 +71,7 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
   maxChoices: model.maxChoices,
   freeChoices: model.freeChoices,
   extraChoicePriceCents: parseEuros(model.extraChoicePrice) ?? 0,
+  maxPerChoice: model.maxPerChoice,
   choices: model.choices.map((choice) => ({
     id: choice.id,
     name: choice.name.trim(),
@@ -125,8 +137,9 @@ export class OptionGroupEditPage {
         : undefined,
     );
     eurosRule(path.extraChoicePrice, { required: true });
+    integerRange(path.maxPerChoice, 1, 10);
     validate(path.choices, ({ value, valueOf }) =>
-      value().length < Math.max(1, valueOf(path.minChoices))
+      value().length === 0 || value().length * valueOf(path.maxPerChoice) < valueOf(path.minChoices)
         ? {
             kind: 'tooFew',
             message: $localize`:@@optionGroup.tooFew:Proposez au moins un choix, et au moins autant que le minimum.`,
@@ -171,6 +184,45 @@ export class OptionGroupEditPage {
   constructor() {
     this.store.ingredients.load();
     this.store.products.load();
+    this.prefillChoicePrices();
+  }
+
+  /**
+   * Un ingrédient tout juste lié à un choix encore à 0 € lui donne son prix de référence
+   * (« Suppléments » : cheddar → +0,80 €). Ni les déplacements ni un prix saisi ne sont touchés.
+   */
+  private prefillChoicePrices(): void {
+    let previous: string[] | null = null;
+    effect(() => {
+      const ids = this.model().choices.map((choice) => choice.ingredientId);
+      const before = previous;
+      previous = ids;
+      if (!before || before.length !== ids.length) {
+        return;
+      }
+      const prices = new Map(
+        untracked(this.store.ingredients.value).map((ingredient) => [
+          ingredient.id,
+          ingredient.priceCents,
+        ]),
+      );
+      const filled = ids.map((id, i) =>
+        id && id !== before[i] && !before.includes(id) ? prices.get(id) : undefined,
+      );
+      if (filled.every((price) => !price)) {
+        return;
+      }
+      untracked(() =>
+        this.model.update((model) => ({
+          ...model,
+          choices: model.choices.map((choice, i) =>
+            filled[i] && (parseEuros(choice.extraPrice) ?? 0) === 0
+              ? { ...choice, extraPrice: centsToInput(filled[i]) }
+              : choice,
+          ),
+        })),
+      );
+    });
   }
 
   protected addChoice(): void {

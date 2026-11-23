@@ -28,7 +28,11 @@ export function fill(
 ): void {
   const input = control<HTMLInputElement | HTMLSelectElement>(fixture, label, index);
   input.value = value;
-  input.dispatchEvent(new Event(input instanceof HTMLSelectElement ? 'change' : 'input'));
+  // Comme un navigateur : `input` à chaque saisie, et `change` en plus pour une liste.
+  input.dispatchEvent(new Event('input'));
+  if (input instanceof HTMLSelectElement) {
+    input.dispatchEvent(new Event('change'));
+  }
 }
 
 export function submitForm(fixture: ComponentFixture<unknown>): void {

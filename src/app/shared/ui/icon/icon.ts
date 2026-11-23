@@ -5,6 +5,7 @@ const PATHS = {
   dashboard: ['M3 3h7v9H3z', 'M14 3h7v5h-7z', 'M14 12h7v9h-7z', 'M3 16h7v5H3z'],
   categories: ['M4 5h16', 'M4 12h16', 'M4 19h16', 'M8 3v4', 'M14 10v4', 'M10 17v4'],
   products: ['M4 7l8-4 8 4v10l-8 4-8-4z', 'M4 7l8 4 8-4', 'M12 11v10'],
+  ingredients: ['M5 19C5 11 11 5 19 5c0 8-6 14-14 14z', 'M5 19l8-8'],
   options: ['M9 6h11', 'M9 12h11', 'M9 18h11', 'M4 5h2v2H4z', 'M4 11h2v2H4z', 'M4 17h2v2H4z'],
   plus: ['M12 5v14', 'M5 12h14'],
   back: ['M15 5l-7 7 7 7'],

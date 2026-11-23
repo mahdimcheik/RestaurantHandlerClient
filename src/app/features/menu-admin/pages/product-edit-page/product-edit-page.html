@@ -106,6 +106,20 @@
         }
       </section>
 
+      <section class="sheet__section" aria-labelledby="product-composition">
+        <h2 id="product-composition" i18n="@@composition.title">Composition</h2>
+        @if (id(); as productId) {
+          <app-product-composition
+            [productId]="productId"
+            [composition]="product.value()?.composition"
+          />
+        } @else {
+          <p class="sheet__lead" i18n="@@composition.afterCreate">
+            La composition se renseigne une fois le produit créé.
+          </p>
+        }
+      </section>
+
       <section class="sheet__section" aria-labelledby="product-groups">
         <h2 id="product-groups" i18n="@@admin.options">Groupes d'options</h2>
         @if (!id()) {
@@ -114,35 +128,44 @@
           </p>
         } @else {
           <p class="sheet__lead" i18n="@@product.groupsLead">
-            Choix proposés au client (pain, sauces, taille…), dans l'ordre d'affichage. Un groupe se
-            modifie une seule fois pour tous les produits qui le proposent.
+            Choix proposés au client (pain, sauces, taille, suppléments…), dans l'ordre d'affichage.
+            Un groupe se modifie une seule fois pour tous les produits qui le proposent.
           </p>
           @if (groupsError()) {
             <p class="alert alert--error" role="alert">{{ groupsError() }}</p>
           }
-          @if (selectedGroups().length === 0) {
+          @if (groupLinks().links.length === 0) {
             <p class="empty" i18n="@@product.noGroups">Aucun groupe d'options sur ce produit.</p>
           } @else {
             <ol class="stack-list">
-              @for (group of selectedGroups(); track group.id; let i = $index, last = $last) {
+              @for (
+                link of groupsForm.links;
+                track link;
+                let i = $index, first = $first, last = $last
+              ) {
+                @let model = groupLinks().links[i];
+                @let group = groupsById().get(model.id);
+                @let label = group?.label ?? '';
                 <li class="stack-list__item">
                   <div class="stack-list__head">
                     <div>
-                      <a class="stack-list__title" [routerLink]="['/gestion/options', group.id]">
-                        {{ group.label }}
+                      <a class="stack-list__title" [routerLink]="['/gestion/options', model.id]">
+                        {{ label }}
                       </a>
-                      <p class="stack-list__meta" i18n="@@group.bounds">
-                        {{ group.minChoices }} à {{ group.maxChoices }} choix ·
-                        {{ group.choices.length }} proposés
-                      </p>
+                      @if (group) {
+                        <p class="stack-list__meta" i18n="@@group.bounds">
+                          Groupe : {{ group.minChoices }} à {{ group.maxChoices }} choix ·
+                          {{ group.choices.length }} proposés
+                        </p>
+                      }
                     </div>
                     <div class="stack-list__tools">
                       <button
                         type="button"
                         class="icon-button"
-                        [disabled]="i === 0"
+                        [disabled]="first"
                         (click)="moveGroup(i, -1)"
-                        title="Monter « {{ group.label }} »"
+                        title="Monter « {{ label }} »"
                         i18n-title="@@list.moveUp"
                       >
                         <app-icon name="up" />
@@ -152,7 +175,7 @@
                         class="icon-button"
                         [disabled]="last"
                         (click)="moveGroup(i, 1)"
-                        title="Descendre « {{ group.label }} »"
+                        title="Descendre « {{ label }} »"
                         i18n-title="@@list.moveDown"
                       >
                         <app-icon name="down" />
@@ -161,13 +184,37 @@
                         type="button"
                         class="icon-button"
                         (click)="removeGroup(i)"
-                        title="Retirer « {{ group.label }} »"
+                        title="Retirer « {{ label }} »"
                         i18n-title="@@list.remove"
                       >
                         <app-icon name="remove" />
                       </button>
                     </div>
                   </div>
+                  <app-checkbox-field [field]="link.custom">
+                    <ng-container i18n="@@product.customBounds">
+                      Nombre de choix propre à ce produit
+                    </ng-container>
+                  </app-checkbox-field>
+                  @if (model.custom) {
+                    <div class="form__row form__row--3">
+                      <app-number-field
+                        [field]="link.minChoices"
+                        label="Minimum de choix"
+                        i18n-label="@@optionGroup.min"
+                      />
+                      <app-number-field
+                        [field]="link.maxChoices"
+                        label="Maximum de choix"
+                        i18n-label="@@optionGroup.max"
+                      />
+                      <app-number-field
+                        [field]="link.freeChoices"
+                        label="Choix offerts"
+                        i18n-label="@@optionGroup.free"
+                      />
+                    </div>
+                  }
                 </li>
               }
             </ol>
@@ -204,7 +251,11 @@
           </div>
 
           <div class="form__actions">
-            <button type="button" [disabled]="savingGroups()" (click)="saveGroups()">
+            <button
+              type="button"
+              [disabled]="savingGroups() || groupsForm().submitting()"
+              (click)="saveGroups()"
+            >
               <ng-container i18n="@@product.saveGroups">Enregistrer les groupes</ng-container>
             </button>
           </div>

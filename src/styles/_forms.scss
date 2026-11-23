@@ -27,6 +27,24 @@
   width: 100%;
 }
 
+// Un champ et son bouton sur une ligne (ajout rapide) ; le bouton passe dessous si la place manque.
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+
+  // Le premier champ (ou le composant qui l'enveloppe) prend le plus de place ; les suivants
+  // (prix, case à cocher) restent étroits ; les boutons gardent leur largeur.
+  > :first-child {
+    flex: 2 1 14rem;
+  }
+
+  > :not(:first-child, button) {
+    flex: 1 1 8rem;
+  }
+}
+
 .form__link {
   justify-self: start;
   display: inline-flex;

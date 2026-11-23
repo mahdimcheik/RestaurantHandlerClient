@@ -10,5 +10,6 @@ export interface PublicOptionGroup {
   imageUrl?: string | null;
   label: string;
   maxChoices: number;
+  maxPerChoice: number;
   minChoices: number;
 }

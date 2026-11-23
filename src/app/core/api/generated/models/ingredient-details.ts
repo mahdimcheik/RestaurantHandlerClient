@@ -5,5 +5,7 @@ export interface IngredientDetails {
   id: string;
   isArchived: boolean;
   isAvailable: boolean;
+  isOfferedAsReplacement: boolean;
   name: string;
+  priceCents: number;
 }

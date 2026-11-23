@@ -4,7 +4,6 @@
 import { ProductKind } from '../models/product-kind';
 import { PublicIngredient } from '../models/public-ingredient';
 import { PublicOptionGroup } from '../models/public-option-group';
-import { PublicSupplement } from '../models/public-supplement';
 export interface PublicProduct {
   description?: string | null;
   id: string;
@@ -15,5 +14,4 @@ export interface PublicProduct {
   name: string;
   optionGroups: Array<PublicOptionGroup>;
   priceCents: number;
-  supplements: Array<PublicSupplement>;
 }

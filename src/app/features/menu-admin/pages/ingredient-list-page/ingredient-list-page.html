@@ -1,0 +1,155 @@
+<div class="page-head">
+  <h1 i18n="@@admin.ingredients">Ingrédients</h1>
+</div>
+
+<p class="sheet__lead" i18n="@@ingredient.lead">
+  Les ingrédients composent les produits et peuvent être liés aux choix d'options. Le prix de
+  référence sert seulement aux remplacements : remplacer un ingrédient par un plus cher coûte la
+  différence. Décochez « Proposé en remplacement » pour la pâte, le pain… Une rupture grise partout
+  ce qui en dépend.
+</p>
+
+<app-ingredient-quick-add (created)="created($event)" />
+
+<div class="toolbar">
+  <div class="field">
+    <label class="field__label" for="ingredient-search" i18n="@@ingredient.search">
+      Rechercher
+    </label>
+    <input
+      #searchBox
+      id="ingredient-search"
+      type="search"
+      autocomplete="off"
+      [value]="search()"
+      (input)="search.set(searchBox.value)"
+    />
+  </div>
+  <label class="checkbox">
+    <input
+      #archivedBox
+      type="checkbox"
+      [checked]="showArchived()"
+      (change)="showArchived.set(archivedBox.checked)"
+    />
+    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+  </label>
+</div>
+
+@if (error()) {
+  <p class="alert alert--error" role="alert">{{ error() }}</p>
+}
+<p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+  {{ notice() }}
+</p>
+
+@if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else if (loading() && total() === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (total() === 0) {
+  <p class="empty" i18n="@@ingredient.empty">Aucun ingrédient pour l'instant.</p>
+} @else if (rows().length === 0) {
+  <p class="empty" i18n="@@ingredient.noMatch">Aucun ingrédient ne correspond à la recherche.</p>
+} @else {
+  <table class="data-table">
+    <caption class="visually-hidden" i18n="@@admin.ingredients">
+      Ingrédients
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" i18n="@@field.name">Nom</th>
+        <th scope="col" class="data-table__num" i18n="@@ingredient.price">Prix de référence</th>
+        <th scope="col" i18n="@@ingredient.replacement">En remplacement</th>
+        <th scope="col" i18n="@@list.status">Statut</th>
+        <th scope="col" i18n="@@list.actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (ingredient of rows(); track ingredient.id) {
+        <tr>
+          <td class="data-table__main">{{ ingredient.name }}</td>
+          <td
+            class="data-table__num"
+            data-label="Prix de référence"
+            i18n-data-label="@@ingredient.price"
+          >
+            {{ ingredient.priceCents | euros }}
+          </td>
+          <td data-label="En remplacement" i18n-data-label="@@ingredient.replacement">
+            @if (ingredient.isOfferedAsReplacement) {
+              <ng-container i18n="@@common.yes">Oui</ng-container>
+            } @else {
+              <ng-container i18n="@@common.no">Non</ng-container>
+            }
+          </td>
+          <td data-label="Statut" i18n-data-label="@@list.status">
+            <app-status-badges
+              [archived]="ingredient.isArchived"
+              [available]="ingredient.isAvailable"
+            />
+          </td>
+          <td data-label="Actions" i18n-data-label="@@list.actions">
+            @if (!ingredient.isArchived) {
+              <div class="toolbar">
+                <button
+                  type="button"
+                  class="btn btn--outline"
+                  [disabled]="busyId() === ingredient.id"
+                  (click)="toggleAvailability(ingredient)"
+                >
+                  @if (ingredient.isAvailable) {
+                    <ng-container i18n="@@ingredient.markOut">Marquer en rupture</ng-container>
+                  } @else {
+                    <ng-container i18n="@@ingredient.markIn">Remettre en stock</ng-container>
+                  }
+                </button>
+                @if (editingId() !== ingredient.id) {
+                  <button
+                    type="button"
+                    class="btn btn--outline"
+                    (click)="startEdit(ingredient)"
+                    i18n="@@ingredient.edit"
+                  >
+                    Modifier
+                  </button>
+                }
+                <app-archive-button
+                  [name]="ingredient.name"
+                  [busy]="busyId() === ingredient.id"
+                  (confirmed)="archive(ingredient)"
+                />
+              </div>
+            }
+          </td>
+        </tr>
+        @if (editingId() === ingredient.id) {
+          <tr>
+            <td colspan="5">
+              <form class="inline-form" novalidate (submit)="save($event, ingredient)">
+                <app-text-field [field]="editForm.name" label="Nom" i18n-label="@@field.name" />
+                <app-text-field
+                  [field]="editForm.price"
+                  inputmode="decimal"
+                  label="Prix de référence (€)"
+                  i18n-label="@@ingredient.priceLabel"
+                />
+                <app-checkbox-field [field]="editForm.isOfferedAsReplacement">
+                  <ng-container i18n="@@ingredient.offeredLabel">
+                    Proposé en remplacement
+                  </ng-container>
+                </app-checkbox-field>
+                <button type="submit" [disabled]="busyId() === ingredient.id">
+                  <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+                </button>
+                <button type="button" class="btn btn--outline" (click)="cancelEdit()">
+                  <ng-container i18n="@@common.cancel">Annuler</ng-container>
+                </button>
+              </form>
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+}

@@ -63,5 +63,13 @@
         <span class="stat__value">{{ optionGroupCount() }}</span>
       </a>
     </li>
+    <li>
+      <a class="stat" routerLink="/gestion/ingredients">
+        <span class="stat__label" i18n="@@dashboard.outOfStockIngredients">
+          Ingrédients en rupture
+        </span>
+        <span class="stat__value">{{ outOfStockIngredientCount() }}</span>
+      </a>
+    </li>
   </ul>
 </section>

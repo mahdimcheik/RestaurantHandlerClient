@@ -4,6 +4,7 @@ import {
   AvailabilityUpdate,
   CompositionUpdate,
   ProductDetails,
+  ProductOptionGroupWrite,
   ProductsApi,
   ProductWrite,
   ReorderRequest,
@@ -66,9 +67,9 @@ export class ProductsService {
   }
 
   /** Groupes d'options proposés sur le produit, dans l'ordre d'affichage. */
-  setOptionGroups(id: string, optionGroupIds: string[]): Observable<ProductDetails> {
+  setOptionGroups(id: string, optionGroups: ProductOptionGroupWrite[]): Observable<ProductDetails> {
     return this.api
-      .manageProductsIdOptionGroupsPut({ id, body: { optionGroupIds } })
+      .manageProductsIdOptionGroupsPut({ id, body: { optionGroups } })
       .pipe(unwrap(), refresh(this.store.products, this.store.optionGroups));
   }
 

@@ -32,10 +32,14 @@ export class DashboardPage {
         .length,
   );
   protected readonly optionGroupCount = computed(() => this.store.optionGroups.value().length);
+  protected readonly outOfStockIngredientCount = computed(
+    () => this.store.ingredients.value().filter((ingredient) => !ingredient.isAvailable).length,
+  );
 
   constructor() {
     this.store.categories.load();
     this.store.products.load();
     this.store.optionGroups.load();
+    this.store.ingredients.load();
   }
 }

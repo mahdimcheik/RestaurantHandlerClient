@@ -40,6 +40,12 @@ export const MENU_ADMIN_ROUTES: Routes = [
       import('./pages/product-edit-page/product-edit-page').then((m) => m.ProductEditPage),
   },
   {
+    path: 'ingredients',
+    title: $localize`:@@admin.ingredients:Ingrédients` + suffix,
+    loadComponent: () =>
+      import('./pages/ingredient-list-page/ingredient-list-page').then((m) => m.IngredientListPage),
+  },
+  {
     path: 'options',
     title: $localize`:@@admin.options:Groupes d'options` + suffix,
     loadComponent: () =>

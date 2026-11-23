@@ -42,6 +42,7 @@ describe('AdminLayout', () => {
       'Tableau de bord',
       'Catégories',
       'Produits',
+      'Ingrédients',
       "Groupes d'options",
       'Retour au site',
       'Déconnexion',

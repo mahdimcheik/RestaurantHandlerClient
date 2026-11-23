@@ -4,8 +4,10 @@
 import { OpeningStateDto } from '../models/opening-state-dto';
 import { PublicCategory } from '../models/public-category';
 import { PublicMenu } from '../models/public-menu';
+import { PublicReplacement } from '../models/public-replacement';
 export interface PublicCard {
   categories: Array<PublicCategory>;
   menus: Array<PublicMenu>;
   opening: OpeningStateDto;
+  replacements: Array<PublicReplacement>;
 }

@@ -3,11 +3,12 @@
 
 import { CartMenuChoiceDto } from '../models/cart-menu-choice-dto';
 import { CartModificationDto } from '../models/cart-modification-dto';
+import { CartOptionChoiceDto } from '../models/cart-option-choice-dto';
 export interface CartLineDto {
   choices?: Array<CartMenuChoiceDto> | null;
   menuId?: string | null;
   modifications?: Array<CartModificationDto> | null;
-  optionChoiceIds?: Array<string> | null;
+  optionChoices?: Array<CartOptionChoiceDto> | null;
   productId?: string | null;
   quantity?: number;
 }
