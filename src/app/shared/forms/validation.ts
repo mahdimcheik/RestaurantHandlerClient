@@ -56,6 +56,18 @@ export function integerRange(path: SchemaPath<number>, low: number, high: number
   );
 }
 
+/** Le maximum (`max`) doit être au moins égal au minimum (`min`) : bornes d'un nombre de choix. */
+export function maxAtLeastMin(max: SchemaPath<number>, min: SchemaPath<number>): void {
+  validate(max, ({ value, valueOf }) =>
+    value() < valueOf(min)
+      ? {
+          kind: 'belowMin',
+          message: $localize`:@@optionGroup.maxBelowMin:Le maximum doit être au moins égal au minimum.`,
+        }
+      : undefined,
+  );
+}
+
 /** Place le focus sur le premier champ en erreur après une soumission refusée. */
 export function focusFirstInvalid(tree: FieldTree<unknown>): void {
   tree().errorSummary()[0]?.fieldTree().focusBoundControl();

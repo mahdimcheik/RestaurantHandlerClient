@@ -31,6 +31,9 @@ export class DashboardPage {
       this.store.products.value().filter((product) => product.isActive && !product.isAvailable)
         .length,
   );
+  protected readonly activeMenuCount = computed(
+    () => this.store.menus.value().filter((menu) => menu.isActive).length,
+  );
   protected readonly optionGroupCount = computed(() => this.store.optionGroups.value().length);
   protected readonly outOfStockIngredientCount = computed(
     () => this.store.ingredients.value().filter((ingredient) => !ingredient.isAvailable).length,
@@ -39,6 +42,7 @@ export class DashboardPage {
   constructor() {
     this.store.categories.load();
     this.store.products.load();
+    this.store.menus.load();
     this.store.optionGroups.load();
     this.store.ingredients.load();
   }

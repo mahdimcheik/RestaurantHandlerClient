@@ -1,0 +1,172 @@
+<a class="page-head__back" routerLink="/gestion/menus" i18n="@@menu.back">← Tous les menus</a>
+
+@if (id() && loading()) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else {
+  <div class="page-head">
+    <h1>
+      @if (id()) {
+        {{ name() }}
+      } @else {
+        <ng-container i18n="@@menu.new">Nouveau menu</ng-container>
+      }
+    </h1>
+    @if (id() && !archived()) {
+      <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
+    }
+  </div>
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  }
+  <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+    {{ notice() }}
+  </p>
+
+  @if (archived()) {
+    <p class="alert" i18n="@@sheet.archived">
+      Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
+    </p>
+  } @else {
+    <div class="sheet">
+      <section class="sheet__section" aria-labelledby="menu-info">
+        <h2 id="menu-info" i18n="@@sheet.info">Informations</h2>
+        <form class="form" novalidate (submit)="onSubmit($event)">
+          <app-text-field [field]="form.name" label="Nom" i18n-label="@@field.name" />
+          <app-textarea-field
+            [field]="form.description"
+            label="Description (facultative)"
+            i18n-label="@@field.description"
+          />
+          <div class="form__row">
+            <app-text-field
+              [field]="form.price"
+              inputmode="decimal"
+              label="Prix TTC du menu (€)"
+              i18n-label="@@menu.priceField"
+              hint="Prix de base ; les surcoûts s'ajoutent par produit choisi"
+              i18n-hint="@@menu.priceHint"
+            />
+            <app-select-field
+              [field]="form.vatRate"
+              [options]="vatRates"
+              label="Taux de TVA"
+              i18n-label="@@product.vat"
+              hint="Un taux unique pour tout le menu"
+              i18n-hint="@@menu.vatHint"
+            />
+          </div>
+          <app-checkbox-field [field]="form.isActive">
+            <ng-container i18n="@@product.activeLabel">Visible sur la carte</ng-container>
+          </app-checkbox-field>
+          <div class="form__actions">
+            <button type="submit" [disabled]="form().submitting()">
+              @if (id()) {
+                <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+              } @else {
+                <ng-container i18n="@@menu.create">Créer le menu</ng-container>
+              }
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="sheet__section" aria-labelledby="menu-photo">
+        <h2 id="menu-photo" i18n="@@sheet.photo">Photo</h2>
+        @if (id()) {
+          <app-image-field
+            label="Choisir une photo"
+            i18n-label="@@image.choose"
+            [imageUrl]="menu()?.imageUrl"
+            [alt]="name()"
+            [upload]="uploadImage"
+            [remove]="removeImage"
+          />
+        } @else {
+          <p class="sheet__lead" i18n="@@sheet.photoAfterCreate">
+            La photo s'ajoute une fois l'élément créé.
+          </p>
+        }
+      </section>
+
+      <section class="sheet__section" aria-labelledby="menu-slots">
+        <h2 id="menu-slots" i18n="@@menu.slots">Emplacements</h2>
+        @if (menu(); as current) {
+          <p class="sheet__lead" i18n="@@menu.slotsLead">
+            Les étapes du menu (Plat, Accompagnement, Boisson…), dans l'ordre où le client les
+            remplit. Chacune propose des produits, avec un surcoût éventuel.
+          </p>
+          @if (slotsError()) {
+            <p class="alert alert--error" role="alert">{{ slotsError() }}</p>
+          }
+          @if (current.slots.length === 0) {
+            <p class="empty" i18n="@@menu.noSlots">Aucun emplacement dans ce menu.</p>
+          } @else {
+            <ol class="stack-list">
+              @for (
+                slot of current.slots;
+                track slot.id;
+                let i = $index, first = $first, last = $last
+              ) {
+                <li class="stack-list__item">
+                  <app-menu-slot
+                    [menuId]="current.id"
+                    [slot]="slot"
+                    [first]="first"
+                    [last]="last"
+                    [locked]="movingSlots()"
+                    [products]="activeProducts()"
+                    [categories]="categories()"
+                    (moved)="moveSlot(i, $event)"
+                    (changed)="menu.set($event)"
+                  />
+                </li>
+              }
+            </ol>
+          }
+
+          <form class="form" novalidate (submit)="addSlot($event)">
+            <h3 i18n="@@menu.addSlot">Ajouter un emplacement</h3>
+            <div class="form__row form__row--3">
+              <app-text-field
+                [field]="slotForm.label"
+                label="Libellé"
+                i18n-label="@@menuSlot.label"
+                hint="Par exemple Plat, Boisson"
+                i18n-hint="@@menuSlot.labelHint"
+              />
+              <app-number-field
+                [field]="slotForm.minChoices"
+                label="Minimum de choix"
+                i18n-label="@@optionGroup.min"
+              />
+              <app-number-field
+                [field]="slotForm.maxChoices"
+                label="Maximum de choix"
+                i18n-label="@@optionGroup.max"
+              />
+            </div>
+            <div class="form__actions">
+              <button type="submit" [disabled]="slotForm().submitting()">
+                <ng-container i18n="@@menu.addSlotAction">Ajouter l'emplacement</ng-container>
+              </button>
+            </div>
+          </form>
+          <p
+            role="status"
+            [class.alert]="slotsNotice() !== ''"
+            [class.alert--success]="slotsNotice() !== ''"
+          >
+            {{ slotsNotice() }}
+          </p>
+        } @else {
+          <p class="sheet__lead" i18n="@@menu.slotsAfterCreate">
+            Les emplacements se composent une fois le menu créé.
+          </p>
+        }
+      </section>
+    </div>
+  }
+}

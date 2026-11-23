@@ -58,6 +58,12 @@
       </a>
     </li>
     <li>
+      <a class="stat" routerLink="/gestion/menus">
+        <span class="stat__label" i18n="@@dashboard.activeMenus">Menus actifs</span>
+        <span class="stat__value">{{ activeMenuCount() }}</span>
+      </a>
+    </li>
+    <li>
       <a class="stat" routerLink="/gestion/options">
         <span class="stat__label" i18n="@@admin.options">Groupes d'options</span>
         <span class="stat__value">{{ optionGroupCount() }}</span>

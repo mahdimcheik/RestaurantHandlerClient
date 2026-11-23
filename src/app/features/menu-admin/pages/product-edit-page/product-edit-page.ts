@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { applyEach, form, required, submit, validate } from '@angular/forms/signals';
+import { applyEach, form, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom, tap } from 'rxjs';
 import {
@@ -15,6 +15,7 @@ import {
   eurosRule,
   focusFirstInvalid,
   integerRange,
+  maxAtLeastMin,
   lengthRule,
   nameRules,
   requiredMessage,
@@ -29,7 +30,10 @@ import { SelectField, SelectOption } from '../../../../shared/ui/select-field/se
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { TextareaField } from '../../../../shared/ui/textarea-field/textarea-field';
 import { centsToInput, parseEuros } from '../../../../shared/utils/money';
+import { VAT_RATES } from '../../catalog-options';
 import { ArchiveButton } from '../../components/archive-button';
+import { MoveButtons } from '../../components/move-buttons';
+import { moveItem } from '../../reorder';
 import { ProductComposition } from '../../components/product-composition/product-composition';
 
 interface ProductModel {
@@ -46,13 +50,6 @@ const KINDS: readonly SelectOption[] = [
   { value: 'Dish', label: $localize`:@@kind.dish:Plat` },
   { value: 'Drink', label: $localize`:@@kind.drink:Boisson` },
   { value: 'Dessert', label: $localize`:@@kind.dessert:Dessert` },
-];
-
-/** Liste fermée de l'API (conformité fiscale). */
-const VAT_RATES: readonly SelectOption[] = [
-  { value: '5.5', label: '5,5 %' },
-  { value: '10', label: '10 %' },
-  { value: '20', label: '20 %' },
 ];
 
 const toModel = (product: ProductDetails | undefined, categoryId: string): ProductModel => ({
@@ -115,6 +112,7 @@ const toLinkWrite = (link: GroupLinkModel): ProductOptionGroupWrite => ({
     NumberField,
     ImageField,
     ArchiveButton,
+    MoveButtons,
     ProductComposition,
   ],
   templateUrl: './product-edit-page.html',
@@ -145,6 +143,8 @@ export class ProductEditPage {
   protected readonly archived = computed(() => this.product.value()?.isArchived ?? false);
   protected readonly imageUrl = linkedSignal(() => this.product.value()?.imageUrl);
   protected readonly name = linkedSignal(() => this.product.value()?.name ?? '');
+  protected readonly available = linkedSignal(() => this.product.value()?.isAvailable ?? true);
+  protected readonly togglingAvailability = signal(false);
 
   protected readonly model = linkedSignal(() =>
     toModel(this.product.value(), this.categorie() ?? ''),
@@ -168,14 +168,7 @@ export class ProductEditPage {
       integerRange(link.minChoices, 0, 20);
       integerRange(link.maxChoices, 1, 20);
       integerRange(link.freeChoices, 0, 20);
-      validate(link.maxChoices, ({ value, valueOf }) =>
-        value() < valueOf(link.minChoices)
-          ? {
-              kind: 'belowMin',
-              message: $localize`:@@optionGroup.maxBelowMin:Le maximum doit être au moins égal au minimum.`,
-            }
-          : undefined,
-      );
+      maxAtLeastMin(link.maxChoices, link.minChoices);
     });
   });
   protected readonly groupsById = computed(
@@ -240,11 +233,7 @@ export class ProductEditPage {
   }
 
   protected moveGroup(index: number, offset: -1 | 1): void {
-    this.updateLinks((links) => {
-      const next = [...links];
-      [next[index], next[index + offset]] = [next[index + offset], next[index]];
-      return next;
-    });
+    this.updateLinks((links) => moveItem(links, index, offset));
   }
 
   protected removeGroup(index: number): void {
@@ -277,6 +266,27 @@ export class ProductEditPage {
   private updateLinks(change: (links: GroupLinkModel[]) => GroupLinkModel[]): void {
     this.groupLinks.update((model) => ({ links: change(model.links) }));
     this.groupsNotice.set('');
+  }
+
+  protected async toggleAvailability(): Promise<void> {
+    this.error.set('');
+    this.notice.set('');
+    this.togglingAvailability.set(true);
+    try {
+      const updated = await firstValueFrom(
+        this.products.setAvailability(this.id()!, { isAvailable: !this.available() }),
+      );
+      this.available.set(updated.isAvailable);
+      this.notice.set(
+        updated.isAvailable
+          ? $localize`:@@product.markedIn:« ${updated.name}:name: » est de nouveau disponible.`
+          : $localize`:@@product.markedOut:« ${updated.name}:name: » est en rupture.`,
+      );
+    } catch (error) {
+      this.error.set(apiErrorMessage(error));
+    } finally {
+      this.togglingAvailability.set(false);
+    }
   }
 
   protected async archive(): Promise<void> {

@@ -1,16 +1,20 @@
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { ProductDetails } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { ProductsService } from '../../../../shared/services/products.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { EurosPipe } from '../../../../shared/utils/money';
+import { MoveButtons } from '../../components/move-buttons';
 import { StatusBadges } from '../../components/status-badges';
+import { ListOrder } from '../../reorder';
 
 @Component({
   selector: 'app-product-list-page',
-  imports: [RouterLink, Icon, StatusBadges, EurosPipe],
+  imports: [RouterLink, Icon, StatusBadges, MoveButtons, EurosPipe],
   templateUrl: './product-list-page.html',
 })
 export class ProductListPage {
@@ -53,6 +57,18 @@ export class ProductListPage {
     return error ? apiErrorMessage(error) : '';
   });
 
+  /** L'API ordonne les produits par catégorie : l'ordre se change une catégorie filtrée. */
+  protected readonly canReorder = computed(() => this.categoryId() !== '' && !this.showArchived());
+  protected readonly order = new ListOrder(
+    (orderedIds) => this.products.reorder({ orderedIds }, this.categoryId()),
+    () => this.store.products.reload(),
+  );
+
+  protected readonly actionError = signal('');
+  protected readonly notice = signal('');
+  /** Produit en cours de bascule de rupture, pour désactiver son bouton. */
+  protected readonly busyId = signal<string | null>(null);
+
   constructor() {
     this.store.products.load();
     this.store.categories.load();
@@ -64,5 +80,25 @@ export class ProductListPage {
       queryParams: { categorie: categoryId || null },
       replaceUrl: true,
     });
+  }
+
+  protected async toggleAvailability(product: ProductDetails): Promise<void> {
+    this.actionError.set('');
+    this.notice.set('');
+    this.busyId.set(product.id);
+    try {
+      await firstValueFrom(
+        this.products.setAvailability(product.id, { isAvailable: !product.isAvailable }),
+      );
+      this.notice.set(
+        product.isAvailable
+          ? $localize`:@@product.markedOut:« ${product.name}:name: » est en rupture.`
+          : $localize`:@@product.markedIn:« ${product.name}:name: » est de nouveau disponible.`,
+      );
+    } catch (error) {
+      this.actionError.set(apiErrorMessage(error));
+    } finally {
+      this.busyId.set(null);
+    }
   }
 }

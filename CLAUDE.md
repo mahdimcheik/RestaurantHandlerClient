@@ -5,8 +5,8 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 ## Projet
 
 - Client web Angular 22 de RestaurantHandler : prise de commande sur tablette, écran cuisine (KDS), encaissement, administration du restaurant.
-- Backend et **documentation de référence** : dépôt frère `../Template` (ASP.NET Core .NET 10, dev avec le profil `https` sur `https://localhost:7113` / `http://localhost:5113`, ou le profil `http` sur `http://localhost:5152`). Lire `../Template/docs/` avant toute fonctionnalité.
-- État : page d'accueil, feature `auth` (connexion, inscription, mot de passe oublié, activation) et back-office Manager `/gestion` (coquille `shared/ui/admin-layout`, `features/dashboard`, `features/menu-admin` : catégories, produits, groupes d'options partagés, photos) en place. Les jalons du front (J4, J5) sont décrits dans `../Template/docs/50-feuille-de-route/01-feuille-de-route.md`.
+- Backend et **documentation de référence** : dépôt frère `../RestaurantHandlerAPI` (ASP.NET Core .NET 10, dev avec le profil `https` sur `https://localhost:7113` / `http://localhost:5113`, ou le profil `http` sur `http://localhost:5152`). Lire `../RestaurantHandlerAPI/docs/` avant toute fonctionnalité.
+- État : page d'accueil, feature `auth` (connexion, inscription, mot de passe oublié, activation) et back-office Manager `/gestion` (coquille `shared/ui/admin-layout`, `features/dashboard`, `features/menu-admin` : catégories, produits, groupes d'options partagés, photos) en place. Avancement et suite des écrans : `../RestaurantHandlerAPI/docs/50-feuille-de-route/04-feuille-de-route-front.md` (à tenir à jour à chaque étape), déclinaison des jalons J4 et J5 de `01-feuille-de-route.md`.
 - Interface en **français**, i18n Angular (`@angular/localize`) prête pour d'autres langues.
 
 ## Commandes
@@ -37,7 +37,7 @@ Guide lu à chaque session Claude Code. Règles d'abord.
   Une feature n'importe jamais une autre feature ; le partagé descend dans `shared/` ou `core/`.
 - Lectures par `httpResource` / `resource` / `rxResource`, écritures par `HttpClient` ; types d'API générés depuis l'OpenAPI du backend. Les composants n'appellent jamais `core/api/generated` directement : chaque service généré (`XxxApi`) a son wrapper `shared/services/xxx.service.ts`, même sans cache, qui renvoie `data` désenveloppé (`unwrap`) ou `Page<T>` pour les listes paginées (`unwrapPage`). Après une régénération, ajouter au wrapper les nouvelles méthodes.
 - Données qui changent rarement (catégories, produits, ingrédients, menus, horaires, fermetures, réglages, rôles) : cache dans `shared/services/store.service.ts`, un `Cached<T>` (`rxResource`) par entité. Un composant appelle `store.x.load()` puis lit `store.x.value()` / `isLoading()` / `error()`. Les écritures passent par le service wrapper de l'entité (`categories.service.ts`…), qui appelle le service généré (`CategoriesApi`), renvoie `data` désenveloppé et recharge via `refresh(...)` tous les caches touchés (ex. produit → produits, catégories, menus).
-- Temps réel : un service `core/realtime` gère la connexion SignalR (`/hubs/restaurant`), la reconnexion, le rattrapage par numéro de séquence et un signal d'état de connexion affiché en permanence. Le hub ne fait que pousser : toutes les actions passent par l'API REST.
+- Temps réel : un service `core/realtime` gère la connexion SignalR (`/hubs/realtime`), la reconnexion, le rattrapage par numéro de séquence et un signal d'état de connexion affiché en permanence. Le hub ne fait que pousser : toutes les actions passent par l'API REST.
 - Styles : **globaux, par classes**. Point d'entrée `src/styles.scss`, qui charge les partiels voisins de `src/styles/` : `_tokens.scss` (propriétés CSS : couleurs, surfaces, bordures, typo, espacements), `_base.scss` (éléments natifs), `_layout.scss` (structure, en-tête, pied de page, sections, `.gutter`), `_components.scss` (`.btn`, `.facts`…). Un nouveau partiel thématique au même endroit si besoin (ex. `_forms.scss`), importé dans `styles.scss`.
   - Éviter les styles propres aux composants (`styleUrl`, `styles`) : un composant applique des classes globales. Exception à justifier : un style vraiment indissociable d'un seul composant et impossible à exprimer en classe partagée.
   - Classes nommées en BEM léger (`.bloc`, `.bloc__element`, `.bloc--variante`), réutilisables, sans référence à une page. Réutiliser une classe existante avant d'en créer une.
@@ -110,9 +110,9 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 
 - Dupliquer une règle métier du serveur (calcul de TVA, transitions d'état) comme source de vérité côté client.
 - Ajouter une bibliothèque d'état global, de composants ou d'i18n sans ADR.
-- Écrire la documentation fonctionnelle ici : elle va dans `../Template/docs/`.
+- Écrire la documentation fonctionnelle ici : elle va dans `../RestaurantHandlerAPI/docs/`.
 
-## Documentation (dans `../Template/docs/`)
+## Documentation (dans `../RestaurantHandlerAPI/docs/`)
 
 Point d'entrée : `README.md` (ordre de lecture et index). En cas de désaccord entre ce fichier et la doc backend, la doc backend fait foi.
 
@@ -121,4 +121,4 @@ Point d'entrée : `README.md` (ordre de lecture et index). En cas de désaccord 
 - `20-regles-metier/` : `01-regles-commande.md` (R2 total calculé par le serveur, R10 idempotence) · `02-machine-etats-commande.md` · `03-roles-permissions.md` · `04-conformite-legale.md` (allergènes, RGPD, CGV).
 - `30-technique/` : `01-architecture.md` (§ Temps réel, § Front — PWA Angular mobile-first) · `04-securite.md` (§ Authentification et session, § Front) · `03-exploitation.md` (§ Mode dégradé) · `05-tests.md`.
 - `40-decisions/` : `README.md` (index des ADR) ; pour le front : `ADR-0002-auth-cookies-httponly.md`, `ADR-0009-compte-client-obligatoire.md`, `ADR-0011-francais-uniquement.md`.
-- `50-feuille-de-route/` : `01-feuille-de-route.md` (front : jalons J4 PWA client et J5 back-office & KDS) · `02-questions-ouvertes.md` · `03-risques-dette.md`.
+- `50-feuille-de-route/` : `01-feuille-de-route.md` (jalons J4 PWA client et J5 back-office & KDS) · `04-feuille-de-route-front.md` (étapes F0 à F9 du front) · `02-questions-ouvertes.md` · `03-risques-dette.md`.

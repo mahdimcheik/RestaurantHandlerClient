@@ -5,11 +5,13 @@ import { apiErrorMessage } from '../../../../core/http/api-error';
 import { CategoriesService } from '../../../../shared/services/categories.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { MoveButtons } from '../../components/move-buttons';
 import { StatusBadges } from '../../components/status-badges';
+import { ListOrder } from '../../reorder';
 
 @Component({
   selector: 'app-category-list-page',
-  imports: [RouterLink, Icon, StatusBadges],
+  imports: [RouterLink, Icon, StatusBadges, MoveButtons],
   templateUrl: './category-list-page.html',
 })
 export class CategoryListPage {
@@ -32,6 +34,12 @@ export class CategoryListPage {
     const error = this.showArchived() ? this.withArchived.error() : this.store.categories.error();
     return error ? apiErrorMessage(error) : '';
   });
+
+  /** Ordre de la carte, modifiable sur la liste des catégories en cours (hors archivées). */
+  protected readonly order = new ListOrder(
+    (orderedIds) => this.categories.reorder({ orderedIds }),
+    () => this.store.categories.reload(),
+  );
 
   constructor() {
     this.store.categories.load();

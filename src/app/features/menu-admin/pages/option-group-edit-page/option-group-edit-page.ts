@@ -18,6 +18,7 @@ import {
   eurosRule,
   focusFirstInvalid,
   integerRange,
+  maxAtLeastMin,
   nameRules,
 } from '../../../../shared/forms/validation';
 import { OptionGroupsService } from '../../../../shared/services/option-groups.service';
@@ -136,14 +137,7 @@ export class OptionGroupEditPage {
     integerRange(path.minChoices, 0, 20);
     integerRange(path.maxChoices, 1, 20);
     integerRange(path.freeChoices, 0, 20);
-    validate(path.maxChoices, ({ value, valueOf }) =>
-      value() < valueOf(path.minChoices)
-        ? {
-            kind: 'belowMin',
-            message: $localize`:@@optionGroup.maxBelowMin:Le maximum doit être au moins égal au minimum.`,
-          }
-        : undefined,
-    );
+    maxAtLeastMin(path.maxChoices, path.minChoices);
     eurosRule(path.extraChoicePrice, { required: true });
     integerRange(path.maxPerChoice, 1, 10);
     validate(path.choices, ({ value, valueOf }) =>

@@ -18,6 +18,11 @@
   </label>
 </div>
 
+@if (order.error()) {
+  <p class="alert alert--error" role="alert">{{ order.error() }}</p>
+}
+<p role="status" class="visually-hidden">{{ order.notice() }}</p>
+
 @if (error()) {
   <p class="alert alert--error" role="alert">{{ error() }}</p>
 } @else if (loading() && rows().length === 0) {
@@ -34,10 +39,13 @@
         <th scope="col" i18n="@@field.name">Nom</th>
         <th scope="col" i18n="@@category.activeProducts">Produits actifs</th>
         <th scope="col" i18n="@@list.status">Statut</th>
+        @if (!showArchived()) {
+          <th scope="col" i18n="@@list.order">Ordre</th>
+        }
       </tr>
     </thead>
     <tbody>
-      @for (category of rows(); track category.id) {
+      @for (category of rows(); track category.id; let i = $index, first = $first, last = $last) {
         <tr>
           <td class="data-table__main">
             <a [routerLink]="category.id">{{ category.name }}</a>
@@ -52,6 +60,17 @@
           <td data-label="Statut" i18n-data-label="@@list.status">
             <app-status-badges [archived]="category.isArchived" [active]="category.isActive" />
           </td>
+          @if (!showArchived()) {
+            <td data-label="Ordre" i18n-data-label="@@list.order">
+              <app-move-buttons
+                [name]="category.name"
+                [first]="first"
+                [last]="last"
+                [disabled]="order.busy()"
+                (moved)="order.move(rows(), i, $event)"
+              />
+            </td>
+          }
         </tr>
       }
     </tbody>

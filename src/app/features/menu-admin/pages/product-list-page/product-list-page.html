@@ -33,6 +33,22 @@
   </label>
 </div>
 
+@if (!showArchived() && categoryId() === '') {
+  <p class="sheet__lead" i18n="@@product.reorderHint">
+    Choisissez une catégorie pour changer l'ordre des produits.
+  </p>
+}
+@if (order.error()) {
+  <p class="alert alert--error" role="alert">{{ order.error() }}</p>
+}
+@if (actionError()) {
+  <p class="alert alert--error" role="alert">{{ actionError() }}</p>
+}
+<p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+  {{ notice() }}
+</p>
+<p role="status" class="visually-hidden">{{ order.notice() }}</p>
+
 @if (error()) {
   <p class="alert alert--error" role="alert">{{ error() }}</p>
 } @else if (loading() && rows().length === 0) {
@@ -50,10 +66,14 @@
         <th scope="col" i18n="@@product.category">Catégorie</th>
         <th scope="col" i18n="@@product.price">Prix TTC</th>
         <th scope="col" i18n="@@list.status">Statut</th>
+        <th scope="col" i18n="@@list.actions">Actions</th>
+        @if (canReorder()) {
+          <th scope="col" i18n="@@list.order">Ordre</th>
+        }
       </tr>
     </thead>
     <tbody>
-      @for (product of rows(); track product.id) {
+      @for (product of rows(); track product.id; let i = $index, first = $first, last = $last) {
         <tr>
           <td class="data-table__main">
             <a [routerLink]="product.id">{{ product.name }}</a>
@@ -71,6 +91,33 @@
               [available]="product.isAvailable"
             />
           </td>
+          <td data-label="Actions" i18n-data-label="@@list.actions">
+            @if (!product.isArchived) {
+              <button
+                type="button"
+                class="btn btn--outline"
+                [disabled]="busyId() === product.id"
+                (click)="toggleAvailability(product)"
+              >
+                @if (product.isAvailable) {
+                  <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+                } @else {
+                  <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+                }
+              </button>
+            }
+          </td>
+          @if (canReorder()) {
+            <td data-label="Ordre" i18n-data-label="@@list.order">
+              <app-move-buttons
+                [name]="product.name"
+                [first]="first"
+                [last]="last"
+                [disabled]="order.busy()"
+                (moved)="order.move(rows(), i, $event)"
+              />
+            </td>
+          }
         </tr>
       }
     </tbody>
