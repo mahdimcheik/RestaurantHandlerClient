@@ -1,0 +1,92 @@
+<div class="kds__bar gutter">
+  <h1 class="kds__title">
+    <app-icon name="flame" />
+    <span i18n="@@kitchen.title">Cuisine</span>
+  </h1>
+  <div class="kds__tools">
+    <button
+      type="button"
+      class="icon-button"
+      [attr.aria-pressed]="!board.muted()"
+      title="Son des nouvelles commandes"
+      i18n-title="@@kitchen.sound"
+      (click)="board.toggleSound()"
+    >
+      <app-icon [name]="board.muted() ? 'bellOff' : 'bell'" />
+      <span class="visually-hidden" i18n="@@kitchen.sound">Son des nouvelles commandes</span>
+    </button>
+    <app-connection-status />
+    <app-theme-switcher />
+    <a class="btn btn--outline" routerLink="/gestion" i18n="@@kitchen.back">Gestion</a>
+  </div>
+</div>
+
+<div class="kds__alerts gutter">
+  <app-connection-banner />
+  @if (board.message()) {
+    <p class="alert alert--error" role="alert">{{ board.message() }}</p>
+  }
+  @if (board.loadError()) {
+    <p class="alert alert--error" role="alert">{{ board.loadError() }}</p>
+  }
+  <p class="visually-hidden" aria-live="polite">{{ board.notice() }}</p>
+</div>
+
+@if (board.loading()) {
+  <p class="kds__empty gutter" i18n="@@kitchen.loading">Chargement des commandes…</p>
+} @else {
+  <div class="kds__columns gutter">
+    <section class="kds__column" aria-labelledby="kds-todo">
+      <h2 class="kds__heading" id="kds-todo">
+        <span i18n="@@kitchen.todo">À préparer</span>
+        <span class="kds__count">{{ board.columns().todo.length }}</span>
+      </h2>
+      <ol class="kds__list">
+        @for (order of board.columns().todo; track order.id) {
+          <li>
+            <app-kitchen-ticket
+              [order]="order"
+              [busy]="board.pending() === order.id"
+              (advance)="board.advance(order)"
+            />
+          </li>
+        } @empty {
+          <li class="kds__empty" i18n="@@kitchen.noTodo">Aucune commande à commencer.</li>
+        }
+      </ol>
+    </section>
+    <section class="kds__column" aria-labelledby="kds-cooking">
+      <h2 class="kds__heading" id="kds-cooking">
+        <span i18n="@@order.status.inPreparation">En préparation</span>
+        <span class="kds__count">{{ board.columns().cooking.length }}</span>
+      </h2>
+      <ol class="kds__list">
+        @for (order of board.columns().cooking; track order.id) {
+          <li>
+            <app-kitchen-ticket
+              [order]="order"
+              [busy]="board.pending() === order.id"
+              (advance)="board.advance(order)"
+            />
+          </li>
+        } @empty {
+          <li class="kds__empty" i18n="@@kitchen.noCooking">Aucune commande en préparation.</li>
+        }
+      </ol>
+    </section>
+  </div>
+}
+
+@if (board.lastGesture(); as gesture) {
+  <div class="undo-bar">
+    <p class="undo-bar__text" role="status">
+      <span i18n="@@kitchen.lastGesture"
+        >N° {{ gesture.dailyNumber }} : {{ statusLabel(gesture.status) }}</span
+      >
+    </p>
+    <button type="button" class="btn undo-bar__action" (click)="board.undo()">
+      <app-icon name="back" />
+      <span i18n="@@kitchen.undo">Annuler ({{ board.remaining() }} s)</span>
+    </button>
+  </div>
+}

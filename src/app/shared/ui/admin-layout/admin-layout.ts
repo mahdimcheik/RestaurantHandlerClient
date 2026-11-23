@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, linkedSignal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
+import { ApprovalAlertService } from '../../services/approval-alert.service';
 import { ConnectionBanner, ConnectionStatus } from '../connection-status/connection-status';
 import { Icon, IconName } from '../icon/icon';
 import { ServiceControl } from '../service-control/service-control';
@@ -52,6 +53,13 @@ interface NavLink {
             >
               <app-icon [name]="link.icon" />
               <span class="admin__label">{{ link.label }}</span>
+              @if (link.path === ordersPath && toApprove() > 0) {
+                {{ ' '
+                }}<span class="admin__count"
+                  >{{ toApprove() }}
+                  <span class="visually-hidden" i18n="@@admin.toApprove">à valider</span></span
+                >
+              }
             </a>
           </li>
         }
@@ -81,6 +89,19 @@ interface NavLink {
       <div class="admin__bar gutter">
         <app-service-control />
         <div class="admin__tools">
+          <button
+            type="button"
+            class="icon-button"
+            [attr.aria-pressed]="!approvals.muted()"
+            title="Son des commandes à valider"
+            i18n-title="@@admin.approvalSound"
+            (click)="approvals.toggleMuted()"
+          >
+            <app-icon [name]="approvals.muted() ? 'bellOff' : 'bell'" />
+            <span class="visually-hidden" i18n="@@admin.approvalSound"
+              >Son des commandes à valider</span
+            >
+          </button>
           <app-connection-status />
           <span class="admin__user">{{ session.user()?.firstName }}</span>
           <app-theme-switcher />
@@ -88,6 +109,7 @@ interface NavLink {
       </div>
       <div id="contenu-gestion" class="admin__content gutter" tabindex="-1">
         <app-connection-banner />
+        <p class="visually-hidden" aria-live="polite">{{ approvalNotice() }}</p>
         <router-outlet />
       </div>
     </div>
@@ -95,10 +117,23 @@ interface NavLink {
 })
 export class AdminLayout {
   protected readonly session = inject(SessionService);
+  protected readonly approvals = inject(ApprovalAlertService);
   private readonly router = inject(Router);
+
+  protected readonly ordersPath = '/gestion/commandes';
+  protected readonly toApprove = this.approvals.count;
+  /** Annonce aux lecteurs d'écran, seulement quand le nombre à valider augmente. */
+  protected readonly approvalNotice = linkedSignal<number, string>({
+    source: this.toApprove,
+    computation: (count, previous) =>
+      previous && count > previous.source
+        ? $localize`:@@admin.newToApprove:Nouvelle commande à valider (${count}:count: en attente).`
+        : (previous?.value ?? ''),
+  });
 
   constructor() {
     inject(RealtimeService).start();
+    this.approvals.start();
   }
 
   protected readonly links: readonly NavLink[] = [
@@ -107,6 +142,24 @@ export class AdminLayout {
       icon: 'dashboard',
       label: $localize`:@@admin.dashboard:Tableau de bord`,
       exact: true,
+    },
+    {
+      path: '/gestion/comptoir',
+      icon: 'counter',
+      label: $localize`:@@admin.counter:Comptoir`,
+      exact: false,
+    },
+    {
+      path: '/gestion/commandes',
+      icon: 'orders',
+      label: $localize`:@@admin.orders:Commandes`,
+      exact: false,
+    },
+    {
+      path: '/cuisine',
+      icon: 'flame',
+      label: $localize`:@@admin.kitchen:Cuisine`,
+      exact: false,
     },
     {
       path: '/gestion/categories',

@@ -1,3 +1,4 @@
+import { OrderDetails, OrderSummary } from '../core/api/generated';
 import { ComponentFixture } from '@angular/core/testing';
 
 const root = (fixture: ComponentFixture<unknown>) => fixture.nativeElement as HTMLElement;
@@ -55,3 +56,57 @@ export const text = (fixture: ComponentFixture<unknown>) => root(fixture).textCo
 
 /** Réponse de l'API pour les tests. */
 export const envelope = <T>(data: T) => ({ data, message: 'OK', status: 200 });
+
+/** jsdom n'implémente pas toujours `<dialog>` : ouverture et fermeture simulées. */
+export function polyfillDialog(): void {
+  HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
+    this.open = true;
+  };
+  HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement) {
+    this.open = false;
+  };
+}
+
+/** Heure de retrait des commandes de test. */
+export const PICKUP = '2026-11-23T12:00:00+01:00';
+
+export function order(extra: Partial<OrderDetails> = {}): OrderDetails {
+  return {
+    id: 'o1',
+    orderNumber: 1042,
+    dailyNumber: 12,
+    channel: 'Counter',
+    status: 'Confirmed',
+    paymentChoice: 'OnSite',
+    pickupMode: 'Asap',
+    pickupAt: PICKUP,
+    serviceDate: '2026-11-23',
+    createdAt: PICKUP,
+    isPaid: false,
+    paidCents: 0,
+    totalCents: 1850,
+    items: [],
+    history: [],
+    payments: [],
+    vat: [],
+    ...extra,
+  };
+}
+
+export function summary(extra: Partial<OrderSummary> = {}): OrderSummary {
+  return {
+    id: 'o1',
+    orderNumber: 1042,
+    dailyNumber: 12,
+    channel: 'Counter',
+    status: 'Confirmed',
+    paymentChoice: 'OnSite',
+    pickupMode: 'Asap',
+    pickupAt: PICKUP,
+    serviceDate: '2026-11-23',
+    createdAt: PICKUP,
+    isPaid: false,
+    totalCents: 1850,
+    ...extra,
+  };
+}
