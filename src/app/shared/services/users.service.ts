@@ -18,7 +18,7 @@ export class UsersService {
     return this.api.usersFilterPost({ body }).pipe(unwrapPage());
   }
 
-  get(id: string): Observable<UserDetails> {
+  get(id: string): Observable<UserAdminDetails> {
     return this.api.usersIdGet({ id }).pipe(unwrap());
   }
 

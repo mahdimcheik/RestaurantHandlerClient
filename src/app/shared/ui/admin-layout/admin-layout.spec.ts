@@ -48,6 +48,7 @@ describe('AdminLayout', () => {
       'Comptoir',
       'Commandes',
       'Cuisine',
+      'Statistiques',
       'Catégories',
       'Produits',
       'Menus',
@@ -56,6 +57,7 @@ describe('AdminLayout', () => {
       'Ruptures',
       'Horaires et fermetures',
       'Restaurant',
+      'Utilisateurs',
       'Retour au site',
       'Déconnexion',
     ]);

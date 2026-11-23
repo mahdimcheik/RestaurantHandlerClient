@@ -38,6 +38,15 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/ordering/ordering.routes').then((m) => m.ORDERING_ROUTES),
       },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/reports/reports.routes').then((m) => m.REPORTS_ROUTES),
+      },
+      {
+        path: '',
+        loadChildren: () => import('./features/staff/staff.routes').then((m) => m.STAFF_ROUTES),
+      },
     ],
   },
   {

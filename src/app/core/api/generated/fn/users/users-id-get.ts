@@ -7,13 +7,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { UserDetailsResponse } from '../../models/user-details-response';
+import { UserAdminDetailsResponse } from '../../models/user-admin-details-response';
 
 export interface UsersIdGet$Params {
   id: string;
 }
 
-export function usersIdGet(http: HttpClient, rootUrl: string, params: UsersIdGet$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetailsResponse>> {
+export function usersIdGet(http: HttpClient, rootUrl: string, params: UsersIdGet$Params, context?: HttpContext): Observable<StrictHttpResponse<UserAdminDetailsResponse>> {
   const rb = new RequestBuilder(rootUrl, usersIdGet.PATH, 'get');
   if (params) {
     rb.path('id', params.id, {});
@@ -24,7 +24,7 @@ export function usersIdGet(http: HttpClient, rootUrl: string, params: UsersIdGet
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<UserDetailsResponse>;
+      return r as StrictHttpResponse<UserAdminDetailsResponse>;
     })
   );
 }

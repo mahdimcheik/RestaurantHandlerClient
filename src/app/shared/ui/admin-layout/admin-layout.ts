@@ -162,6 +162,12 @@ export class AdminLayout {
       exact: false,
     },
     {
+      path: '/gestion/statistiques',
+      icon: 'chart',
+      label: $localize`:@@admin.stats:Statistiques`,
+      exact: false,
+    },
+    {
       path: '/gestion/categories',
       icon: 'categories',
       label: $localize`:@@admin.categories:Catégories`,
@@ -207,6 +213,12 @@ export class AdminLayout {
       path: '/gestion/restaurant',
       icon: 'store',
       label: $localize`:@@admin.restaurant:Restaurant`,
+      exact: false,
+    },
+    {
+      path: '/gestion/utilisateurs',
+      icon: 'users',
+      label: $localize`:@@admin.users:Utilisateurs`,
       exact: false,
     },
   ];

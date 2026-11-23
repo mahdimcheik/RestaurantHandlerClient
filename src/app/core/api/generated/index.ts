@@ -147,6 +147,7 @@ export type { StringResponse } from './models/string-response';
 export type { SupplementSales } from './models/supplement-sales';
 export type { UserAdminDetails } from './models/user-admin-details';
 export type { UserAdminDetailsListResponse } from './models/user-admin-details-list-response';
+export type { UserAdminDetailsResponse } from './models/user-admin-details-response';
 export type { UserCreate } from './models/user-create';
 export type { UserDetails } from './models/user-details';
 export type { UserDetailsResponse } from './models/user-details-response';
@@ -260,6 +261,8 @@ export type { ManageOrdersIdRefundPost$Params as ManageOrdersIdRefundPost$Params
 export { manageOrdersIdRefundPost as manageOrdersIdRefundPost } from './fn/manage-orders/manage-orders-id-refund-post';
 export type { ManageOrdersIdPaymentsPost$Params as ManageOrdersIdPaymentsPost$Params } from './fn/manage-orders/manage-orders-id-payments-post';
 export { manageOrdersIdPaymentsPost as manageOrdersIdPaymentsPost } from './fn/manage-orders/manage-orders-id-payments-post';
+export type { ManageCustomersUserIdOrdersGet$Params as ManageCustomersUserIdOrdersGet$Params } from './fn/manage-orders/manage-customers-user-id-orders-get';
+export { manageCustomersUserIdOrdersGet as manageCustomersUserIdOrdersGet } from './fn/manage-orders/manage-customers-user-id-orders-get';
 export type { ManageCustomersUserIdNoShowsResetPost$Params as ManageCustomersUserIdNoShowsResetPost$Params } from './fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
 export { manageCustomersUserIdNoShowsResetPost as manageCustomersUserIdNoShowsResetPost } from './fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
 export type { ManageMenusGet$Params as ManageMenusGet$Params } from './fn/menus/manage-menus-get';

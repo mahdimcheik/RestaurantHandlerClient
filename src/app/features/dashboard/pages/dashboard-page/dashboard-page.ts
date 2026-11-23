@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { OrderStatus } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { ORDER_EVENT_NAMES } from '../../../../core/realtime/realtime-events';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
@@ -12,7 +13,22 @@ import {
 import { StatsService } from '../../../../shared/services/stats.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { statusLabel } from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe } from '../../../../shared/utils/money';
+
+/** Compteurs opérationnels du jour, dans l'ordre du service. */
+const COUNTED_STATUSES: readonly OrderStatus[] = [
+  'PendingPayment',
+  'AwaitingApproval',
+  'Confirmed',
+  'InPreparation',
+  'Ready',
+  'Refused',
+  'NoShow',
+  'Cancelled',
+];
+
+const percent = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 
 @Component({
   selector: 'app-dashboard-page',
@@ -36,6 +52,19 @@ export class DashboardPage {
   protected readonly todayError = computed(() =>
     this.today.error() ? apiErrorMessage(this.today.error()) : '',
   );
+
+  protected readonly statusCounts = computed(() => {
+    const byStatus = this.today.hasValue() ? this.today.value().byStatus : {};
+    return COUNTED_STATUSES.map((status) => ({
+      status,
+      label: statusLabel(status),
+      count: byStatus[status] ?? 0,
+    }));
+  });
+
+  protected vatRate(rate: number): string {
+    return `${percent.format(rate)} %`;
+  }
 
   protected readonly categoryCount = computed(() => this.store.categories.value().length);
   protected readonly activeProductCount = computed(

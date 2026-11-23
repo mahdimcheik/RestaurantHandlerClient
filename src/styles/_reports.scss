@@ -1,0 +1,26 @@
+// Statistiques : barre horizontale dans une cellule de tableau, la valeur écrite à côté.
+// Une seule série : une seule encre, pas de légende ; le tableau porte les chiffres.
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-inline-size: 10rem;
+}
+
+.bar__track {
+  flex: 1;
+  block-size: 0.75rem;
+  background: var(--surface-sunken);
+}
+
+.bar__fill {
+  display: block;
+  block-size: 100%;
+  background: var(--color-ink-soft);
+}
+
+.bar__value {
+  min-inline-size: 2ch;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}

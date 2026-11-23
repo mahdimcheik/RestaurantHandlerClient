@@ -1411,6 +1411,54 @@
         }
       }
     },
+    "/manage/customers/{userId}/orders": {
+      "get": {
+        "tags": [
+          "ManageOrders"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSummaryListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/manage/customers/{userId}/no-shows/reset": {
       "post": {
         "tags": [
@@ -3877,7 +3925,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDetailsResponse"
+                  "$ref": "#/components/schemas/UserAdminDetailsResponse"
                 }
               }
             }
@@ -4652,6 +4700,11 @@
             },
             "nullable": true
           },
+          "statusId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "createdFrom": {
             "type": "string",
             "format": "date-time",
@@ -5412,8 +5465,7 @@
           },
           "ingredientImageUrl": {
             "type": "string",
-            "nullable": true,
-            "description": "Photo de l'ingrédient lié, affichée sur la carte si le choix n'en a pas."
+            "nullable": true
           },
           "extraPriceCents": {
             "type": "integer",
@@ -8046,6 +8098,7 @@
           "firstName",
           "id",
           "lastName",
+          "noShowCount",
           "roles"
         ],
         "type": "object",
@@ -8093,6 +8146,10 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "noShowCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -8118,6 +8175,32 @@
               "$ref": "#/components/schemas/UserAdminDetails"
             },
             "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserAdminDetailsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserAdminDetails"
           },
           "count": {
             "type": "integer",

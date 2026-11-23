@@ -23,26 +23,7 @@ import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dial
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { formatLocal, nextDay, previousDay } from '../../../../shared/utils/restaurant-time';
-
-const WEEK: readonly DayOfWeek[] = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
-const DAY_NAMES: Record<DayOfWeek, string> = {
-  Monday: $localize`:@@day.monday:Lundi`,
-  Tuesday: $localize`:@@day.tuesday:Mardi`,
-  Wednesday: $localize`:@@day.wednesday:Mercredi`,
-  Thursday: $localize`:@@day.thursday:Jeudi`,
-  Friday: $localize`:@@day.friday:Vendredi`,
-  Saturday: $localize`:@@day.saturday:Samedi`,
-  Sunday: $localize`:@@day.sunday:Dimanche`,
-};
+import { DAY_NAMES, WEEK } from '../../../../shared/utils/week';
 
 /** Plage saisie au format des champs `time` : « 11:30 ». */
 interface RangeModel {

@@ -11,6 +11,7 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { UserAdminDetailsListResponse } from '../models/user-admin-details-list-response';
+import { UserAdminDetailsResponse } from '../models/user-admin-details-response';
 import { UserDetailsResponse } from '../models/user-details-response';
 import { usersFilterPost } from '../fn/users/users-filter-post';
 import { UsersFilterPost$Params } from '../fn/users/users-filter-post';
@@ -63,7 +64,7 @@ export class UsersApi extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  usersIdGet$Response(params: UsersIdGet$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDetailsResponse>> {
+  usersIdGet$Response(params: UsersIdGet$Params, context?: HttpContext): Observable<StrictHttpResponse<UserAdminDetailsResponse>> {
     const obs = usersIdGet(this.http, this.rootUrl, params, context);
     return obs;
   }
@@ -74,10 +75,10 @@ export class UsersApi extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  usersIdGet(params: UsersIdGet$Params, context?: HttpContext): Observable<UserDetailsResponse> {
+  usersIdGet(params: UsersIdGet$Params, context?: HttpContext): Observable<UserAdminDetailsResponse> {
     const resp = this.usersIdGet$Response(params, context);
     return resp.pipe(
-      map((r: StrictHttpResponse<UserDetailsResponse>): UserDetailsResponse => r.body)
+      map((r: StrictHttpResponse<UserAdminDetailsResponse>): UserAdminDetailsResponse => r.body)
     );
   }
 
