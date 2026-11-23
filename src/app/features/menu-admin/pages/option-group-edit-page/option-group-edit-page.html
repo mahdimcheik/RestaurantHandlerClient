@@ -189,6 +189,23 @@
                   />
                 }
               }
+              @let ingredientImage = ingredientImages().get(model().choices[i].ingredientId);
+              @let ownImage = model().choices[i].id ? choiceImages().get(model().choices[i].id!) : null;
+              @if (ingredientImage && !ownImage) {
+                <p class="field__hint data-table__named">
+                  <img
+                    class="data-table__thumb"
+                    [src]="ingredientImage"
+                    width="40"
+                    height="40"
+                    alt=""
+                    loading="lazy"
+                  />
+                  <span i18n="@@optionGroup.ingredientPhotoFallback">
+                    Sans photo propre, la carte affiche celle de l'ingrédient lié.
+                  </span>
+                </p>
+              }
             </li>
           }
         </ol>

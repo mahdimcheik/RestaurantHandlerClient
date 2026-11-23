@@ -122,6 +122,14 @@ export class OptionGroupEditPage {
       .map((ingredient) => ({ value: ingredient.id, label: ingredient.name })),
   );
 
+  /** Photo de chaque ingrédient, reprise sur la carte par un choix lié qui n'a pas la sienne. */
+  protected readonly ingredientImages = computed(
+    () =>
+      new Map(
+        this.store.ingredients.value().map((ingredient) => [ingredient.id, ingredient.imageUrl]),
+      ),
+  );
+
   protected readonly model = linkedSignal(() => toModel(this.group.value()));
   protected readonly form = form(this.model, (path) => {
     nameRules(path.label);

@@ -5410,6 +5410,11 @@
             "format": "uuid",
             "nullable": true
           },
+          "ingredientImageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Photo de l'ingrédient lié, affichée sur la carte si le choix n'en a pas."
+          },
           "extraPriceCents": {
             "type": "integer",
             "format": "int32"
