@@ -141,6 +141,7 @@ export type { StringResponse } from './models/string-response';
 export type { SupplementSales } from './models/supplement-sales';
 export type { UserAdminDetails } from './models/user-admin-details';
 export type { UserAdminDetailsListResponse } from './models/user-admin-details-list-response';
+export type { UserAdminDetailsResponse } from './models/user-admin-details-response';
 export type { UserCreate } from './models/user-create';
 export type { UserDetails } from './models/user-details';
 export type { UserDetailsResponse } from './models/user-details-response';

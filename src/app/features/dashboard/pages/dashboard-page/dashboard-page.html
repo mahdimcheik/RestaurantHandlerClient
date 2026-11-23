@@ -30,7 +30,80 @@
         <span class="stat__label" i18n="@@dashboard.basket">Panier moyen</span>
         <span class="stat__value">{{ stats.averageBasketCents | euros }}</span>
       </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@order.channel.counter">Comptoir</span>
+        <span class="stat__value">{{ stats.counter.revenueCents | euros }}</span>
+        <span class="stat__detail" i18n="@@dashboard.channelOrders">{stats.counter.orders, plural,
+          =0 {Aucune commande}
+          =1 {1 commande}
+          other {{{ stats.counter.orders }} commandes}
+        }</span>
+      </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@order.channel.online">En ligne</span>
+        <span class="stat__value">{{ stats.online.revenueCents | euros }}</span>
+        <span class="stat__detail" i18n="@@dashboard.channelOrders">{stats.online.orders, plural,
+          =0 {Aucune commande}
+          =1 {1 commande}
+          other {{{ stats.online.orders }} commandes}
+        }</span>
+      </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@dashboard.paidOnline">Payé en ligne</span>
+        <span class="stat__value">{{ stats.paidOnlineCents | euros }}</span>
+      </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@dashboard.paidOnSite">Payé sur place</span>
+        <span class="stat__value">{{ stats.paidOnSiteCents | euros }}</span>
+      </li>
     </ul>
+
+    <h3 i18n="@@dashboard.byStatus">Commandes par étape</h3>
+    <dl class="summary">
+      @for (item of statusCounts(); track item.status) {
+        <div>
+          <dt>{{ item.label }}</dt>
+          <dd class="summary__strong">{{ item.count }}</dd>
+        </div>
+      }
+    </dl>
+
+    @if (stats.vat.length > 0) {
+      <h3 id="dashboard-vat" i18n="@@dashboard.vat">TVA du jour</h3>
+      <table class="data-table" aria-labelledby="dashboard-vat">
+        <thead>
+          <tr>
+            <th scope="col" i18n="@@dashboard.vatRate">Taux</th>
+            <th scope="col" class="data-table__num" i18n="@@dashboard.net">HT</th>
+            <th scope="col" class="data-table__num" i18n="@@dashboard.vatAmount">TVA</th>
+            <th scope="col" class="data-table__num" i18n="@@dashboard.gross">TTC</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (line of stats.vat; track line.rate) {
+            <tr>
+              <th scope="row" class="data-table__main">{{ vatRate(line.rate) }}</th>
+              <td class="data-table__num" data-label="HT" i18n-data-label="@@dashboard.net">
+                {{ line.netCents | euros }}
+              </td>
+              <td class="data-table__num" data-label="TVA" i18n-data-label="@@dashboard.vatAmount">
+                {{ line.vatCents | euros }}
+              </td>
+              <td class="data-table__num" data-label="TTC" i18n-data-label="@@dashboard.gross">
+                {{ line.grossCents | euros }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    <div class="toolbar">
+      <a class="btn btn--outline btn--icon" routerLink="/gestion/statistiques">
+        <app-icon name="chart" />
+        <span i18n="@@dashboard.seeStats">Voir les statistiques</span>
+      </a>
+    </div>
   } @else {
     <p role="status" i18n="@@common.loading">Chargement…</p>
   }

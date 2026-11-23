@@ -9,4 +9,5 @@ export interface FilterUsers {
   roleId?: string | null;
   roleIds?: Array<string> | null;
   row?: number | null;
+  statusId?: string | null;
 }

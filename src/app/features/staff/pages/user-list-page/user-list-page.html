@@ -1,0 +1,112 @@
+<div class="page-head">
+  <h1 i18n="@@admin.users">Utilisateurs</h1>
+  <div class="toolbar">
+    <a class="btn btn--icon" routerLink="nouveau">
+      <app-icon name="plus" />
+      <span i18n="@@user.addManager">Créer un compte Manager</span>
+    </a>
+  </div>
+</div>
+
+<form
+  class="toolbar"
+  role="search"
+  (submit)="search($event, searchBox.value, roleBox.value, statusBox.value)"
+>
+  <div class="field">
+    <label class="field__label" for="users-search" i18n="@@users.search"
+      >Nom, e-mail ou téléphone</label
+    >
+    <input #searchBox id="users-search" type="search" autocomplete="off" />
+  </div>
+  <div class="field">
+    <label class="field__label" for="users-role" i18n="@@users.role">Rôle</label>
+    <select #roleBox id="users-role">
+      <option value="" i18n="@@users.allRoles">Tous</option>
+      @for (role of store.roles.value(); track role.id) {
+        <option [value]="role.id">{{ role.name }}</option>
+      }
+    </select>
+  </div>
+  <div class="field">
+    <label class="field__label" for="users-status" i18n="@@list.status">Statut</label>
+    <select #statusBox id="users-status">
+      <option value="" i18n="@@users.allStatuses">Tous</option>
+      @for (status of statuses; track status.value) {
+        <option [value]="status.value">{{ status.label }}</option>
+      }
+    </select>
+  </div>
+  <button type="submit" class="btn" i18n="@@users.searchButton">Rechercher</button>
+</form>
+
+@if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else if (list.isLoading() && rows().length === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (rows().length === 0) {
+  <p class="empty" i18n="@@users.none">Aucun compte ne correspond.</p>
+} @else {
+  <p class="sheet__lead" role="status" i18n="@@users.count">
+    {total(), plural, =1 {1 compte} other {{{ total() }} comptes}}
+  </p>
+  <table class="data-table">
+    <caption class="visually-hidden" i18n="@@admin.users">
+      Utilisateurs
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" i18n="@@field.name">Nom</th>
+        <th scope="col" i18n="@@field.email">E-mail</th>
+        <th scope="col" i18n="@@field.phone">Téléphone</th>
+        <th scope="col" i18n="@@users.role">Rôle</th>
+        <th scope="col" i18n="@@list.status">Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of rows(); track user.id) {
+        <tr>
+          <td class="data-table__main">
+            <a [routerLink]="user.id">{{ userName(user) }}</a>
+          </td>
+          <td data-label="E-mail" i18n-data-label="@@field.email">{{ user.email }}</td>
+          <td data-label="Téléphone" i18n-data-label="@@field.phone">
+            {{ user.phoneNumber || '—' }}
+          </td>
+          <td data-label="Rôle" i18n-data-label="@@users.role">{{ roleNames(user) }}</td>
+          <td data-label="Statut" i18n-data-label="@@list.status">
+            @if (userStatus(user); as status) {
+              <span
+                class="badge"
+                [class.badge--danger]="status === 'Banned'"
+                [class.badge--muted]="status === 'Pending'"
+                >{{ statusLabels[status] }}</span
+              >
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (pageCount() > 1) {
+    <nav class="day-stepper" aria-label="Pages" i18n-aria-label="@@users.pages">
+      <button type="button" class="icon-button" [disabled]="page() === 0" (click)="previous()">
+        <app-icon name="back" />
+        <span class="visually-hidden" i18n="@@users.previousPage">Page précédente</span>
+      </button>
+      <span class="day-stepper__value" aria-live="polite" i18n="@@users.pageOf"
+        >Page {{ page() + 1 }} sur {{ pageCount() }}</span
+      >
+      <button
+        type="button"
+        class="icon-button"
+        [disabled]="page() + 1 >= pageCount()"
+        (click)="next()"
+      >
+        <app-icon name="forward" />
+        <span class="visually-hidden" i18n="@@users.nextPage">Page suivante</span>
+      </button>
+    </nav>
+  }
+}

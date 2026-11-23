@@ -72,6 +72,11 @@ export class ManageOrdersService {
     return this.api.manageOrdersIdPaymentsPost({ id, body }).pipe(unwrap());
   }
 
+  /** Commandes d'un client, les plus récentes d'abord (pages à partir de 1). */
+  customerOrders(userId: string, page = 1, pageSize = 20): Observable<Page<OrderSummary>> {
+    return this.api.manageCustomersUserIdOrdersGet({ userId, page, pageSize }).pipe(unwrapPage());
+  }
+
   resetCustomerNoShows(userId: string): Observable<void> {
     return this.api.manageCustomersUserIdNoShowsResetPost({ userId }).pipe(toVoid());
   }

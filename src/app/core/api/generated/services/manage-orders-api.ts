@@ -12,6 +12,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { manageCustomersUserIdNoShowsResetPost } from '../fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
 import { ManageCustomersUserIdNoShowsResetPost$Params } from '../fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
+import { manageCustomersUserIdOrdersGet } from '../fn/manage-orders/manage-customers-user-id-orders-get';
+import { ManageCustomersUserIdOrdersGet$Params } from '../fn/manage-orders/manage-customers-user-id-orders-get';
 import { manageOrdersCounterPost } from '../fn/manage-orders/manage-orders-counter-post';
 import { ManageOrdersCounterPost$Params } from '../fn/manage-orders/manage-orders-counter-post';
 import { manageOrdersGet } from '../fn/manage-orders/manage-orders-get';
@@ -426,6 +428,33 @@ export class ManageOrdersApi extends BaseService {
     const resp = this.manageOrdersIdPaymentsPost$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageCustomersUserIdOrdersGet()` */
+  static readonly ManageCustomersUserIdOrdersGetPath = '/manage/customers/{userId}/orders';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageCustomersUserIdOrdersGet()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageCustomersUserIdOrdersGet$Response(params: ManageCustomersUserIdOrdersGet$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderSummaryListResponse>> {
+    const obs = manageCustomersUserIdOrdersGet(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageCustomersUserIdOrdersGet$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageCustomersUserIdOrdersGet(params: ManageCustomersUserIdOrdersGet$Params, context?: HttpContext): Observable<OrderSummaryListResponse> {
+    const resp = this.manageCustomersUserIdOrdersGet$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<OrderSummaryListResponse>): OrderSummaryListResponse => r.body)
     );
   }
 

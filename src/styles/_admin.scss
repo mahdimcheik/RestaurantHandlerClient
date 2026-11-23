@@ -222,7 +222,7 @@
     vertical-align: middle;
   }
 
-  th {
+  thead th {
     border-bottom: var(--border);
     color: var(--color-muted);
     font-size: var(--text-sm);
@@ -501,6 +501,11 @@ a.stat {
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   line-height: var(--leading-tight);
+}
+
+.stat__detail {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
 }
 
 // Dialogue de confirmation (<dialog> natif, modal).

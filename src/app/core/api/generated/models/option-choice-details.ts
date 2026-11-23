@@ -6,10 +6,6 @@ export interface OptionChoiceDetails {
   id: string;
   imageUrl?: string | null;
   ingredientId?: string | null;
-
-  /**
-   * Photo de l'ingrédient lié, affichée sur la carte si le choix n'en a pas.
-   */
   ingredientImageUrl?: string | null;
   isAvailable: boolean;
   name: string;
