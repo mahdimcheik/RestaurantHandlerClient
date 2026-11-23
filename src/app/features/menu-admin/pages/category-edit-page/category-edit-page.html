@@ -72,6 +72,7 @@
             [imageUrl]="imageUrl()"
             [alt]="category.value()?.name ?? ''"
             [upload]="uploadImage"
+            [remove]="removeImage"
           />
         } @else {
           <p class="sheet__lead" i18n="@@sheet.photoAfterCreate">

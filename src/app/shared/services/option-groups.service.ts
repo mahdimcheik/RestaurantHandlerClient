@@ -52,4 +52,16 @@ export class OptionGroupsService {
       .manageOptionGroupsIdChoicesChoiceIdImagePost({ id, choiceId, body: { file } })
       .pipe(unwrap(), refresh(...this.touched));
   }
+
+  removeImage(id: string): Observable<OptionGroupDetails> {
+    return this.api
+      .manageOptionGroupsIdImageDelete({ id })
+      .pipe(unwrap(), refresh(...this.touched));
+  }
+
+  removeChoiceImage(id: string, choiceId: string): Observable<OptionGroupDetails> {
+    return this.api
+      .manageOptionGroupsIdChoicesChoiceIdImageDelete({ id, choiceId })
+      .pipe(unwrap(), refresh(...this.touched));
+  }
 }

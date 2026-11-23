@@ -18,6 +18,10 @@ import { manageIngredientsIdAvailabilityPut } from '../fn/ingredients/manage-ing
 import { ManageIngredientsIdAvailabilityPut$Params } from '../fn/ingredients/manage-ingredients-id-availability-put';
 import { manageIngredientsIdDelete } from '../fn/ingredients/manage-ingredients-id-delete';
 import { ManageIngredientsIdDelete$Params } from '../fn/ingredients/manage-ingredients-id-delete';
+import { manageIngredientsIdImageDelete } from '../fn/ingredients/manage-ingredients-id-image-delete';
+import { ManageIngredientsIdImageDelete$Params } from '../fn/ingredients/manage-ingredients-id-image-delete';
+import { manageIngredientsIdImagePost } from '../fn/ingredients/manage-ingredients-id-image-post';
+import { ManageIngredientsIdImagePost$Params } from '../fn/ingredients/manage-ingredients-id-image-post';
 import { manageIngredientsIdPut } from '../fn/ingredients/manage-ingredients-id-put';
 import { ManageIngredientsIdPut$Params } from '../fn/ingredients/manage-ingredients-id-put';
 import { manageIngredientsPost } from '../fn/ingredients/manage-ingredients-post';
@@ -160,6 +164,60 @@ export class IngredientsApi extends BaseService {
    */
   manageIngredientsIdAvailabilityPut(params: ManageIngredientsIdAvailabilityPut$Params, context?: HttpContext): Observable<IngredientDetailsResponse> {
     const resp = this.manageIngredientsIdAvailabilityPut$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<IngredientDetailsResponse>): IngredientDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageIngredientsIdImagePost()` */
+  static readonly ManageIngredientsIdImagePostPath = '/manage/ingredients/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageIngredientsIdImagePost()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  manageIngredientsIdImagePost$Response(params: ManageIngredientsIdImagePost$Params, context?: HttpContext): Observable<StrictHttpResponse<IngredientDetailsResponse>> {
+    const obs = manageIngredientsIdImagePost(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageIngredientsIdImagePost$Response()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  manageIngredientsIdImagePost(params: ManageIngredientsIdImagePost$Params, context?: HttpContext): Observable<IngredientDetailsResponse> {
+    const resp = this.manageIngredientsIdImagePost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<IngredientDetailsResponse>): IngredientDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageIngredientsIdImageDelete()` */
+  static readonly ManageIngredientsIdImageDeletePath = '/manage/ingredients/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageIngredientsIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageIngredientsIdImageDelete$Response(params: ManageIngredientsIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<IngredientDetailsResponse>> {
+    const obs = manageIngredientsIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageIngredientsIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageIngredientsIdImageDelete(params: ManageIngredientsIdImageDelete$Params, context?: HttpContext): Observable<IngredientDetailsResponse> {
+    const resp = this.manageIngredientsIdImageDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<IngredientDetailsResponse>): IngredientDetailsResponse => r.body)
     );

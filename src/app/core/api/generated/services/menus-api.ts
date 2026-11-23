@@ -16,6 +16,8 @@ import { manageMenusIdDelete } from '../fn/menus/manage-menus-id-delete';
 import { ManageMenusIdDelete$Params } from '../fn/menus/manage-menus-id-delete';
 import { manageMenusIdGet } from '../fn/menus/manage-menus-id-get';
 import { ManageMenusIdGet$Params } from '../fn/menus/manage-menus-id-get';
+import { manageMenusIdImageDelete } from '../fn/menus/manage-menus-id-image-delete';
+import { ManageMenusIdImageDelete$Params } from '../fn/menus/manage-menus-id-image-delete';
 import { manageMenusIdImagePost } from '../fn/menus/manage-menus-id-image-post';
 import { ManageMenusIdImagePost$Params } from '../fn/menus/manage-menus-id-image-post';
 import { manageMenusIdPut } from '../fn/menus/manage-menus-id-put';
@@ -228,6 +230,33 @@ export class MenusApi extends BaseService {
    */
   manageMenusIdImagePost(params: ManageMenusIdImagePost$Params, context?: HttpContext): Observable<MenuDetailsResponse> {
     const resp = this.manageMenusIdImagePost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<MenuDetailsResponse>): MenuDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageMenusIdImageDelete()` */
+  static readonly ManageMenusIdImageDeletePath = '/manage/menus/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageMenusIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageMenusIdImageDelete$Response(params: ManageMenusIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<MenuDetailsResponse>> {
+    const obs = manageMenusIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageMenusIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageMenusIdImageDelete(params: ManageMenusIdImageDelete$Params, context?: HttpContext): Observable<MenuDetailsResponse> {
+    const resp = this.manageMenusIdImageDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<MenuDetailsResponse>): MenuDetailsResponse => r.body)
     );

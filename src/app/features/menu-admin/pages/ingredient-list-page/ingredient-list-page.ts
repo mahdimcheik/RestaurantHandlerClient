@@ -1,13 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, submit } from '@angular/forms/signals';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 import { IngredientDetails } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { eurosRule, focusFirstInvalid, nameRules } from '../../../../shared/forms/validation';
 import { IngredientsService } from '../../../../shared/services/ingredients.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
+import { ImageField } from '../../../../shared/ui/image-field/image-field';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { centsToInput, EurosPipe, parseEuros } from '../../../../shared/utils/money';
 import { ArchiveButton } from '../../components/archive-button';
@@ -16,12 +17,20 @@ import { StatusBadges } from '../../components/status-badges';
 
 /**
  * Ingrédients de la carte : ajout, modification (nom, prix de référence, proposé en
- * remplacement), rupture de stock et archivage, sur une seule page. Sert aussi en service pour
+ * remplacement, photo), rupture de stock et archivage, sur une seule page. Sert aussi en service pour
  * signaler une rupture : elle grise les choix liés et peut rendre des produits indisponibles.
  */
 @Component({
   selector: 'app-ingredient-list-page',
-  imports: [TextField, CheckboxField, EurosPipe, ArchiveButton, IngredientQuickAdd, StatusBadges],
+  imports: [
+    TextField,
+    CheckboxField,
+    ImageField,
+    EurosPipe,
+    ArchiveButton,
+    IngredientQuickAdd,
+    StatusBadges,
+  ],
   templateUrl: './ingredient-list-page.html',
 })
 export class IngredientListPage {
@@ -94,6 +103,22 @@ export class IngredientListPage {
     );
   }
 
+  /** Photo de l'ingrédient en cours d'édition, mise à jour à chaque envoi ou retrait. */
+  protected readonly editImageUrl = signal<string | null | undefined>(null);
+
+  protected readonly uploadImage = (file: File) =>
+    this.ingredients.uploadImage(this.editingId()!, file).pipe(tap((i) => this.photoChanged(i)));
+
+  protected readonly removeImage = () =>
+    this.ingredients.removeImage(this.editingId()!).pipe(tap((i) => this.photoChanged(i)));
+
+  private photoChanged(ingredient: IngredientDetails): void {
+    this.editImageUrl.set(ingredient.imageUrl);
+    if (this.showArchived()) {
+      this.withArchived.reload();
+    }
+  }
+
   protected startEdit(ingredient: IngredientDetails): void {
     this.editModel.set({
       name: ingredient.name,
@@ -101,6 +126,7 @@ export class IngredientListPage {
       isOfferedAsReplacement: ingredient.isOfferedAsReplacement,
     });
     this.editForm().reset();
+    this.editImageUrl.set(ingredient.imageUrl);
     this.editingId.set(ingredient.id);
     this.notice.set('');
   }

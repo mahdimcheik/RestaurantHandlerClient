@@ -178,13 +178,14 @@
                 />
               </div>
               @if (model().choices[i].id; as choiceId) {
-                @if (choiceUploaders().get(choiceId); as upload) {
+                @if (choiceUploaders().get(choiceId); as photo) {
                   <app-image-field
                     label="Photo du choix"
                     i18n-label="@@optionGroup.choicePhoto"
                     [imageUrl]="choiceImages().get(choiceId)"
                     [alt]="model().choices[i].name"
-                    [upload]="upload"
+                    [upload]="photo.upload"
+                    [remove]="photo.remove"
                   />
                 }
               }
@@ -215,6 +216,7 @@
             [imageUrl]="imageUrl()"
             [alt]="group.value()?.label ?? ''"
             [upload]="uploadImage"
+            [remove]="removeImage"
           />
         </section>
       } @else {

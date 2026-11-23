@@ -68,7 +68,21 @@
     <tbody>
       @for (ingredient of rows(); track ingredient.id) {
         <tr>
-          <td class="data-table__main">{{ ingredient.name }}</td>
+          <td class="data-table__main">
+            <span class="data-table__named">
+              @if (ingredient.imageUrl) {
+                <img
+                  class="data-table__thumb"
+                  [src]="ingredient.imageUrl"
+                  width="40"
+                  height="40"
+                  alt=""
+                  loading="lazy"
+                />
+              }
+              {{ ingredient.name }}
+            </span>
+          </td>
           <td
             class="data-table__num"
             data-label="Prix de référence"
@@ -146,6 +160,14 @@
                   <ng-container i18n="@@common.cancel">Annuler</ng-container>
                 </button>
               </form>
+              <app-image-field
+                label="Photo de l'ingrédient"
+                i18n-label="@@ingredient.photo"
+                [imageUrl]="editImageUrl()"
+                [alt]="ingredient.name"
+                [upload]="uploadImage"
+                [remove]="removeImage"
+              />
             </td>
           </tr>
         }

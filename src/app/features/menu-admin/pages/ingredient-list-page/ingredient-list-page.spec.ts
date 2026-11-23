@@ -15,7 +15,7 @@ const ingredient = (id: string, name: string, isAvailable = true): IngredientDet
 });
 
 const list = [
-  ingredient('i1', 'Tomate'),
+  { ...ingredient('i1', 'Tomate'), imageUrl: 'https://cdn.test/catalog/tomate.webp' },
   ingredient('i2', 'Œuf'),
   ingredient('i3', 'Cheddar', false),
 ];
@@ -101,5 +101,27 @@ describe('IngredientListPage', () => {
     await settle();
 
     expect(text(fixture)).toContain('« Cheddar affiné » enregistré.');
+  });
+
+  it('affiche la vignette et retire la photo depuis la ligne d’édition', async () => {
+    expect(fixture.nativeElement.querySelectorAll('.data-table__thumb').length).toBe(1);
+
+    // Tomate est la troisième ligne : le troisième bouton « Modifier ».
+    const edit = [...fixture.nativeElement.querySelectorAll('button')].filter(
+      (b: HTMLButtonElement) => b.textContent?.trim() === 'Modifier',
+    )[2] as HTMLButtonElement;
+    edit.click();
+    await fixture.whenStable();
+
+    expect(text(fixture)).toContain("Photo de l'ingrédient");
+    clickButton(fixture, 'Retirer la photo');
+    await Promise.resolve();
+
+    const request = http.expectOne('/manage/ingredients/i1/image');
+    expect(request.request.method).toBe('DELETE');
+    request.flush(envelope({ ...list[0], imageUrl: null }));
+    await settle();
+
+    expect(text(fixture)).toContain('Photo retirée.');
   });
 });

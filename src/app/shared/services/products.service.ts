@@ -78,4 +78,10 @@ export class ProductsService {
       .manageProductsIdImagePost({ id, body: { file } })
       .pipe(unwrap(), refresh(this.store.products));
   }
+
+  removeImage(id: string): Observable<ProductDetails> {
+    return this.api
+      .manageProductsIdImageDelete({ id })
+      .pipe(unwrap(), refresh(this.store.products));
+  }
 }

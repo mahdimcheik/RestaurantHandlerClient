@@ -71,6 +71,11 @@ export class CategoryEditPage {
       .uploadImage(this.id()!, file)
       .pipe(tap((category) => this.imageUrl.set(category.imageUrl)));
 
+  protected readonly removeImage = () =>
+    this.categories
+      .removeImage(this.id()!)
+      .pipe(tap((category) => this.imageUrl.set(category.imageUrl)));
+
   protected async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     this.error.set('');

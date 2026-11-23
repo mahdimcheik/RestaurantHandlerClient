@@ -12,12 +12,16 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { manageOptionGroupsGet } from '../fn/option-groups/manage-option-groups-get';
 import { ManageOptionGroupsGet$Params } from '../fn/option-groups/manage-option-groups-get';
+import { manageOptionGroupsIdChoicesChoiceIdImageDelete } from '../fn/option-groups/manage-option-groups-id-choices-choice-id-image-delete';
+import { ManageOptionGroupsIdChoicesChoiceIdImageDelete$Params } from '../fn/option-groups/manage-option-groups-id-choices-choice-id-image-delete';
 import { manageOptionGroupsIdChoicesChoiceIdImagePost } from '../fn/option-groups/manage-option-groups-id-choices-choice-id-image-post';
 import { ManageOptionGroupsIdChoicesChoiceIdImagePost$Params } from '../fn/option-groups/manage-option-groups-id-choices-choice-id-image-post';
 import { manageOptionGroupsIdDelete } from '../fn/option-groups/manage-option-groups-id-delete';
 import { ManageOptionGroupsIdDelete$Params } from '../fn/option-groups/manage-option-groups-id-delete';
 import { manageOptionGroupsIdGet } from '../fn/option-groups/manage-option-groups-id-get';
 import { ManageOptionGroupsIdGet$Params } from '../fn/option-groups/manage-option-groups-id-get';
+import { manageOptionGroupsIdImageDelete } from '../fn/option-groups/manage-option-groups-id-image-delete';
+import { ManageOptionGroupsIdImageDelete$Params } from '../fn/option-groups/manage-option-groups-id-image-delete';
 import { manageOptionGroupsIdImagePost } from '../fn/option-groups/manage-option-groups-id-image-post';
 import { ManageOptionGroupsIdImagePost$Params } from '../fn/option-groups/manage-option-groups-id-image-post';
 import { manageOptionGroupsIdPut } from '../fn/option-groups/manage-option-groups-id-put';
@@ -196,6 +200,33 @@ export class OptionGroupsApi extends BaseService {
     );
   }
 
+  /** Path part for operation `manageOptionGroupsIdImageDelete()` */
+  static readonly ManageOptionGroupsIdImageDeletePath = '/manage/option-groups/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageOptionGroupsIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageOptionGroupsIdImageDelete$Response(params: ManageOptionGroupsIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<OptionGroupDetailsResponse>> {
+    const obs = manageOptionGroupsIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageOptionGroupsIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageOptionGroupsIdImageDelete(params: ManageOptionGroupsIdImageDelete$Params, context?: HttpContext): Observable<OptionGroupDetailsResponse> {
+    const resp = this.manageOptionGroupsIdImageDelete$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<OptionGroupDetailsResponse>): OptionGroupDetailsResponse => r.body)
+    );
+  }
+
   /** Path part for operation `manageOptionGroupsIdChoicesChoiceIdImagePost()` */
   static readonly ManageOptionGroupsIdChoicesChoiceIdImagePostPath = '/manage/option-groups/{id}/choices/{choiceId}/image';
 
@@ -218,6 +249,33 @@ export class OptionGroupsApi extends BaseService {
    */
   manageOptionGroupsIdChoicesChoiceIdImagePost(params: ManageOptionGroupsIdChoicesChoiceIdImagePost$Params, context?: HttpContext): Observable<OptionGroupDetailsResponse> {
     const resp = this.manageOptionGroupsIdChoicesChoiceIdImagePost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<OptionGroupDetailsResponse>): OptionGroupDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageOptionGroupsIdChoicesChoiceIdImageDelete()` */
+  static readonly ManageOptionGroupsIdChoicesChoiceIdImageDeletePath = '/manage/option-groups/{id}/choices/{choiceId}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageOptionGroupsIdChoicesChoiceIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageOptionGroupsIdChoicesChoiceIdImageDelete$Response(params: ManageOptionGroupsIdChoicesChoiceIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<OptionGroupDetailsResponse>> {
+    const obs = manageOptionGroupsIdChoicesChoiceIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageOptionGroupsIdChoicesChoiceIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageOptionGroupsIdChoicesChoiceIdImageDelete(params: ManageOptionGroupsIdChoicesChoiceIdImageDelete$Params, context?: HttpContext): Observable<OptionGroupDetailsResponse> {
+    const resp = this.manageOptionGroupsIdChoicesChoiceIdImageDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OptionGroupDetailsResponse>): OptionGroupDetailsResponse => r.body)
     );

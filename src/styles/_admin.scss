@@ -232,6 +232,21 @@
   font-weight: var(--weight-medium);
 }
 
+// Nom précédé d'une vignette facultative.
+.data-table__named {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.data-table__thumb {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--border);
+  background: var(--surface-sunken);
+  object-fit: cover;
+}
+
 .data-table__num {
   font-variant-numeric: tabular-nums;
 }

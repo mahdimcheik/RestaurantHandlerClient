@@ -3,6 +3,7 @@
 
 export interface IngredientDetails {
   id: string;
+  imageUrl?: string | null;
   isArchived: boolean;
   isAvailable: boolean;
   isOfferedAsReplacement: boolean;

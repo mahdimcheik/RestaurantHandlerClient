@@ -10,7 +10,8 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 /**
  * Photo d'un élément de la carte : aperçu de l'image actuelle, choix d'un fichier, envoi
- * immédiat par `upload` et état annoncé aux lecteurs d'écran.
+ * immédiat par `upload`, retrait par `remove` (bouton affiché seulement s'il y a une photo)
+ * et état annoncé aux lecteurs d'écran.
  */
 @Component({
   selector: 'app-image-field',
@@ -32,6 +33,17 @@ const MAX_BYTES = 5 * 1024 * 1024;
         [attr.aria-describedby]="id + '-status'"
         (change)="onFile($event)"
       />
+      @if (remove() && imageUrl()) {
+        <button
+          type="button"
+          class="btn btn--outline image-field__remove"
+          [disabled]="busy()"
+          (click)="onRemove()"
+          i18n="@@image.remove"
+        >
+          Retirer la photo
+        </button>
+      }
       <p class="field__hint" [id]="id + '-status'" role="status">{{ status() }}</p>
     </div>
   `,
@@ -42,6 +54,7 @@ export class ImageField {
   /** Texte alternatif de l'aperçu (nom de l'élément). */
   readonly alt = input('');
   readonly upload = input.required<(file: File) => Observable<unknown>>();
+  readonly remove = input<(() => Observable<unknown>) | undefined>(undefined);
 
   protected readonly id = `image-${nextId++}`;
   protected readonly busy = signal(false);
@@ -68,6 +81,23 @@ export class ImageField {
     } finally {
       this.busy.set(false);
       control.value = '';
+    }
+  }
+
+  protected async onRemove(): Promise<void> {
+    const remove = this.remove();
+    if (!remove) {
+      return;
+    }
+    this.busy.set(true);
+    this.status.set($localize`:@@image.removing:Retrait de la photo…`);
+    try {
+      await firstValueFrom(remove());
+      this.status.set($localize`:@@image.removed:Photo retirée.`);
+    } catch (error) {
+      this.status.set(apiErrorMessage(error));
+    } finally {
+      this.busy.set(false);
     }
   }
 }

@@ -216,6 +216,8 @@ export type { ManageCategoriesReorderPut$Params as ManageCategoriesReorderPut$Pa
 export { manageCategoriesReorderPut as manageCategoriesReorderPut } from './fn/categories/manage-categories-reorder-put';
 export type { ManageCategoriesIdImagePost$Params as ManageCategoriesIdImagePost$Params } from './fn/categories/manage-categories-id-image-post';
 export { manageCategoriesIdImagePost as manageCategoriesIdImagePost } from './fn/categories/manage-categories-id-image-post';
+export type { ManageCategoriesIdImageDelete$Params as ManageCategoriesIdImageDelete$Params } from './fn/categories/manage-categories-id-image-delete';
+export { manageCategoriesIdImageDelete as manageCategoriesIdImageDelete } from './fn/categories/manage-categories-id-image-delete';
 export type { ManageIngredientsGet$Params as ManageIngredientsGet$Params } from './fn/ingredients/manage-ingredients-get';
 export { manageIngredientsGet as manageIngredientsGet } from './fn/ingredients/manage-ingredients-get';
 export type { ManageIngredientsPost$Params as ManageIngredientsPost$Params } from './fn/ingredients/manage-ingredients-post';
@@ -226,6 +228,10 @@ export type { ManageIngredientsIdDelete$Params as ManageIngredientsIdDelete$Para
 export { manageIngredientsIdDelete as manageIngredientsIdDelete } from './fn/ingredients/manage-ingredients-id-delete';
 export type { ManageIngredientsIdAvailabilityPut$Params as ManageIngredientsIdAvailabilityPut$Params } from './fn/ingredients/manage-ingredients-id-availability-put';
 export { manageIngredientsIdAvailabilityPut as manageIngredientsIdAvailabilityPut } from './fn/ingredients/manage-ingredients-id-availability-put';
+export type { ManageIngredientsIdImagePost$Params as ManageIngredientsIdImagePost$Params } from './fn/ingredients/manage-ingredients-id-image-post';
+export { manageIngredientsIdImagePost as manageIngredientsIdImagePost } from './fn/ingredients/manage-ingredients-id-image-post';
+export type { ManageIngredientsIdImageDelete$Params as ManageIngredientsIdImageDelete$Params } from './fn/ingredients/manage-ingredients-id-image-delete';
+export { manageIngredientsIdImageDelete as manageIngredientsIdImageDelete } from './fn/ingredients/manage-ingredients-id-image-delete';
 export type { ManageOrdersCounterPost$Params as ManageOrdersCounterPost$Params } from './fn/manage-orders/manage-orders-counter-post';
 export { manageOrdersCounterPost as manageOrdersCounterPost } from './fn/manage-orders/manage-orders-counter-post';
 export type { ManageOrdersGet$Params as ManageOrdersGet$Params } from './fn/manage-orders/manage-orders-get';
@@ -270,6 +276,8 @@ export type { ManageMenusReorderPut$Params as ManageMenusReorderPut$Params } fro
 export { manageMenusReorderPut as manageMenusReorderPut } from './fn/menus/manage-menus-reorder-put';
 export type { ManageMenusIdImagePost$Params as ManageMenusIdImagePost$Params } from './fn/menus/manage-menus-id-image-post';
 export { manageMenusIdImagePost as manageMenusIdImagePost } from './fn/menus/manage-menus-id-image-post';
+export type { ManageMenusIdImageDelete$Params as ManageMenusIdImageDelete$Params } from './fn/menus/manage-menus-id-image-delete';
+export { manageMenusIdImageDelete as manageMenusIdImageDelete } from './fn/menus/manage-menus-id-image-delete';
 export type { ManageMenusIdSlotsPost$Params as ManageMenusIdSlotsPost$Params } from './fn/menus/manage-menus-id-slots-post';
 export { manageMenusIdSlotsPost as manageMenusIdSlotsPost } from './fn/menus/manage-menus-id-slots-post';
 export type { ManageMenusIdSlotsSlotIdPut$Params as ManageMenusIdSlotsSlotIdPut$Params } from './fn/menus/manage-menus-id-slots-slot-id-put';
@@ -304,8 +312,12 @@ export type { ManageOptionGroupsIdDelete$Params as ManageOptionGroupsIdDelete$Pa
 export { manageOptionGroupsIdDelete as manageOptionGroupsIdDelete } from './fn/option-groups/manage-option-groups-id-delete';
 export type { ManageOptionGroupsIdImagePost$Params as ManageOptionGroupsIdImagePost$Params } from './fn/option-groups/manage-option-groups-id-image-post';
 export { manageOptionGroupsIdImagePost as manageOptionGroupsIdImagePost } from './fn/option-groups/manage-option-groups-id-image-post';
+export type { ManageOptionGroupsIdImageDelete$Params as ManageOptionGroupsIdImageDelete$Params } from './fn/option-groups/manage-option-groups-id-image-delete';
+export { manageOptionGroupsIdImageDelete as manageOptionGroupsIdImageDelete } from './fn/option-groups/manage-option-groups-id-image-delete';
 export type { ManageOptionGroupsIdChoicesChoiceIdImagePost$Params as ManageOptionGroupsIdChoicesChoiceIdImagePost$Params } from './fn/option-groups/manage-option-groups-id-choices-choice-id-image-post';
 export { manageOptionGroupsIdChoicesChoiceIdImagePost as manageOptionGroupsIdChoicesChoiceIdImagePost } from './fn/option-groups/manage-option-groups-id-choices-choice-id-image-post';
+export type { ManageOptionGroupsIdChoicesChoiceIdImageDelete$Params as ManageOptionGroupsIdChoicesChoiceIdImageDelete$Params } from './fn/option-groups/manage-option-groups-id-choices-choice-id-image-delete';
+export { manageOptionGroupsIdChoicesChoiceIdImageDelete as manageOptionGroupsIdChoicesChoiceIdImageDelete } from './fn/option-groups/manage-option-groups-id-choices-choice-id-image-delete';
 export type { OrdersQuotePost$Params as OrdersQuotePost$Params } from './fn/orders/orders-quote-post';
 export { ordersQuotePost as ordersQuotePost } from './fn/orders/orders-quote-post';
 export type { OrdersPost$Params as OrdersPost$Params } from './fn/orders/orders-post';
@@ -344,6 +356,8 @@ export type { ManageProductsIdOptionGroupsPut$Params as ManageProductsIdOptionGr
 export { manageProductsIdOptionGroupsPut as manageProductsIdOptionGroupsPut } from './fn/products/manage-products-id-option-groups-put';
 export type { ManageProductsIdImagePost$Params as ManageProductsIdImagePost$Params } from './fn/products/manage-products-id-image-post';
 export { manageProductsIdImagePost as manageProductsIdImagePost } from './fn/products/manage-products-id-image-post';
+export type { ManageProductsIdImageDelete$Params as ManageProductsIdImageDelete$Params } from './fn/products/manage-products-id-image-delete';
+export { manageProductsIdImageDelete as manageProductsIdImageDelete } from './fn/products/manage-products-id-image-delete';
 export type { MenuGet$Params as MenuGet$Params } from './fn/public/menu-get';
 export { menuGet as menuGet } from './fn/public/menu-get';
 export type { RestaurantStatusGet$Params as RestaurantStatusGet$Params } from './fn/public/restaurant-status-get';
@@ -372,6 +386,8 @@ export type { ManageRestaurantSettingsPut$Params as ManageRestaurantSettingsPut$
 export { manageRestaurantSettingsPut as manageRestaurantSettingsPut } from './fn/restaurant/manage-restaurant-settings-put';
 export type { ManageRestaurantSettingsLogoPost$Params as ManageRestaurantSettingsLogoPost$Params } from './fn/restaurant/manage-restaurant-settings-logo-post';
 export { manageRestaurantSettingsLogoPost as manageRestaurantSettingsLogoPost } from './fn/restaurant/manage-restaurant-settings-logo-post';
+export type { ManageRestaurantSettingsLogoDelete$Params as ManageRestaurantSettingsLogoDelete$Params } from './fn/restaurant/manage-restaurant-settings-logo-delete';
+export { manageRestaurantSettingsLogoDelete as manageRestaurantSettingsLogoDelete } from './fn/restaurant/manage-restaurant-settings-logo-delete';
 export type { ManageRestaurantSettingsHistoryGet$Params as ManageRestaurantSettingsHistoryGet$Params } from './fn/restaurant/manage-restaurant-settings-history-get';
 export { manageRestaurantSettingsHistoryGet as manageRestaurantSettingsHistoryGet } from './fn/restaurant/manage-restaurant-settings-history-get';
 export type { VersionGet$Params as VersionGet$Params } from './fn/restaurant-handler/version-get';

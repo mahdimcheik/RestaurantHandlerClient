@@ -54,6 +54,12 @@ export class RestaurantService {
       .pipe(unwrap(), refresh(this.store.settings));
   }
 
+  removeLogo(): Observable<RestaurantSettingsDetails> {
+    return this.api
+      .manageRestaurantSettingsLogoDelete()
+      .pipe(unwrap(), refresh(this.store.settings));
+  }
+
   /** Lectures à jour, hors cache. */
   openingHours(): Observable<OpeningRangeDto[]> {
     return this.api.manageRestaurantHoursGet().pipe(unwrap());

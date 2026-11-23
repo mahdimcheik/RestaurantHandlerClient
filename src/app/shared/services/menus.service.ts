@@ -49,6 +49,10 @@ export class MenusService {
       .pipe(unwrap(), refresh(this.store.menus));
   }
 
+  removeImage(id: string): Observable<MenuDetails> {
+    return this.api.manageMenusIdImageDelete({ id }).pipe(unwrap(), refresh(this.store.menus));
+  }
+
   addSlot(id: string, body: MenuSlotWrite): Observable<MenuDetails> {
     return this.api.manageMenusIdSlotsPost({ id, body }).pipe(unwrap(), refresh(this.store.menus));
   }

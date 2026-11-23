@@ -161,22 +161,31 @@ export class OptionGroupEditPage {
       .uploadImage(this.id()!, file)
       .pipe(tap((group) => this.imageUrl.set(group.imageUrl)));
 
-  /** Un envoi de photo par choix enregistré, stable tant que la liste ne change pas. */
+  protected readonly removeImage = () =>
+    this.groups.removeImage(this.id()!).pipe(tap((group) => this.imageUrl.set(group.imageUrl)));
+
+  /** Envoi et retrait de photo par choix enregistré, stables tant que la liste ne change pas. */
   protected readonly choiceUploaders = computed(() => {
     const id = this.id();
-    const uploaders = new Map<string, (file: File) => Observable<OptionGroupDetails>>();
+    const uploaders = new Map<
+      string,
+      {
+        upload: (file: File) => Observable<OptionGroupDetails>;
+        remove: () => Observable<OptionGroupDetails>;
+      }
+    >();
     for (const choice of this.group.value()?.choices ?? []) {
-      uploaders.set(choice.id, (file: File) =>
-        this.groups.uploadChoiceImage(id!, choice.id, file).pipe(
-          tap((group) =>
-            this.choiceImages.update((images) => {
-              const next = new Map(images);
-              next.set(choice.id, group.choices.find((c) => c.id === choice.id)?.imageUrl);
-              return next;
-            }),
-          ),
-        ),
+      const sync = tap((group: OptionGroupDetails) =>
+        this.choiceImages.update((images) => {
+          const next = new Map(images);
+          next.set(choice.id, group.choices.find((c) => c.id === choice.id)?.imageUrl);
+          return next;
+        }),
       );
+      uploaders.set(choice.id, {
+        upload: (file: File) => this.groups.uploadChoiceImage(id!, choice.id, file).pipe(sync),
+        remove: () => this.groups.removeChoiceImage(id!, choice.id).pipe(sync),
+      });
     }
     return uploaders;
   });

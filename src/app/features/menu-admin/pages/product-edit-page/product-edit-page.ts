@@ -195,6 +195,11 @@ export class ProductEditPage {
       .uploadImage(this.id()!, file)
       .pipe(tap((product) => this.imageUrl.set(product.imageUrl)));
 
+  protected readonly removeImage = () =>
+    this.products
+      .removeImage(this.id()!)
+      .pipe(tap((product) => this.imageUrl.set(product.imageUrl)));
+
   constructor() {
     this.store.categories.load();
     this.store.optionGroups.load();

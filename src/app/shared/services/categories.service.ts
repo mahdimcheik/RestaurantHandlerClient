@@ -54,4 +54,10 @@ export class CategoriesService {
       .manageCategoriesIdImagePost({ id, body: { file } })
       .pipe(unwrap(), refresh(this.store.categories));
   }
+
+  removeImage(id: string): Observable<CategoryDetails> {
+    return this.api
+      .manageCategoriesIdImageDelete({ id })
+      .pipe(unwrap(), refresh(this.store.categories));
+  }
 }
