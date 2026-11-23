@@ -1,0 +1,106 @@
+<div class="page-head">
+  <h1 i18n="@@admin.stock">Ruptures</h1>
+  <p class="stat__value" i18n="@@stock.count">
+    {outCount(), plural, =0 {Aucune rupture} =1 {1 rupture} other {{{ outCount() }} ruptures}}
+  </p>
+</div>
+
+<p class="sheet__lead" i18n="@@stock.lead">
+  Un ingrédient en rupture rend indisponibles les produits où il ne peut pas être retiré ; ailleurs,
+  il est retiré d'office. Les commandes déjà validées ne changent pas.
+</p>
+
+<div class="toolbar">
+  <div class="field">
+    <label class="field__label" for="stock-search" i18n="@@stock.search">Rechercher</label>
+    <input
+      #searchBox
+      id="stock-search"
+      type="search"
+      autocomplete="off"
+      [value]="query()"
+      (input)="query.set(searchBox.value)"
+    />
+  </div>
+  <label class="checkbox">
+    <input
+      #onlyOutBox
+      type="checkbox"
+      [checked]="onlyOut()"
+      (change)="onlyOut.set(onlyOutBox.checked)"
+    />
+    <span class="checkbox__label" i18n="@@stock.onlyOut">Seulement les ruptures</span>
+  </label>
+</div>
+
+@if (error()) {
+  <p class="alert alert--error" role="alert">{{ error() }}</p>
+}
+<p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+  {{ notice() }}
+</p>
+
+@if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else if (loading() && productRows().length === 0 && ingredientRows().length === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else {
+  <section class="sheet__section" aria-labelledby="stock-products">
+    <h2 id="stock-products" i18n="@@admin.products">Produits</h2>
+    @if (productRows().length === 0) {
+      <p class="empty" i18n="@@stock.none">Aucun article ici.</p>
+    } @else {
+      <ul class="stack-list">
+        @for (product of productRows(); track product.id) {
+          <ng-container
+            [ngTemplateOutlet]="row"
+            [ngTemplateOutletContext]="{ $implicit: product, kind: 'product' }"
+          />
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="sheet__section" aria-labelledby="stock-ingredients">
+    <h2 id="stock-ingredients" i18n="@@admin.ingredients">Ingrédients</h2>
+    @if (ingredientRows().length === 0) {
+      <p class="empty" i18n="@@stock.none">Aucun article ici.</p>
+    } @else {
+      <ul class="stack-list">
+        @for (ingredient of ingredientRows(); track ingredient.id) {
+          <ng-container
+            [ngTemplateOutlet]="row"
+            [ngTemplateOutletContext]="{ $implicit: ingredient, kind: 'ingredient' }"
+          />
+        }
+      </ul>
+    }
+  </section>
+}
+
+<ng-template #row let-item let-kind="kind">
+  <li
+    class="stack-list__item stack-list__item--row"
+    [class.stack-list__item--alert]="!item.isAvailable"
+  >
+    <span class="stack-list__title">{{ item.name }}</span>
+    @if (item.isAvailable) {
+      <span class="badge" i18n="@@stock.available">Disponible</span>
+    } @else {
+      <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+    }
+    <button
+      type="button"
+      class="btn stock-toggle"
+      [class.btn--outline]="item.isAvailable"
+      [disabled]="busyId() === item.id"
+      (click)="kind === 'product' ? toggleProduct(item) : toggleIngredient(item)"
+    >
+      @if (item.isAvailable) {
+        <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+      } @else {
+        <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+      }
+    </button>
+  </li>
+</ng-template>

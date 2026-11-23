@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { CategoryDetails } from '../../../../core/api/generated';
-import { envelope, fill, submitForm, text } from '../../testing';
+import { envelope, fill, submitForm, text } from '../../../../shared/testing';
 import { CategoryEditPage } from './category-edit-page';
 
 const category = (overrides: Partial<CategoryDetails> = {}): CategoryDetails => ({

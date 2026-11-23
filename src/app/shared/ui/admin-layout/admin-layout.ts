@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
+import { RealtimeService } from '../../../core/realtime/realtime.service';
+import { ConnectionBanner, ConnectionStatus } from '../connection-status/connection-status';
 import { Icon, IconName } from '../icon/icon';
+import { ServiceControl } from '../service-control/service-control';
 import { ThemeSwitcher } from '../theme-switcher/theme-switcher';
 
 interface NavLink {
@@ -18,7 +21,16 @@ interface NavLink {
  */
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, ThemeSwitcher],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    Icon,
+    ThemeSwitcher,
+    ServiceControl,
+    ConnectionStatus,
+    ConnectionBanner,
+  ],
   host: { class: 'admin' },
   template: `
     <a class="skip-link" href="#contenu-gestion" i18n="@@skipToContent">Aller au contenu</a>
@@ -67,10 +79,15 @@ interface NavLink {
     </nav>
     <div class="admin__main">
       <div class="admin__bar gutter">
-        <span class="admin__user">{{ session.user()?.firstName }}</span>
-        <app-theme-switcher />
+        <app-service-control />
+        <div class="admin__tools">
+          <app-connection-status />
+          <span class="admin__user">{{ session.user()?.firstName }}</span>
+          <app-theme-switcher />
+        </div>
       </div>
       <div id="contenu-gestion" class="admin__content gutter" tabindex="-1">
+        <app-connection-banner />
         <router-outlet />
       </div>
     </div>
@@ -79,6 +96,10 @@ interface NavLink {
 export class AdminLayout {
   protected readonly session = inject(SessionService);
   private readonly router = inject(Router);
+
+  constructor() {
+    inject(RealtimeService).start();
+  }
 
   protected readonly links: readonly NavLink[] = [
     {
@@ -115,6 +136,24 @@ export class AdminLayout {
       path: '/gestion/options',
       icon: 'options',
       label: $localize`:@@admin.options:Groupes d'options`,
+      exact: false,
+    },
+    {
+      path: '/gestion/ruptures',
+      icon: 'stock',
+      label: $localize`:@@admin.stock:Ruptures`,
+      exact: false,
+    },
+    {
+      path: '/gestion/ouverture',
+      icon: 'clock',
+      label: $localize`:@@admin.opening:Horaires et fermetures`,
+      exact: false,
+    },
+    {
+      path: '/gestion/restaurant',
+      icon: 'store',
+      label: $localize`:@@admin.restaurant:Restaurant`,
       exact: false,
     },
   ];

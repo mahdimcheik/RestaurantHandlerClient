@@ -489,3 +489,122 @@ a.stat {
     font-size: var(--text-xl);
   }
 }
+
+// Barre du haut : état du service à gauche, utilisateur et thème à droite.
+.admin__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+// État d'ouverture (icône et texte) et bouton du dialogue « Service ».
+.service-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.service-control__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-bold);
+}
+
+// État de la connexion temps réel : icône et libellé, la couleur ne fait que doubler le sens.
+.connection-status__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.connection-status--up .connection-status__state {
+  color: var(--color-success);
+}
+
+.connection-status--down .connection-status__state {
+  color: var(--color-danger);
+  font-weight: var(--weight-bold);
+}
+
+// Grandes touches de même taille (durées de pause), deux par ligne.
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+
+  > .btn {
+    min-height: calc(var(--tap-min) + var(--space-3));
+  }
+}
+
+.choice-grid__wide {
+  width: 100%;
+  min-height: calc(var(--tap-min) + var(--space-3));
+}
+
+// Valeur réglée par « − / + ».
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.stepper__value {
+  min-width: 6rem;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+// Horaires : un bloc par jour, une ligne par plage.
+.week-hours {
+  display: grid;
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.week-hours__day {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border);
+  background: var(--surface-raised);
+}
+
+.week-hours__name {
+  margin-bottom: var(--space-2);
+  font-weight: var(--weight-bold);
+}
+
+.week-hours__range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+
+  > :not(button) {
+    flex: 1 1 8rem;
+  }
+}
+
+.week-hours__closed {
+  color: var(--color-muted);
+}
+
+// Article en rupture : bordure renforcée, en plus du badge écrit.
+.stack-list__item--alert {
+  border-color: var(--color-danger);
+  border-width: var(--border-width-strong);
+}
+
+// Touche de rupture : largeur fixe pour que la liste reste alignée.
+.stock-toggle {
+  min-width: 13rem;
+}

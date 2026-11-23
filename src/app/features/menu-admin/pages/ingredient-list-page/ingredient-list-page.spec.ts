@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IngredientDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, text } from '../../testing';
+import { clickButton, envelope, fill, text } from '../../../../shared/testing';
 import { IngredientListPage } from './ingredient-list-page';
 
 const ingredient = (id: string, name: string, isAvailable = true): IngredientDetails => ({

@@ -1,4 +1,5 @@
 import { inject, Service } from '@angular/core';
+import { filter, merge } from 'rxjs';
 import {
   CategoriesApi,
   CategoryDetails,
@@ -17,12 +18,17 @@ import {
   RoleDetails,
   RolesApi,
 } from '../../core/api/generated';
+import { RealtimeService } from '../../core/realtime/realtime.service';
 import { Cached } from './cached';
 
 /**
  * Cache des données qui changent rarement, partagé par toute l'application.
  * Les composants lisent `value()` après `load()` ; les écritures passent par les
  * services de `shared/services/`, qui rechargent les caches concernés.
+ * Les caches de la carte déjà demandés sont relus quand le serveur annonce un changement
+ * (`AvailabilityChanged`, portée `catalog`, ex. rupture saisie sur une autre tablette) et à chaque
+ * resynchronisation. Horaires, fermetures et réglages ne le sont pas : leurs formulaires suivent
+ * le cache et perdraient la saisie en cours.
  */
 @Service()
 export class StoreService {
@@ -61,4 +67,20 @@ export class StoreService {
     null,
   );
   readonly roles = new Cached<RoleDetails[]>(() => this.rolesApi.rolesAllGet(), []);
+
+  constructor() {
+    const realtime = inject(RealtimeService);
+    merge(
+      realtime.on('AvailabilityChanged').pipe(filter(({ scope }) => scope === 'catalog')),
+      realtime.resync,
+    ).subscribe(() => this.reloadCatalog());
+  }
+
+  private reloadCatalog(): void {
+    this.categories.reload();
+    this.products.reload();
+    this.ingredients.reload();
+    this.menus.reload();
+    this.optionGroups.reload();
+  }
 }

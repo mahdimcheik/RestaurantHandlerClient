@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { provideFakeHub } from '../../../core/realtime/testing';
 import { AdminLayout } from './admin-layout';
 
 @Component({ template: '<h1>Page</h1>' })
@@ -25,6 +26,7 @@ describe('AdminLayout', () => {
         ]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideFakeHub(),
       ],
     });
   });
@@ -45,6 +47,9 @@ describe('AdminLayout', () => {
       'Menus',
       'Ingrédients',
       "Groupes d'options",
+      'Ruptures',
+      'Horaires et fermetures',
+      'Restaurant',
       'Retour au site',
       'Déconnexion',
     ]);

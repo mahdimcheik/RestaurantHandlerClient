@@ -55,7 +55,9 @@ let nextId = 0;
 export class TextField {
   readonly field = input.required<FieldTree<string>>();
   readonly label = input.required<string>();
-  readonly type = input<'text' | 'email' | 'password'>('text');
+  readonly type = input<
+    'text' | 'email' | 'password' | 'tel' | 'search' | 'time' | 'date' | 'datetime-local'
+  >('text');
   readonly autocomplete = input('off');
   readonly hint = input('');
   /** Clavier virtuel adapté, ex. `decimal` pour un prix saisi en texte. */

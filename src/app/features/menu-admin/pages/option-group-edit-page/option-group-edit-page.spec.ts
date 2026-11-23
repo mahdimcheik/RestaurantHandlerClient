@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { OptionGroupDetails } from '../../../../core/api/generated';
-import { clickButton, control, envelope, fill, submitForm, text } from '../../testing';
+import { clickButton, control, envelope, fill, submitForm, text } from '../../../../shared/testing';
 import { OptionGroupEditPage } from './option-group-edit-page';
 
 const sauces: OptionGroupDetails = {

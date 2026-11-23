@@ -28,6 +28,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/menu-admin/menu-admin.routes').then((m) => m.MENU_ADMIN_ROUTES),
       },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

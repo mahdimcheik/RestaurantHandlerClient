@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { CategoryDetails, MenuDetails, ProductDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, submitForm, text } from '../../testing';
+import { clickButton, envelope, fill, submitForm, text } from '../../../../shared/testing';
 import { MenuEditPage } from './menu-edit-page';
 
 const category: CategoryDetails = {

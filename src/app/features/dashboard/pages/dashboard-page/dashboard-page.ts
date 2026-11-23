@@ -1,7 +1,14 @@
 import { Component, computed, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { merge } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
+import { ORDER_EVENT_NAMES } from '../../../../core/realtime/realtime-events';
+import { RealtimeService } from '../../../../core/realtime/realtime.service';
+import {
+  describeOpening,
+  OpeningStateService,
+} from '../../../../shared/services/opening-state.service';
 import { StatsService } from '../../../../shared/services/stats.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
@@ -15,6 +22,14 @@ import { EurosPipe } from '../../../../shared/utils/money';
 export class DashboardPage {
   private readonly store = inject(StoreService);
   private readonly stats = inject(StatsService);
+  private readonly opening = inject(OpeningStateService);
+
+  /** État d'ouverture en une phrase ; vide tant qu'il n'est pas connu. */
+  protected readonly openingLabel = computed(() => {
+    const state = this.opening.state();
+    return state ? describeOpening(state) : '';
+  });
+  protected readonly openingReason = computed(() => this.opening.state()?.closureReason ?? '');
 
   /** Chiffres du jour (date du restaurant, choisie par le serveur). */
   protected readonly today = rxResource({ stream: () => this.stats.dashboard() });
@@ -45,5 +60,12 @@ export class DashboardPage {
     this.store.menus.load();
     this.store.optionGroups.load();
     this.store.ingredients.load();
+    this.opening.load();
+
+    // Chiffres du jour relus à chaque commande reçue ou modifiée, et après une coupure.
+    const realtime = inject(RealtimeService);
+    merge(...ORDER_EVENT_NAMES.map((name) => realtime.on(name)), realtime.resync)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.today.reload());
   }
 }
