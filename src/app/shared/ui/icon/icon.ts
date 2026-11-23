@@ -19,7 +19,11 @@ const PATHS = {
   pause: ['M8 5v14', 'M16 5v14'],
   play: ['M7 4l13 8-13 8z'],
   stock: ['M4 7l8-4 8 4v10l-8 4-8-4z', 'M3 3l18 18'],
-  store: ['M3 9l2-5h14l2 5', 'M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z', 'M5 13v7h14v-7'],
+  store: [
+    'M3 9l2-5h14l2 5',
+    'M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z',
+    'M5 13v7h14v-7',
+  ],
   logout: ['M10 4H4v16h6', 'M15 8l4 4-4 4', 'M19 12H9'],
 } satisfies Record<string, string[]>;
 

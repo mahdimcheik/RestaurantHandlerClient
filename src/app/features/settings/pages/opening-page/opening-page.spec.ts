@@ -2,13 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ClosureDetails, OpeningRangeDto } from '../../../../core/api/generated';
-import {
-  clickButton,
-  control,
-  envelope,
-  fill,
-  text,
-} from '../../../../shared/testing';
+import { clickButton, control, envelope, fill, text } from '../../../../shared/testing';
 import { closurePeriod, OpeningPage, toClosureWrite, toWeek, toWeekUpdate } from './opening-page';
 
 const hours: OpeningRangeDto[] = [
@@ -41,15 +35,19 @@ describe('OpeningPage', () => {
     it('ferme des journées entières jusqu’au lendemain du dernier jour', () => {
       const base = { start: '', end: '', reason: ' Congés ' };
       expect(
-        toClosureWrite({ ...base, wholeDays: true, startDate: '2026-08-01', endDate: '2026-08-15' }),
+        toClosureWrite({
+          ...base,
+          wholeDays: true,
+          startDate: '2026-08-01',
+          endDate: '2026-08-15',
+        }),
       ).toEqual({
         startLocal: '2026-08-01T00:00:00',
         endLocal: '2026-08-16T00:00:00',
         reason: 'Congés',
       });
       expect(
-        toClosureWrite({ ...base, wholeDays: true, startDate: '2026-12-25', endDate: '' })
-          .endLocal,
+        toClosureWrite({ ...base, wholeDays: true, startDate: '2026-12-25', endDate: '' }).endLocal,
       ).toBe('2026-12-26T00:00:00');
       expect(
         toClosureWrite({
@@ -87,9 +85,7 @@ describe('OpeningPage', () => {
       http = TestBed.inject(HttpTestingController);
       fixture.detectChanges();
       http.expectOne('/manage/restaurant/hours').flush(envelope(hours));
-      http
-        .expectOne((r) => r.url === '/manage/restaurant/closures')
-        .flush(envelope([christmas]));
+      http.expectOne((r) => r.url === '/manage/restaurant/closures').flush(envelope([christmas]));
       await fixture.whenStable();
     });
 
@@ -104,9 +100,9 @@ describe('OpeningPage', () => {
       // Lundi : première plage proposée, le midi.
       clickButton(fixture, 'Ajouter une plage');
       await fixture.whenStable();
-      fixture.nativeElement.querySelectorAll('form')[0].dispatchEvent(
-        new Event('submit', { cancelable: true }),
-      );
+      fixture.nativeElement
+        .querySelectorAll('form')[0]
+        .dispatchEvent(new Event('submit', { cancelable: true }));
       await fixture.whenStable();
 
       const put = http.expectOne((r) => r.method === 'PUT');
@@ -125,9 +121,9 @@ describe('OpeningPage', () => {
 
     it('refuse une plage qui finit avant de commencer', async () => {
       fill(fixture, 'Fin', '10:00', 0);
-      fixture.nativeElement.querySelectorAll('form')[0].dispatchEvent(
-        new Event('submit', { cancelable: true }),
-      );
+      fixture.nativeElement
+        .querySelectorAll('form')[0]
+        .dispatchEvent(new Event('submit', { cancelable: true }));
       await fixture.whenStable();
       expect(text(fixture)).toContain('La fin doit suivre le début.');
       http.expectNone((r) => r.method === 'PUT');
@@ -136,9 +132,9 @@ describe('OpeningPage', () => {
     it('ajoute une fermeture d’un jour', async () => {
       fill(fixture, 'Du', '2027-01-01');
       fill(fixture, 'Motif affiché aux clients (facultatif)', 'Jour de l’an');
-      fixture.nativeElement.querySelectorAll('form')[1].dispatchEvent(
-        new Event('submit', { cancelable: true }),
-      );
+      fixture.nativeElement
+        .querySelectorAll('form')[1]
+        .dispatchEvent(new Event('submit', { cancelable: true }));
       await fixture.whenStable();
 
       const post = http.expectOne((r) => r.method === 'POST');

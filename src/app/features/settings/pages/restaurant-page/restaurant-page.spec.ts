@@ -33,17 +33,19 @@ describe('RestaurantPage', () => {
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     http.expectOne('/manage/restaurant/settings').flush(envelope(settings));
-    http.expectOne((r) => r.url === '/manage/restaurant/settings/history').flush(
-      envelope([
-        {
-          id: 'h1',
-          changedAt: '2026-11-20T09:00:00Z',
-          changedByUserId: 'u1',
-          changedByName: 'Nino',
-          snapshot: '{}',
-        },
-      ]),
-    );
+    http
+      .expectOne((r) => r.url === '/manage/restaurant/settings/history')
+      .flush(
+        envelope([
+          {
+            id: 'h1',
+            changedAt: '2026-11-20T09:00:00Z',
+            changedByUserId: 'u1',
+            changedByName: 'Nino',
+            snapshot: '{}',
+          },
+        ]),
+      );
     await fixture.whenStable();
   });
 

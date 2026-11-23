@@ -2,7 +2,10 @@ import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
-import { describeOpening, OpeningStateService } from '../../../../shared/services/opening-state.service';
+import {
+  describeOpening,
+  OpeningStateService,
+} from '../../../../shared/services/opening-state.service';
 import { StatsService } from '../../../../shared/services/stats.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';

@@ -14,11 +14,7 @@ interface StockItem {
 }
 
 const normalize = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim();
+  value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
 /**
  * Écran « Ruptures » pour le service : produits et ingrédients, une touche par article.

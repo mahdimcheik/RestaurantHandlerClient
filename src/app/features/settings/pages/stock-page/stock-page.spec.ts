@@ -5,7 +5,11 @@ import { IngredientDetails, ProductDetails } from '../../../../core/api/generate
 import { clickButton, envelope, text } from '../../../../shared/testing';
 import { StockPage } from './stock-page';
 
-const product = (id: string, name: string, extra: Partial<ProductDetails> = {}): ProductDetails => ({
+const product = (
+  id: string,
+  name: string,
+  extra: Partial<ProductDetails> = {},
+): ProductDetails => ({
   id,
   categoryId: 'cat1',
   name,
@@ -84,7 +88,10 @@ describe('StockPage', () => {
 
   it('déclare la rupture d’un ingrédient d’une touche', async () => {
     const buttons = [...fixture.nativeElement.querySelectorAll('button')] as HTMLButtonElement[];
-    buttons.filter((b) => b.textContent?.trim() === 'Marquer en rupture').at(-1)!.click();
+    buttons
+      .filter((b) => b.textContent?.trim() === 'Marquer en rupture')
+      .at(-1)!
+      .click();
     const put = http.expectOne('/manage/ingredients/i1/availability');
     expect(put.request.body).toEqual({ isAvailable: false });
     put.flush(envelope(ingredient('i1', 'Tomate', false)));

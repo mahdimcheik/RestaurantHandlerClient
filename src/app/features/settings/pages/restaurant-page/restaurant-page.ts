@@ -2,10 +2,7 @@ import { Component, computed, inject, linkedSignal, signal } from '@angular/core
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, pattern, submit } from '@angular/forms/signals';
 import { firstValueFrom, tap } from 'rxjs';
-import {
-  RestaurantSettingsDetails,
-  RestaurantSettingsWrite,
-} from '../../../../core/api/generated';
+import { RestaurantSettingsDetails, RestaurantSettingsWrite } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import {
   focusFirstInvalid,

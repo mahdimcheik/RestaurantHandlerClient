@@ -10,7 +10,11 @@ import {
   WeekHoursUpdate,
 } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
-import { focusFirstInvalid, lengthRule, requiredMessage } from '../../../../shared/forms/validation';
+import {
+  focusFirstInvalid,
+  lengthRule,
+  requiredMessage,
+} from '../../../../shared/forms/validation';
 import { OpeningStateService } from '../../../../shared/services/opening-state.service';
 import { RestaurantService } from '../../../../shared/services/restaurant.service';
 import { StoreService } from '../../../../shared/services/store.service';
@@ -205,7 +209,10 @@ export class OpeningPage {
       when: ({ valueOf }) => valueOf(path.wholeDays),
     });
     validate(path.endDate, ({ value, valueOf }) =>
-      valueOf(path.wholeDays) && value() && valueOf(path.startDate) && value() < valueOf(path.startDate)
+      valueOf(path.wholeDays) &&
+      value() &&
+      valueOf(path.startDate) &&
+      value() < valueOf(path.startDate)
         ? { kind: 'endAfterStart', message: endAfterStart }
         : undefined,
     );
@@ -239,7 +246,9 @@ export class OpeningPage {
   protected addRange(dayIndex: number): void {
     this.week.update((week) => ({
       days: week.days.map((day, i) =>
-        i === dayIndex ? { ...day, ranges: [...day.ranges, suggestedRange(day.ranges.length)] } : day,
+        i === dayIndex
+          ? { ...day, ranges: [...day.ranges, suggestedRange(day.ranges.length)] }
+          : day,
       ),
     }));
   }

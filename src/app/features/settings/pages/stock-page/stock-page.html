@@ -1,6 +1,8 @@
 <div class="page-head">
   <h1 i18n="@@admin.stock">Ruptures</h1>
-  <p class="stat__value" i18n="@@stock.count">{outCount(), plural, =0 {Aucune rupture} =1 {1 rupture} other {{{ outCount() }} ruptures}}</p>
+  <p class="stat__value" i18n="@@stock.count">
+    {outCount(), plural, =0 {Aucune rupture} =1 {1 rupture} other {{{ outCount() }} ruptures}}
+  </p>
 </div>
 
 <p class="sheet__lead" i18n="@@stock.lead">
@@ -77,7 +79,10 @@
 }
 
 <ng-template #row let-item let-kind="kind">
-  <li class="stack-list__item stack-list__item--row" [class.stack-list__item--alert]="!item.isAvailable">
+  <li
+    class="stack-list__item stack-list__item--row"
+    [class.stack-list__item--alert]="!item.isAvailable"
+  >
     <span class="stack-list__title">{{ item.name }}</span>
     @if (item.isAvailable) {
       <span class="badge" i18n="@@stock.available">Disponible</span>

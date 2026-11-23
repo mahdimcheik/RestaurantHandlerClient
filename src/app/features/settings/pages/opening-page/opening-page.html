@@ -6,8 +6,8 @@
   <section class="sheet__section" aria-labelledby="hours-title">
     <h2 id="hours-title" i18n="@@hours.title">Horaires de la semaine</h2>
     <p class="sheet__lead" i18n="@@hours.lead">
-      Heures du restaurant (Paris). Les commandes en ligne ne sont possibles que pendant ces
-      plages ; un jour sans plage est fermé.
+      Heures du restaurant (Paris). Les commandes en ligne ne sont possibles que pendant ces plages
+      ; un jour sans plage est fermé.
     </p>
 
     @if (hoursLoadError()) {
@@ -33,7 +33,12 @@
                       label="Début"
                       i18n-label="@@hours.start"
                     />
-                    <app-text-field type="time" [field]="range.end" label="Fin" i18n-label="@@hours.end" />
+                    <app-text-field
+                      type="time"
+                      [field]="range.end"
+                      label="Fin"
+                      i18n-label="@@hours.end"
+                    />
                     <button
                       type="button"
                       class="icon-button"
@@ -55,14 +60,20 @@
                 </button>
                 @if (!lastDay) {
                   <button type="button" class="btn btn--outline" (click)="copyForward(d)">
-                    <ng-container i18n="@@hours.copyForward">Copier sur les jours suivants</ng-container>
+                    <ng-container i18n="@@hours.copyForward"
+                      >Copier sur les jours suivants</ng-container
+                    >
                   </button>
                 }
               </div>
             </li>
           }
         </ol>
-        <p role="status" [class.alert]="hoursNotice() !== ''" [class.alert--success]="hoursNotice() !== ''">
+        <p
+          role="status"
+          [class.alert]="hoursNotice() !== ''"
+          [class.alert--success]="hoursNotice() !== ''"
+        >
           {{ hoursNotice() }}
         </p>
         <div class="form__actions">
@@ -176,11 +187,7 @@
         i18n-label="@@closure.reason"
       />
       <div class="form__actions">
-        <button
-          type="submit"
-          [disabled]="closureForm().submitting()"
-          i18n="@@closure.create"
-        >
+        <button type="submit" [disabled]="closureForm().submitting()" i18n="@@closure.create">
           Ajouter la fermeture
         </button>
       </div>
