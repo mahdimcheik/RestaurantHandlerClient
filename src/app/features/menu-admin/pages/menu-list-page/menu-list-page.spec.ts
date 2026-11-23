@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { MenuDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, text } from '../../testing';
+import { clickButton, envelope, text } from '../../../../shared/testing';
 import { MenuListPage } from './menu-list-page';
 
 const menu = (id: string, name: string, position: number): MenuDetails => ({

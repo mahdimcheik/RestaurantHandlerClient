@@ -45,6 +45,9 @@ describe('AdminLayout', () => {
       'Menus',
       'Ingrédients',
       "Groupes d'options",
+      'Ruptures',
+      'Horaires et fermetures',
+      'Restaurant',
       'Retour au site',
       'Déconnexion',
     ]);

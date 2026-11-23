@@ -36,6 +36,30 @@
   }
 </section>
 
+<section class="sheet__section" aria-labelledby="dashboard-service">
+  <h2 id="dashboard-service" i18n="@@dashboard.service">Service</h2>
+  @if (openingLabel()) {
+    <p class="stat__value">{{ openingLabel() }}</p>
+    @if (openingReason()) {
+      <p class="sheet__lead">{{ openingReason() }}</p>
+    }
+  }
+  <div class="toolbar">
+    <a class="btn btn--outline btn--icon" routerLink="/gestion/ruptures">
+      <app-icon name="stock" />
+      <span i18n="@@admin.stock">Ruptures</span>
+    </a>
+    <a class="btn btn--outline btn--icon" routerLink="/gestion/ouverture">
+      <app-icon name="clock" />
+      <span i18n="@@admin.opening">Horaires et fermetures</span>
+    </a>
+    <a class="btn btn--outline btn--icon" routerLink="/gestion/restaurant">
+      <app-icon name="store" />
+      <span i18n="@@admin.restaurant">Restaurant</span>
+    </a>
+  </div>
+</section>
+
 <section class="sheet__section" aria-labelledby="dashboard-menu">
   <h2 id="dashboard-menu" i18n="@@dashboard.menu">Carte</h2>
   <ul class="stats">
@@ -52,7 +76,7 @@
       </a>
     </li>
     <li>
-      <a class="stat" routerLink="/gestion/produits">
+      <a class="stat" routerLink="/gestion/ruptures">
         <span class="stat__label" i18n="@@dashboard.outOfStock">Produits en rupture</span>
         <span class="stat__value">{{ outOfStockCount() }}</span>
       </a>
@@ -70,7 +94,7 @@
       </a>
     </li>
     <li>
-      <a class="stat" routerLink="/gestion/ingredients">
+      <a class="stat" routerLink="/gestion/ruptures">
         <span class="stat__label" i18n="@@dashboard.outOfStockIngredients">
           Ingrédients en rupture
         </span>

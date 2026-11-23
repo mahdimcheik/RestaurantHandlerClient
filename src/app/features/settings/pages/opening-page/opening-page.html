@@ -1,0 +1,199 @@
+<div class="page-head">
+  <h1 i18n="@@admin.opening">Horaires et fermetures</h1>
+</div>
+
+<div class="sheet">
+  <section class="sheet__section" aria-labelledby="hours-title">
+    <h2 id="hours-title" i18n="@@hours.title">Horaires de la semaine</h2>
+    <p class="sheet__lead" i18n="@@hours.lead">
+      Heures du restaurant (Paris). Les commandes en ligne ne sont possibles que pendant ces
+      plages ; un jour sans plage est fermé.
+    </p>
+
+    @if (hoursLoadError()) {
+      <p class="alert alert--error" role="alert">{{ hoursLoadError() }}</p>
+    } @else if (hoursLoading() && !hasHours()) {
+      <p role="status" i18n="@@common.loading">Chargement…</p>
+    } @else {
+      @if (hoursError()) {
+        <p class="alert alert--error" role="alert">{{ hoursError() }}</p>
+      }
+      <form class="form" novalidate (submit)="saveHours($event)">
+        <ol class="week-hours">
+          @for (day of hoursForm.days; track $index; let d = $index, lastDay = $last) {
+            @let dayName = dayNames[week().days[d].day];
+            <li class="week-hours__day">
+              <fieldset class="form__group">
+                <legend class="week-hours__name">{{ dayName }}</legend>
+                @for (range of day.ranges; track range; let r = $index) {
+                  <div class="week-hours__range">
+                    <app-text-field
+                      type="time"
+                      [field]="range.start"
+                      label="Début"
+                      i18n-label="@@hours.start"
+                    />
+                    <app-text-field type="time" [field]="range.end" label="Fin" i18n-label="@@hours.end" />
+                    <button
+                      type="button"
+                      class="icon-button"
+                      title="Retirer la plage {{ r + 1 }} du {{ dayName }}"
+                      i18n-title="@@hours.removeRange"
+                      (click)="removeRange(d, r)"
+                    >
+                      <app-icon name="remove" />
+                    </button>
+                  </div>
+                } @empty {
+                  <p class="week-hours__closed" i18n="@@opening.closed">Fermé</p>
+                }
+              </fieldset>
+              <div class="stack-list__tools">
+                <button type="button" class="btn btn--outline btn--icon" (click)="addRange(d)">
+                  <app-icon name="plus" />
+                  <span i18n="@@hours.addRange">Ajouter une plage</span>
+                </button>
+                @if (!lastDay) {
+                  <button type="button" class="btn btn--outline" (click)="copyForward(d)">
+                    <ng-container i18n="@@hours.copyForward">Copier sur les jours suivants</ng-container>
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ol>
+        <p role="status" [class.alert]="hoursNotice() !== ''" [class.alert--success]="hoursNotice() !== ''">
+          {{ hoursNotice() }}
+        </p>
+        <div class="form__actions">
+          <button type="submit" [disabled]="hoursForm().submitting()" i18n="@@hours.save">
+            Enregistrer les horaires
+          </button>
+        </div>
+      </form>
+    }
+  </section>
+
+  <section class="sheet__section" aria-labelledby="closures-title">
+    <h2 id="closures-title" i18n="@@closure.title">Fermetures exceptionnelles</h2>
+    <p class="sheet__lead" i18n="@@closure.lead">
+      Jours fériés, congés, soirée privée : aucune commande en ligne pendant ces périodes. Le motif
+      est affiché aux clients.
+    </p>
+
+    @if (closureError()) {
+      <p class="alert alert--error" role="alert">{{ closureError() }}</p>
+    }
+    <p
+      role="status"
+      [class.alert]="closureNotice() !== ''"
+      [class.alert--success]="closureNotice() !== ''"
+    >
+      {{ closureNotice() }}
+    </p>
+
+    <label class="checkbox">
+      <input
+        #pastBox
+        type="checkbox"
+        [checked]="showPast()"
+        (change)="showPast.set(pastBox.checked)"
+      />
+      <span class="checkbox__label" i18n="@@closure.showPast">Afficher les fermetures passées</span>
+    </label>
+
+    @if (closuresLoadError()) {
+      <p class="alert alert--error" role="alert">{{ closuresLoadError() }}</p>
+    } @else if (closuresLoading() && closures().length === 0) {
+      <p role="status" i18n="@@common.loading">Chargement…</p>
+    } @else if (closures().length === 0) {
+      <p class="empty" i18n="@@closure.empty">Aucune fermeture prévue.</p>
+    } @else {
+      <ul class="stack-list">
+        @for (closure of closures(); track closure.id) {
+          <li class="stack-list__item stack-list__item--row">
+            <span class="stack-list__title">
+              {{ closure.period }}
+              @if (closure.reason) {
+                <span class="stack-list__meta">{{ closure.reason }}</span>
+              }
+            </span>
+            <button
+              type="button"
+              class="btn btn--danger btn--icon"
+              [disabled]="removing()"
+              (click)="askRemove(closure)"
+            >
+              <app-icon name="remove" />
+              <span i18n="@@closure.remove">Supprimer</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    <h3 i18n="@@closure.add">Ajouter une fermeture</h3>
+    <form class="form" novalidate (submit)="addClosure($event)">
+      <app-checkbox-field [field]="closureForm.wholeDays">
+        <ng-container i18n="@@closure.wholeDays">Journées entières</ng-container>
+      </app-checkbox-field>
+      @if (closure().wholeDays) {
+        <div class="form__row">
+          <app-text-field
+            type="date"
+            [field]="closureForm.startDate"
+            label="Du"
+            i18n-label="@@closure.fromDay"
+          />
+          <app-text-field
+            type="date"
+            [field]="closureForm.endDate"
+            label="Au (inclus)"
+            i18n-label="@@closure.toDay"
+            hint="Vide : un seul jour."
+            i18n-hint="@@closure.toDayHint"
+          />
+        </div>
+      } @else {
+        <div class="form__row">
+          <app-text-field
+            type="datetime-local"
+            [field]="closureForm.start"
+            label="Début"
+            i18n-label="@@hours.start"
+          />
+          <app-text-field
+            type="datetime-local"
+            [field]="closureForm.end"
+            label="Fin"
+            i18n-label="@@hours.end"
+          />
+        </div>
+      }
+      <app-text-field
+        [field]="closureForm.reason"
+        label="Motif affiché aux clients (facultatif)"
+        i18n-label="@@closure.reason"
+      />
+      <div class="form__actions">
+        <button
+          type="submit"
+          [disabled]="closureForm().submitting()"
+          i18n="@@closure.create"
+        >
+          Ajouter la fermeture
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<app-confirm-dialog
+  title="Supprimer cette fermeture ?"
+  i18n-title="@@closure.removeTitle"
+  confirmLabel="Supprimer"
+  i18n-confirmLabel="@@closure.remove"
+  (confirmed)="remove()"
+>
+  {{ pending()?.period }}
+</app-confirm-dialog>

@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { OptionGroupDetails, ProductDetails } from '../../../../core/api/generated';
-import { clickButton, control, envelope, fill, text } from '../../testing';
+import { clickButton, control, envelope, fill, text } from '../../../../shared/testing';
 import { ProductEditPage } from './product-edit-page';
 
 const ingredients: OptionGroupDetails = {

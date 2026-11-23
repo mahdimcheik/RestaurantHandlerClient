@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { CategoryDetails, ProductDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, text } from '../../testing';
+import { clickButton, envelope, text } from '../../../../shared/testing';
 import { ProductListPage } from './product-list-page';
 
 const category = (id: string, name: string): CategoryDetails => ({

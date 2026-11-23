@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import {
   ClosureDetails,
   ClosureWrite,
@@ -14,6 +14,26 @@ import {
 } from '../../core/api/generated';
 import { refresh, toVoid, unwrap } from './api-operators';
 import { StoreService } from './store.service';
+
+/** Partie modifiable des réglages : le PUT remplace l'ensemble. */
+export function settingsWrite(settings: RestaurantSettingsDetails): RestaurantSettingsWrite {
+  return {
+    tradeName: settings.tradeName,
+    legalName: settings.legalName,
+    address: settings.address,
+    phone: settings.phone,
+    siret: settings.siret,
+    vatNumber: settings.vatNumber,
+    asapDelayMinutes: settings.asapDelayMinutes,
+    slotDurationMinutes: settings.slotDurationMinutes,
+    slotCapacityOrders: settings.slotCapacityOrders,
+    minLeadMinutes: settings.minLeadMinutes,
+    approvalTimeoutMinutes: settings.approvalTimeoutMinutes,
+    pickupGraceMinutes: settings.pickupGraceMinutes,
+    noShowThreshold: settings.noShowThreshold,
+    onlinePaymentExpiryMinutes: settings.onlinePaymentExpiryMinutes,
+  };
+}
 
 /**
  * Horaires, fermetures et réglages (en cache dans `StoreService`) ; pause et reprise
@@ -46,6 +66,15 @@ export class RestaurantService {
     return this.api
       .manageRestaurantSettingsPut({ body })
       .pipe(unwrap(), refresh(this.store.settings));
+  }
+
+  /** Délai ASAP ajusté pendant le service : relit les réglages puis les renvoie en entier. */
+  updateAsapDelay(minutes: number): Observable<RestaurantSettingsDetails> {
+    return this.settings().pipe(
+      switchMap((current) =>
+        this.updateSettings({ ...settingsWrite(current), asapDelayMinutes: minutes }),
+      ),
+    );
   }
 
   uploadLogo(file: Blob): Observable<RestaurantSettingsDetails> {

@@ -15,6 +15,11 @@ const PATHS = {
   remove: ['M6 6l12 12', 'M18 6L6 18'],
   archive: ['M3 4h18v4H3z', 'M5 8v12h14V8', 'M10 12h4'],
   site: ['M3 11l9-7 9 7', 'M5 9.5V20h14V9.5', 'M10 20v-6h4v6'],
+  clock: ['M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18z', 'M12 7v5l3 3'],
+  pause: ['M8 5v14', 'M16 5v14'],
+  play: ['M7 4l13 8-13 8z'],
+  stock: ['M4 7l8-4 8 4v10l-8 4-8-4z', 'M3 3l18 18'],
+  store: ['M3 9l2-5h14l2 5', 'M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z', 'M5 13v7h14v-7'],
   logout: ['M10 4H4v16h6', 'M15 8l4 4-4 4', 'M19 12H9'],
 } satisfies Record<string, string[]>;
 
