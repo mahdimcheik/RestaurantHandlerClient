@@ -1,4 +1,11 @@
-import { formatLocal, formatTime, nextDay, previousDay, splitMoment } from './restaurant-time';
+import {
+  formatLocal,
+  formatTime,
+  nextDay,
+  previousDay,
+  restaurantDay,
+  splitMoment,
+} from './restaurant-time';
 
 describe('restaurant-time', () => {
   it('affiche l’heure de Paris, heure d’été comme d’hiver', () => {
@@ -21,5 +28,12 @@ describe('restaurant-time', () => {
   it('passe au jour suivant ou précédent, fin de mois comprise', () => {
     expect(nextDay('2026-12-31')).toBe('2027-01-01');
     expect(previousDay('2026-03-01')).toBe('2026-02-28');
+  });
+});
+
+describe('restaurantDay', () => {
+  it('donne le jour de Paris, même quand UTC est encore la veille', () => {
+    expect(restaurantDay(new Date('2026-11-23T23:30:00Z'))).toBe('2026-11-24');
+    expect(restaurantDay(new Date('2026-11-23T10:00:00Z'))).toBe('2026-11-23');
   });
 });

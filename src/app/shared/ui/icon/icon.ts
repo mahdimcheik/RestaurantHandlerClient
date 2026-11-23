@@ -9,7 +9,9 @@ const PATHS = {
   ingredients: ['M5 19C5 11 11 5 19 5c0 8-6 14-14 14z', 'M5 19l8-8'],
   options: ['M9 6h11', 'M9 12h11', 'M9 18h11', 'M4 5h2v2H4z', 'M4 11h2v2H4z', 'M4 17h2v2H4z'],
   plus: ['M12 5v14', 'M5 12h14'],
+  minus: ['M5 12h14'],
   back: ['M15 5l-7 7 7 7'],
+  forward: ['M9 5l7 7-7 7'],
   up: ['M6 15l6-6 6 6'],
   down: ['M6 9l6 6 6-6'],
   remove: ['M6 6l12 12', 'M18 6L6 18'],
@@ -38,6 +40,22 @@ const PATHS = {
     'M12 20h.01',
     'M3 3l18 18',
   ],
+  counter: ['M3 11h18v9H3z', 'M6 11V4h12v7', 'M9 7h6', 'M7 15h2', 'M11 15h2', 'M15 15h2'],
+  orders: ['M6 3h12v18l-3-2-3 2-3-2-3 2z', 'M9 8h6', 'M9 12h6', 'M9 16h3'],
+  bell: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z', 'M10 21h4'],
+  bellOff: ['M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z', 'M10 21h4', 'M3 3l18 18'],
+  check: ['M5 12l5 5 9-10'],
+  done: ['M2 12l5 5 10-10', 'M12 17l10-10'],
+  alert: ['M12 3l10 18H2z', 'M12 10v5', 'M12 18h.01'],
+  flame: ['M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-3 0-5 1-8z'],
+  noShow: [
+    'M9 11a4 4 0 1 0 0-8 4 4 0 1 0 0 8z',
+    'M2 21c0-4 3-7 7-7s7 3 7 7',
+    'M17 8l5 5',
+    'M22 8l-5 5',
+  ],
+  card: ['M3 6h18v12H3z', 'M3 10h18', 'M7 15h4'],
+  cash: ['M3 7h18v10H3z', 'M12 9a3 3 0 1 0 0 6 3 3 0 1 0 0-6z'],
 } satisfies Record<string, string[]>;
 
 export type IconName = keyof typeof PATHS;

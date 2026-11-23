@@ -1,5 +1,8 @@
-import { Provider } from '@angular/core';
+import { computed, Provider, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 import { HUB_CONNECTION_FACTORY, RealtimeConnection } from './hub-connection';
+import { ConnectionState } from './realtime-events';
+import { RealtimeService } from './realtime.service';
 
 /** Connexion SignalR simulée : les tests déclenchent eux-mêmes les rappels. */
 export class FakeConnection implements RealtimeConnection {
@@ -72,5 +75,36 @@ export function provideFakeHub(
       connections.push(connection);
       return connection;
     },
+  };
+}
+
+/**
+ * Temps réel simulé : `emit` pousse un événement, `resync` une resynchronisation, `state` fixe
+ * l'état de la connexion.
+ */
+export function fakeRealtime() {
+  const events = new Map<string, Subject<unknown>>();
+  const resync = new Subject<void>();
+  const state = signal<ConnectionState>('connected');
+  const subject = (name: string) => {
+    if (!events.has(name)) {
+      events.set(name, new Subject());
+    }
+    return events.get(name)!;
+  };
+  return {
+    provider: {
+      provide: RealtimeService,
+      useValue: {
+        on: (name: string) => subject(name),
+        resync,
+        start: () => {},
+        state,
+        connected: computed(() => state() === 'connected'),
+      },
+    },
+    emit: (name: string, payload: unknown) => subject(name).next(payload),
+    resync,
+    state,
   };
 }

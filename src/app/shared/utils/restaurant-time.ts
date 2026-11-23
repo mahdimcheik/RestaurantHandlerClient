@@ -83,6 +83,18 @@ export function formatLocal(local: string): string {
     : localDateTimeFormat.format(date);
 }
 
+const isoDayFormat = new Intl.DateTimeFormat('en-CA', {
+  timeZone: RESTAURANT_TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/** Jour du restaurant (« AAAA-MM-JJ ») à l'instant donné. */
+export function restaurantDay(now: Date = new Date()): string {
+  return isoDayFormat.format(now);
+}
+
 /** Jour suivant d'une date « AAAA-MM-JJ ». */
 export function nextDay(day: string): string {
   const date = new Date(`${day}T00:00:00Z`);
@@ -110,5 +122,13 @@ export class LocalDateTimePipe implements PipeTransform {
 export class RestaurantDateTimePipe implements PipeTransform {
   transform(instant: string | null | undefined): string {
     return instant ? formatDateTime(instant) : '';
+  }
+}
+
+/** `formatTime` pour les gabarits : « 14:30 ». */
+@Pipe({ name: 'restaurantTime' })
+export class RestaurantTimePipe implements PipeTransform {
+  transform(instant: string | null | undefined): string {
+    return instant ? formatTime(instant) : '';
   }
 }

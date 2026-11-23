@@ -33,7 +33,18 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/ordering/ordering.routes').then((m) => m.ORDERING_ROUTES),
+      },
     ],
+  },
+  {
+    path: 'cuisine',
+    canActivate: [managerGuard],
+    data: { bare: true },
+    loadChildren: () => import('./features/kitchen/kitchen.routes').then((m) => m.KITCHEN_ROUTES),
   },
   { path: '**', redirectTo: '' },
 ];
