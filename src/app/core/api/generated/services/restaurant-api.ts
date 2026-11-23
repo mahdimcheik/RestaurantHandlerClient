@@ -30,6 +30,8 @@ import { manageRestaurantSettingsGet } from '../fn/restaurant/manage-restaurant-
 import { ManageRestaurantSettingsGet$Params } from '../fn/restaurant/manage-restaurant-settings-get';
 import { manageRestaurantSettingsHistoryGet } from '../fn/restaurant/manage-restaurant-settings-history-get';
 import { ManageRestaurantSettingsHistoryGet$Params } from '../fn/restaurant/manage-restaurant-settings-history-get';
+import { manageRestaurantSettingsLogoDelete } from '../fn/restaurant/manage-restaurant-settings-logo-delete';
+import { ManageRestaurantSettingsLogoDelete$Params } from '../fn/restaurant/manage-restaurant-settings-logo-delete';
 import { manageRestaurantSettingsLogoPost } from '../fn/restaurant/manage-restaurant-settings-logo-post';
 import { ManageRestaurantSettingsLogoPost$Params } from '../fn/restaurant/manage-restaurant-settings-logo-post';
 import { manageRestaurantSettingsPut } from '../fn/restaurant/manage-restaurant-settings-put';
@@ -311,6 +313,33 @@ export class RestaurantApi extends BaseService {
    */
   manageRestaurantSettingsLogoPost(params?: ManageRestaurantSettingsLogoPost$Params, context?: HttpContext): Observable<RestaurantSettingsDetailsResponse> {
     const resp = this.manageRestaurantSettingsLogoPost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<RestaurantSettingsDetailsResponse>): RestaurantSettingsDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageRestaurantSettingsLogoDelete()` */
+  static readonly ManageRestaurantSettingsLogoDeletePath = '/manage/restaurant/settings/logo';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageRestaurantSettingsLogoDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageRestaurantSettingsLogoDelete$Response(params?: ManageRestaurantSettingsLogoDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<RestaurantSettingsDetailsResponse>> {
+    const obs = manageRestaurantSettingsLogoDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageRestaurantSettingsLogoDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageRestaurantSettingsLogoDelete(params?: ManageRestaurantSettingsLogoDelete$Params, context?: HttpContext): Observable<RestaurantSettingsDetailsResponse> {
+    const resp = this.manageRestaurantSettingsLogoDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<RestaurantSettingsDetailsResponse>): RestaurantSettingsDetailsResponse => r.body)
     );

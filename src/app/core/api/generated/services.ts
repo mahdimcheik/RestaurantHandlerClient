@@ -7,6 +7,7 @@ export { IngredientsApi } from './services/ingredients-api';
 export { ManageOrdersApi } from './services/manage-orders-api';
 export { MenusApi } from './services/menus-api';
 export { NotificationsApi } from './services/notifications-api';
+export { OptionGroupsApi } from './services/option-groups-api';
 export { OrdersApi } from './services/orders-api';
 export { ProductsApi } from './services/products-api';
 export { PublicApi } from './services/public-api';

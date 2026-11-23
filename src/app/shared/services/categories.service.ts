@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   CategoriesApi,
   CategoryDetails,
@@ -18,6 +18,13 @@ export class CategoriesService {
   /** Liste à jour, hors cache (ex. avec les archivées). Pour la liste en cache : `StoreService.categories`. */
   list(params?: ManageCategoriesGet$Params): Observable<CategoryDetails[]> {
     return this.api.manageCategoriesGet(params).pipe(unwrap());
+  }
+
+  /** Une catégorie, archivée ou non ; l'API n'a pas de lecture unitaire, d'où la liste. */
+  get(id: string): Observable<CategoryDetails | undefined> {
+    return this.list({ includeArchived: true }).pipe(
+      map((categories) => categories.find((category) => category.id === id)),
+    );
   }
 
   create(body: CategoryWrite): Observable<CategoryDetails> {
@@ -45,6 +52,12 @@ export class CategoriesService {
   uploadImage(id: string, file: Blob): Observable<CategoryDetails> {
     return this.api
       .manageCategoriesIdImagePost({ id, body: { file } })
+      .pipe(unwrap(), refresh(this.store.categories));
+  }
+
+  removeImage(id: string): Observable<CategoryDetails> {
+    return this.api
+      .manageCategoriesIdImageDelete({ id })
       .pipe(unwrap(), refresh(this.store.categories));
   }
 }

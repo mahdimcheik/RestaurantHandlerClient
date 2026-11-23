@@ -5,8 +5,8 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 ## Projet
 
 - Client web Angular 22 de RestaurantHandler : prise de commande sur tablette, écran cuisine (KDS), encaissement, administration du restaurant.
-- Backend et **documentation de référence** : dépôt frère `../Template` (ASP.NET Core .NET 10, dev sur `http://localhost:5216` / `https://localhost:7273`). Lire `../Template/docs/` avant toute fonctionnalité.
-- État : scaffold CLI (`app.routes.ts` vide, `app.html` par défaut, ni `HttpClient`, ni proxy, ni i18n). Les jalons du front (J4, J5) sont décrits dans `../Template/docs/50-feuille-de-route/01-feuille-de-route.md`.
+- Backend et **documentation de référence** : dépôt frère `../Template` (ASP.NET Core .NET 10, dev avec le profil `https` sur `https://localhost:7113` / `http://localhost:5113`, ou le profil `http` sur `http://localhost:5152`). Lire `../Template/docs/` avant toute fonctionnalité.
+- État : page d'accueil, feature `auth` (connexion, inscription, mot de passe oublié, activation) et back-office Manager `/gestion` (coquille `shared/ui/admin-layout`, `features/dashboard`, `features/menu-admin` : catégories, produits, groupes d'options partagés, photos) en place. Les jalons du front (J4, J5) sont décrits dans `../Template/docs/50-feuille-de-route/01-feuille-de-route.md`.
 - Interface en **français**, i18n Angular (`@angular/localize`) prête pour d'autres langues.
 
 ## Commandes
@@ -50,8 +50,13 @@ Guide lu à chaque session Claude Code. Règles d'abord.
 
 ## Sécurité côté client
 
-- Authentification par **cookie de session `HttpOnly`** posé par l'API : aucun jeton dans `localStorage`, `sessionStorage`, IndexedDB ou en mémoire ; jamais de JWT.
-- SPA et API sur la **même origine** : en dev via un proxy `ng serve` (`/api`, `/hubs` → `http://localhost:5216`) ; URLs d'API relatives ; pas de CORS.
+- Cible : authentification par **cookie de session `HttpOnly`** posé par l'API (ADR-0002) : aucun jeton dans `localStorage`, `sessionStorage` ou IndexedDB.
+  - **Exception temporaire, tant que l'API n'applique pas ADR-0002** : l'API renvoie un JWT d'accès court et pose un cookie `refreshToken` `HttpOnly`. Le JWT vit **uniquement en mémoire** dans `core/auth/session.service.ts` (un signal) ; `core/auth/auth.interceptor.ts` l'ajoute en `Authorization: Bearer` aux appels `/api/`, renouvelle une fois sur 401 via `/auth/refresh-token`, sinon renvoie vers `/auth/connexion?returnUrl=…`. Au démarrage, `provideAppInitializer` reprend la session grâce au cookie. Jamais de jeton ailleurs.
+  - Gardes : `authGuard` / `guestGuard` (`core/auth/auth.guards.ts`) ; retour après connexion filtré par `safeReturnUrl` (pas de redirection ouverte).
+  - Routes `auth/reset-password`, `auth/password-reset-success`, `auth/email-confirmation-success`, `auth/email-confirmation-failed` : chemins imposés par les liens des e-mails de l'API, ne pas les renommer.
+  - Google : `GOOGLE_CLIENT_ID` (`core/auth/auth.config.ts`, vide = bouton masqué) ; le script `https://accounts.google.com/gsi/client` est chargé à la demande et devra être autorisé dans la CSP.
+- SPA et API sur la **même origine** : en dev via `proxy.conf.mjs` (`/api` → `API_URL`, par défaut `http://localhost:5113`, avec le préfixe `/api` retiré ; `/hubs` idem ; autre port : `API_URL=http://localhost:5152 npm start`) ; `provideApiConfiguration('/api')` ; URLs d'API relatives ; pas de CORS. L'API n'a pas de préfixe : sans `/api`, ses routes `/auth/...` entreraient en collision avec celles du front.
+- Réponses de l'API : enveloppe `{ message, status, data }` (pas encore de ProblemDetails) ; afficher le `message` via `apiErrorMessage` (`core/http/api-error.ts`), jamais de détail technique. Certaines routes ne renvoient pas de `data` : le wrapper utilise alors `toVoid()`, pas `unwrap()`.
 - `provideHttpClient(withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }))` ; ne jamais désactiver la protection XSRF.
 - Chaque action modifiante envoie un en-tête `Idempotency-Key` (UUID par action utilisateur, réutilisé en cas de nouvel essai) et la version (`If-Match`) quand l'API la demande.
 - Les permissions reçues de l'API servent **uniquement** à masquer l'interface (gardes de route, boutons) ; le serveur décide.

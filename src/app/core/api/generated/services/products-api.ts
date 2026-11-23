@@ -20,6 +20,8 @@ import { manageProductsIdDelete } from '../fn/products/manage-products-id-delete
 import { ManageProductsIdDelete$Params } from '../fn/products/manage-products-id-delete';
 import { manageProductsIdGet } from '../fn/products/manage-products-id-get';
 import { ManageProductsIdGet$Params } from '../fn/products/manage-products-id-get';
+import { manageProductsIdImageDelete } from '../fn/products/manage-products-id-image-delete';
+import { ManageProductsIdImageDelete$Params } from '../fn/products/manage-products-id-image-delete';
 import { manageProductsIdImagePost } from '../fn/products/manage-products-id-image-post';
 import { ManageProductsIdImagePost$Params } from '../fn/products/manage-products-id-image-post';
 import { manageProductsIdOptionGroupsPut } from '../fn/products/manage-products-id-option-groups-put';
@@ -305,6 +307,33 @@ export class ProductsApi extends BaseService {
    */
   manageProductsIdImagePost(params: ManageProductsIdImagePost$Params, context?: HttpContext): Observable<ProductDetailsResponse> {
     const resp = this.manageProductsIdImagePost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<ProductDetailsResponse>): ProductDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageProductsIdImageDelete()` */
+  static readonly ManageProductsIdImageDeletePath = '/manage/products/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageProductsIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageProductsIdImageDelete$Response(params: ManageProductsIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<ProductDetailsResponse>> {
+    const obs = manageProductsIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageProductsIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageProductsIdImageDelete(params: ManageProductsIdImageDelete$Params, context?: HttpContext): Observable<ProductDetailsResponse> {
+    const resp = this.manageProductsIdImageDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<ProductDetailsResponse>): ProductDetailsResponse => r.body)
     );

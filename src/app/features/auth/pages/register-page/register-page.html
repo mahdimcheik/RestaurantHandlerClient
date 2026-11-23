@@ -1,0 +1,79 @@
+<app-auth-layout>
+  @if (registeredEmail(); as sentTo) {
+    <h1 class="auth__title" i18n="@@register.doneTitle">Vérifiez vos e-mails</h1>
+    <p class="alert alert--success" role="status" i18n="@@register.done">
+      Compte créé. Un lien d'activation vient d'être envoyé à <strong>{{ sentTo }}</strong>.
+    </p>
+    <p class="auth__lead" i18n="@@register.doneHint">
+      Rien reçu ? Regardez dans les courriers indésirables.
+    </p>
+    <a class="btn form__submit" routerLink="/auth/connexion" i18n="@@auth.goToLogin">
+      Aller à la connexion
+    </a>
+  } @else {
+    <h1 class="auth__title" i18n="@@register.title">Créer un compte</h1>
+    <p class="auth__lead" i18n="@@register.lead">
+      Déjà inscrit ?
+      <a routerLink="/auth/connexion" [queryParams]="{ returnUrl: returnUrl() }">Se connecter</a>
+    </p>
+
+    @if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    }
+
+    <form class="form" novalidate (submit)="onSubmit($event)">
+      <div class="form__row">
+        <app-text-field
+          [field]="form.firstName"
+          autocomplete="given-name"
+          label="Prénom"
+          i18n-label="@@field.firstName"
+        />
+        <app-text-field
+          [field]="form.lastName"
+          autocomplete="family-name"
+          label="Nom"
+          i18n-label="@@field.lastName"
+        />
+      </div>
+      <app-text-field
+        [field]="form.email"
+        type="email"
+        autocomplete="email"
+        label="E-mail"
+        i18n-label="@@field.email"
+      />
+      <app-text-field
+        [field]="form.password"
+        type="password"
+        autocomplete="new-password"
+        label="Mot de passe"
+        i18n-label="@@field.password"
+        [hint]="passwordHint"
+      />
+
+      <fieldset class="form__group">
+        <legend class="field__label" i18n="@@register.consents">Consentements</legend>
+        <app-checkbox-field [field]="form.termsConsent" i18n="@@register.terms">
+          J'accepte les conditions générales d'utilisation.
+        </app-checkbox-field>
+        <app-checkbox-field [field]="form.privacyPolicyConsent" i18n="@@register.privacy">
+          J'ai lu la politique de confidentialité.
+        </app-checkbox-field>
+        <app-checkbox-field [field]="form.dataProcessingConsent" i18n="@@register.processing">
+          J'accepte le traitement de mes données pour gérer mon compte et mes commandes.
+        </app-checkbox-field>
+      </fieldset>
+
+      <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+        @if (form().submitting()) {
+          <ng-container i18n="@@register.submitting">Création…</ng-container>
+        } @else {
+          <ng-container i18n="@@register.submit">Créer mon compte</ng-container>
+        }
+      </button>
+    </form>
+
+    <app-google-sign-in (credential)="onGoogle($event)" />
+  }
+</app-auth-layout>

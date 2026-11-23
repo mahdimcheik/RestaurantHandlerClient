@@ -40,4 +40,14 @@ export class IngredientsService {
       .manageIngredientsIdAvailabilityPut({ id, body })
       .pipe(unwrap(), refresh(...this.touched));
   }
+
+  uploadImage(id: string, file: Blob): Observable<IngredientDetails> {
+    return this.api
+      .manageIngredientsIdImagePost({ id, body: { file } })
+      .pipe(unwrap(), refresh(...this.touched));
+  }
+
+  removeImage(id: string): Observable<IngredientDetails> {
+    return this.api.manageIngredientsIdImageDelete({ id }).pipe(unwrap(), refresh(...this.touched));
+  }
 }

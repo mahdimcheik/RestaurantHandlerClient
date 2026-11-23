@@ -1,0 +1,70 @@
+<div class="page-head">
+  <h1 i18n="@@admin.options">Groupes d'options</h1>
+  <a class="btn btn--icon" routerLink="nouveau">
+    <app-icon name="plus" />
+    <span i18n="@@optionGroup.add">Ajouter un groupe</span>
+  </a>
+</div>
+
+<p class="sheet__lead" i18n="@@optionGroup.lead">
+  Un groupe (pain, sauces, taille…) se définit une fois et se propose sur autant de produits que
+  voulu, depuis la fiche de chaque produit.
+</p>
+
+<div class="toolbar">
+  <label class="checkbox">
+    <input
+      #archivedBox
+      type="checkbox"
+      [checked]="showArchived()"
+      (change)="showArchived.set(archivedBox.checked)"
+    />
+    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+  </label>
+</div>
+
+@if (error()) {
+  <p class="alert alert--error" role="alert">{{ error() }}</p>
+} @else if (loading() && rows().length === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (rows().length === 0) {
+  <p class="empty" i18n="@@optionGroup.empty">Aucun groupe d'options pour l'instant.</p>
+} @else {
+  <table class="data-table">
+    <caption class="visually-hidden" i18n="@@admin.options">
+      Groupes d'options
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" i18n="@@optionGroup.label">Libellé</th>
+        <th scope="col" i18n="@@optionGroup.choices">Choix</th>
+        <th scope="col" i18n="@@optionGroup.products">Produits</th>
+        <th scope="col" i18n="@@list.status">Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (group of rows(); track group.id) {
+        <tr>
+          <td class="data-table__main">
+            <a [routerLink]="group.id">{{ group.label }}</a>
+          </td>
+          <td data-label="Choix" i18n-data-label="@@optionGroup.choices">
+            <ng-container i18n="@@optionGroup.bounds">
+              {{ group.minChoices }} à {{ group.maxChoices }} parmi {{ group.choices.length }}
+            </ng-container>
+          </td>
+          <td
+            class="data-table__num"
+            data-label="Produits"
+            i18n-data-label="@@optionGroup.products"
+          >
+            {{ group.productCount }}
+          </td>
+          <td data-label="Statut" i18n-data-label="@@list.status">
+            <app-status-badges [archived]="group.isArchived" />
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

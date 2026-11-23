@@ -16,6 +16,8 @@ import { manageCategoriesGet } from '../fn/categories/manage-categories-get';
 import { ManageCategoriesGet$Params } from '../fn/categories/manage-categories-get';
 import { manageCategoriesIdDelete } from '../fn/categories/manage-categories-id-delete';
 import { ManageCategoriesIdDelete$Params } from '../fn/categories/manage-categories-id-delete';
+import { manageCategoriesIdImageDelete } from '../fn/categories/manage-categories-id-image-delete';
+import { ManageCategoriesIdImageDelete$Params } from '../fn/categories/manage-categories-id-image-delete';
 import { manageCategoriesIdImagePost } from '../fn/categories/manage-categories-id-image-post';
 import { ManageCategoriesIdImagePost$Params } from '../fn/categories/manage-categories-id-image-post';
 import { manageCategoriesIdPut } from '../fn/categories/manage-categories-id-put';
@@ -189,6 +191,33 @@ export class CategoriesApi extends BaseService {
    */
   manageCategoriesIdImagePost(params: ManageCategoriesIdImagePost$Params, context?: HttpContext): Observable<CategoryDetailsResponse> {
     const resp = this.manageCategoriesIdImagePost$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<CategoryDetailsResponse>): CategoryDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `manageCategoriesIdImageDelete()` */
+  static readonly ManageCategoriesIdImageDeletePath = '/manage/categories/{id}/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `manageCategoriesIdImageDelete()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageCategoriesIdImageDelete$Response(params: ManageCategoriesIdImageDelete$Params, context?: HttpContext): Observable<StrictHttpResponse<CategoryDetailsResponse>> {
+    const obs = manageCategoriesIdImageDelete(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `manageCategoriesIdImageDelete$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  manageCategoriesIdImageDelete(params: ManageCategoriesIdImageDelete$Params, context?: HttpContext): Observable<CategoryDetailsResponse> {
+    const resp = this.manageCategoriesIdImageDelete$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<CategoryDetailsResponse>): CategoryDetailsResponse => r.body)
     );

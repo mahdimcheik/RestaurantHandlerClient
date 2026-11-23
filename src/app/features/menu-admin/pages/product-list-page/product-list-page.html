@@ -1,0 +1,78 @@
+<div class="page-head">
+  <h1 i18n="@@admin.products">Produits</h1>
+  <a
+    class="btn btn--icon"
+    routerLink="nouveau"
+    [queryParams]="categoryId() ? { categorie: categoryId() } : {}"
+  >
+    <app-icon name="plus" />
+    <span i18n="@@product.add">Ajouter un produit</span>
+  </a>
+</div>
+
+<div class="toolbar">
+  <div class="field">
+    <label class="field__label" for="product-filter" i18n="@@product.filter">Catégorie</label>
+    <select #filterBox id="product-filter" (change)="filter(filterBox.value)">
+      <option value="" i18n="@@product.allCategories">Toutes les catégories</option>
+      @for (category of categories(); track category.id) {
+        <option [value]="category.id" [selected]="category.id === categoryId()">
+          {{ category.name }}
+        </option>
+      }
+    </select>
+  </div>
+  <label class="checkbox">
+    <input
+      #archivedBox
+      type="checkbox"
+      [checked]="showArchived()"
+      (change)="showArchived.set(archivedBox.checked)"
+    />
+    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+  </label>
+</div>
+
+@if (error()) {
+  <p class="alert alert--error" role="alert">{{ error() }}</p>
+} @else if (loading() && rows().length === 0) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (rows().length === 0) {
+  <p class="empty" i18n="@@product.empty">Aucun produit ici pour l'instant.</p>
+} @else {
+  <table class="data-table">
+    <caption class="visually-hidden" i18n="@@admin.products">
+      Produits
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" i18n="@@field.name">Nom</th>
+        <th scope="col" i18n="@@product.category">Catégorie</th>
+        <th scope="col" i18n="@@product.price">Prix TTC</th>
+        <th scope="col" i18n="@@list.status">Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (product of rows(); track product.id) {
+        <tr>
+          <td class="data-table__main">
+            <a [routerLink]="product.id">{{ product.name }}</a>
+          </td>
+          <td data-label="Catégorie" i18n-data-label="@@product.category">
+            {{ product.categoryName }}
+          </td>
+          <td class="data-table__num" data-label="Prix TTC" i18n-data-label="@@product.price">
+            {{ product.priceCents | euros }}
+          </td>
+          <td data-label="Statut" i18n-data-label="@@list.status">
+            <app-status-badges
+              [archived]="product.isArchived"
+              [active]="product.isActive"
+              [available]="product.isAvailable"
+            />
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

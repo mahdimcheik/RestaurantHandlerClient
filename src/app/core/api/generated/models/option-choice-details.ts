@@ -4,6 +4,7 @@
 export interface OptionChoiceDetails {
   extraPriceCents: number;
   id: string;
+  imageUrl?: string | null;
   ingredientId?: string | null;
   isAvailable: boolean;
   name: string;

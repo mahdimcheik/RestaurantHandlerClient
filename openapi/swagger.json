@@ -608,6 +608,34 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDetailsResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/manage/ingredients": {
@@ -787,6 +815,84 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/ingredients/{id}/image": {
+      "post": {
+        "tags": [
+          "Ingredients"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Ingredients"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1591,6 +1697,34 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Menus"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuDetailsResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/manage/menus/{id}/slots": {
@@ -1989,6 +2123,350 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ObjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups": {
+      "get": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}": {
+      "get": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionGroupWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}/image": {
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/option-groups/{id}/choices/{choiceId}/image": {
+      "post": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "choiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "OptionGroups"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "choiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionGroupDetailsResponse"
                 }
               }
             }
@@ -2701,6 +3179,34 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetailsResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/menu": {
@@ -3066,6 +3572,23 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantSettingsDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Restaurant"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -3480,11 +4003,10 @@
             },
             "nullable": true
           },
-          "optionChoiceIds": {
+          "optionChoices": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/CartOptionChoiceDto"
             },
             "nullable": true
           }
@@ -3513,11 +4035,10 @@
             },
             "nullable": true
           },
-          "optionChoiceIds": {
+          "optionChoices": {
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/CartOptionChoiceDto"
             },
             "nullable": true
           }
@@ -3542,6 +4063,25 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          },
+          "quantity": {
+            "maximum": 20,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CartOptionChoiceDto": {
+        "required": [
+          "choiceId"
+        ],
+        "type": "object",
+        "properties": {
+          "choiceId": {
+            "type": "string",
+            "format": "uuid"
           },
           "quantity": {
             "maximum": 20,
@@ -3800,8 +4340,7 @@
       },
       "CompositionDetails": {
         "required": [
-          "ingredients",
-          "supplements"
+          "ingredients"
         ],
         "type": "object",
         "properties": {
@@ -3809,12 +4348,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CompositionIngredientDetails"
-            }
-          },
-          "supplements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SupplementDetails"
             }
           }
         },
@@ -3825,8 +4358,7 @@
           "ingredientId",
           "isAvailable",
           "isRemovable",
-          "name",
-          "substitutions"
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -3843,12 +4375,6 @@
           },
           "isAvailable": {
             "type": "boolean"
-          },
-          "substitutions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubstitutionDetails"
-            }
           }
         },
         "additionalProperties": false
@@ -3865,21 +4391,13 @@
           },
           "isRemovable": {
             "type": "boolean"
-          },
-          "substitutions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubstitutionWrite"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
       },
       "CompositionUpdate": {
         "required": [
-          "ingredients",
-          "supplements"
+          "ingredients"
         ],
         "type": "object",
         "properties": {
@@ -3887,12 +4405,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CompositionIngredientWrite"
-            }
-          },
-          "supplements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SupplementWrite"
             }
           }
         },
@@ -4221,7 +4733,9 @@
           "id",
           "isArchived",
           "isAvailable",
-          "name"
+          "isOfferedAsReplacement",
+          "name",
+          "priceCents"
         ],
         "type": "object",
         "properties": {
@@ -4233,11 +4747,22 @@
             "minLength": 1,
             "type": "string"
           },
+          "priceCents": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isOfferedAsReplacement": {
+            "type": "boolean"
+          },
           "isAvailable": {
             "type": "boolean"
           },
           "isArchived": {
             "type": "boolean"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4308,6 +4833,15 @@
             "maxLength": 64,
             "minLength": 1,
             "type": "string"
+          },
+          "priceCents": {
+            "maximum": 100000,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "isOfferedAsReplacement": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -4867,6 +5401,10 @@
             "minLength": 1,
             "type": "string"
           },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "ingredientId": {
             "type": "string",
             "format": "uuid",
@@ -4922,10 +5460,13 @@
           "extraChoicePriceCents",
           "freeChoices",
           "id",
+          "isArchived",
           "label",
           "maxChoices",
+          "maxPerChoice",
           "minChoices",
-          "position"
+          "position",
+          "productCount"
         ],
         "type": "object",
         "properties": {
@@ -4936,6 +5477,10 @@
           "label": {
             "minLength": 1,
             "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           },
           "position": {
             "type": "integer",
@@ -4957,11 +5502,110 @@
             "type": "integer",
             "format": "int32"
           },
+          "maxPerChoice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productRules": {
+            "$ref": "#/components/schemas/OptionGroupRules"
+          },
           "choices": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OptionChoiceDetails"
             }
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "productCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OptionGroupDetailsListResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionGroupDetails"
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OptionGroupDetailsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/OptionGroupDetails"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OptionGroupRules": {
+        "required": [
+          "freeChoices",
+          "maxChoices",
+          "minChoices"
+        ],
+        "type": "object",
+        "properties": {
+          "minChoices": {
+            "maximum": 20,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxChoices": {
+            "maximum": 20,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "freeChoices": {
+            "maximum": 20,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -4973,11 +5617,6 @@
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
           "label": {
             "maxLength": 64,
             "minLength": 1,
@@ -5008,6 +5647,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "maxPerChoice": {
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
           "choices": {
             "minItems": 1,
             "type": "array",
@@ -5020,14 +5665,14 @@
       },
       "OptionGroupsUpdate": {
         "required": [
-          "groups"
+          "optionGroups"
         ],
         "type": "object",
         "properties": {
-          "groups": {
+          "optionGroups": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OptionGroupWrite"
+              "$ref": "#/components/schemas/ProductOptionGroupWrite"
             }
           }
         },
@@ -6044,6 +6689,22 @@
         ],
         "type": "string"
       },
+      "ProductOptionGroupWrite": {
+        "required": [
+          "optionGroupId"
+        ],
+        "type": "object",
+        "properties": {
+          "optionGroupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/OptionGroupRules"
+          }
+        },
+        "additionalProperties": false
+      },
       "ProductSales": {
         "required": [
           "name",
@@ -6187,7 +6848,8 @@
         "required": [
           "categories",
           "menus",
-          "opening"
+          "opening",
+          "replacements"
         ],
         "type": "object",
         "properties": {
@@ -6201,6 +6863,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PublicMenu"
+            }
+          },
+          "replacements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicReplacement"
             }
           },
           "opening": {
@@ -6274,7 +6942,7 @@
           "isForcedRemoved",
           "isRemovable",
           "name",
-          "substitutions"
+          "priceCents"
         ],
         "type": "object",
         "properties": {
@@ -6289,14 +6957,16 @@
           "isRemovable": {
             "type": "boolean"
           },
+          "priceCents": {
+            "type": "integer",
+            "format": "int32"
+          },
           "isForcedRemoved": {
             "type": "boolean"
           },
-          "substitutions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PublicSubstitution"
-            }
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -6426,6 +7096,10 @@
             "minLength": 1,
             "type": "string"
           },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "extraPriceCents": {
             "type": "integer",
             "format": "int32"
@@ -6444,6 +7118,7 @@
           "id",
           "label",
           "maxChoices",
+          "maxPerChoice",
           "minChoices"
         ],
         "type": "object",
@@ -6455,6 +7130,10 @@
           "label": {
             "minLength": 1,
             "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           },
           "minChoices": {
             "type": "integer",
@@ -6469,6 +7148,10 @@
             "format": "int32"
           },
           "extraChoicePriceCents": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPerChoice": {
             "type": "integer",
             "format": "int32"
           },
@@ -6489,8 +7172,7 @@
           "kind",
           "name",
           "optionGroups",
-          "priceCents",
-          "supplements"
+          "priceCents"
         ],
         "type": "object",
         "properties": {
@@ -6526,12 +7208,6 @@
               "$ref": "#/components/schemas/PublicIngredient"
             }
           },
-          "supplements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PublicSupplement"
-            }
-          },
           "optionGroups": {
             "type": "array",
             "items": {
@@ -6541,33 +7217,9 @@
         },
         "additionalProperties": false
       },
-      "PublicSubstitution": {
-        "required": [
-          "extraPriceCents",
-          "ingredientId",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "ingredientId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "extraPriceCents": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PublicSupplement": {
+      "PublicReplacement": {
         "required": [
           "ingredientId",
-          "maxQuantity",
           "name",
           "priceCents"
         ],
@@ -6585,9 +7237,9 @@
             "type": "integer",
             "format": "int32"
           },
-          "maxQuantity": {
-            "type": "integer",
-            "format": "int32"
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -7355,84 +8007,6 @@
         },
         "additionalProperties": false
       },
-      "SubstitutionDetails": {
-        "required": [
-          "extraPriceCents",
-          "isAvailable",
-          "name",
-          "substituteIngredientId"
-        ],
-        "type": "object",
-        "properties": {
-          "substituteIngredientId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "extraPriceCents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isAvailable": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SubstitutionWrite": {
-        "required": [
-          "substituteIngredientId"
-        ],
-        "type": "object",
-        "properties": {
-          "substituteIngredientId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "extraPriceCents": {
-            "maximum": 100000,
-            "minimum": 0,
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SupplementDetails": {
-        "required": [
-          "ingredientId",
-          "isAvailable",
-          "maxQuantity",
-          "name",
-          "priceCents"
-        ],
-        "type": "object",
-        "properties": {
-          "ingredientId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "priceCents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "maxQuantity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isAvailable": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
       "SupplementSales": {
         "required": [
           "ingredientId",
@@ -7455,31 +8029,6 @@
             "format": "int32"
           },
           "revenueCents": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "SupplementWrite": {
-        "required": [
-          "ingredientId"
-        ],
-        "type": "object",
-        "properties": {
-          "ingredientId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "priceCents": {
-            "maximum": 100000,
-            "minimum": 0,
-            "type": "integer",
-            "format": "int32"
-          },
-          "maxQuantity": {
-            "maximum": 20,
-            "minimum": 1,
             "type": "integer",
             "format": "int32"
           }

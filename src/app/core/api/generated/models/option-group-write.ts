@@ -6,8 +6,8 @@ export interface OptionGroupWrite {
   choices: Array<OptionChoiceWrite>;
   extraChoicePriceCents?: number;
   freeChoices?: number | null;
-  id?: string | null;
   label: string;
   maxChoices?: number;
+  maxPerChoice?: number;
   minChoices?: number;
 }

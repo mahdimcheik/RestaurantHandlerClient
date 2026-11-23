@@ -1,0 +1,85 @@
+<a class="page-head__back" routerLink="/gestion/categories" i18n="@@category.back">
+  ← Toutes les catégories
+</a>
+
+@if (notFound()) {
+  <h1 i18n="@@category.notFound">Catégorie introuvable</h1>
+} @else if (id() && category.isLoading() && !category.hasValue()) {
+  <p role="status" i18n="@@common.loading">Chargement…</p>
+} @else if (loadError()) {
+  <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+} @else {
+  <div class="page-head">
+    <h1>
+      @if (id()) {
+        {{ category.value()?.name }}
+      } @else {
+        <ng-container i18n="@@category.new">Nouvelle catégorie</ng-container>
+      }
+    </h1>
+    @if (id() && !archived()) {
+      <app-archive-button
+        [name]="category.value()?.name ?? ''"
+        [busy]="archiving()"
+        (confirmed)="archive()"
+      />
+    }
+  </div>
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  }
+  <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+    {{ notice() }}
+  </p>
+
+  @if (archived()) {
+    <p class="alert" i18n="@@sheet.archived">
+      Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
+    </p>
+  } @else {
+    <div class="sheet">
+      <section class="sheet__section" aria-labelledby="category-info">
+        <h2 id="category-info" i18n="@@sheet.info">Informations</h2>
+        <form class="form" novalidate (submit)="onSubmit($event)">
+          <app-text-field [field]="form.name" label="Nom" i18n-label="@@field.name" />
+          <app-textarea-field
+            [field]="form.description"
+            label="Description (facultative)"
+            i18n-label="@@field.description"
+          />
+          <app-checkbox-field [field]="form.isActive">
+            <ng-container i18n="@@category.activeLabel">Visible sur la carte</ng-container>
+          </app-checkbox-field>
+          <div class="form__actions">
+            <button type="submit" [disabled]="form().submitting()">
+              @if (id()) {
+                <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+              } @else {
+                <ng-container i18n="@@category.create">Créer la catégorie</ng-container>
+              }
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="sheet__section" aria-labelledby="category-photo">
+        <h2 id="category-photo" i18n="@@sheet.photo">Photo</h2>
+        @if (id()) {
+          <app-image-field
+            label="Choisir une photo"
+            i18n-label="@@image.choose"
+            [imageUrl]="imageUrl()"
+            [alt]="category.value()?.name ?? ''"
+            [upload]="uploadImage"
+            [remove]="removeImage"
+          />
+        } @else {
+          <p class="sheet__lead" i18n="@@sheet.photoAfterCreate">
+            La photo s'ajoute une fois l'élément créé.
+          </p>
+        }
+      </section>
+    </div>
+  }
+}

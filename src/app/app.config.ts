@@ -1,7 +1,21 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideHttpClient, withFetch, withXsrfConfiguration } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withXsrfConfiguration,
+} from '@angular/common/http';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
+import { provideApiConfiguration } from './core/api/generated';
+import { authInterceptor } from './core/auth/auth.interceptor';
+import { idempotencyInterceptor } from './core/http/idempotency.interceptor';
+import { SessionService } from './core/auth/session.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -9,7 +23,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
+      withInterceptors([idempotencyInterceptor, authInterceptor]),
     ),
-    provideRouter(routes),
+    provideApiConfiguration('/api'),
+    provideRouter(routes, withComponentInputBinding()),
+    provideAppInitializer(() => inject(SessionService).restore()),
   ],
 };

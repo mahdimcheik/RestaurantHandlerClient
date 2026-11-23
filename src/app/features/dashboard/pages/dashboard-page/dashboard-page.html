@@ -1,0 +1,75 @@
+<div class="page-head">
+  <h1 i18n="@@dashboard.title">Tableau de bord</h1>
+  <div class="toolbar">
+    <a class="btn btn--icon" routerLink="/gestion/produits/nouveau">
+      <app-icon name="plus" />
+      <span i18n="@@dashboard.addProduct">Ajouter un produit</span>
+    </a>
+    <a class="btn btn--outline btn--icon" routerLink="/gestion/categories/nouvelle">
+      <app-icon name="plus" />
+      <span i18n="@@dashboard.addCategory">Ajouter une catégorie</span>
+    </a>
+  </div>
+</div>
+
+<section class="sheet__section" aria-labelledby="dashboard-today">
+  <h2 id="dashboard-today" i18n="@@dashboard.today">Aujourd'hui</h2>
+  @if (todayError()) {
+    <p class="alert alert--error" role="alert">{{ todayError() }}</p>
+  } @else if (today.value(); as stats) {
+    <ul class="stats">
+      <li class="stat">
+        <span class="stat__label" i18n="@@dashboard.orders">Commandes</span>
+        <span class="stat__value">{{ stats.orders }}</span>
+      </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@dashboard.revenue">Chiffre d'affaires</span>
+        <span class="stat__value">{{ stats.revenueCents | euros }}</span>
+      </li>
+      <li class="stat">
+        <span class="stat__label" i18n="@@dashboard.basket">Panier moyen</span>
+        <span class="stat__value">{{ stats.averageBasketCents | euros }}</span>
+      </li>
+    </ul>
+  } @else {
+    <p role="status" i18n="@@common.loading">Chargement…</p>
+  }
+</section>
+
+<section class="sheet__section" aria-labelledby="dashboard-menu">
+  <h2 id="dashboard-menu" i18n="@@dashboard.menu">Carte</h2>
+  <ul class="stats">
+    <li>
+      <a class="stat" routerLink="/gestion/categories">
+        <span class="stat__label" i18n="@@admin.categories">Catégories</span>
+        <span class="stat__value">{{ categoryCount() }}</span>
+      </a>
+    </li>
+    <li>
+      <a class="stat" routerLink="/gestion/produits">
+        <span class="stat__label" i18n="@@dashboard.activeProducts">Produits actifs</span>
+        <span class="stat__value">{{ activeProductCount() }}</span>
+      </a>
+    </li>
+    <li>
+      <a class="stat" routerLink="/gestion/produits">
+        <span class="stat__label" i18n="@@dashboard.outOfStock">Produits en rupture</span>
+        <span class="stat__value">{{ outOfStockCount() }}</span>
+      </a>
+    </li>
+    <li>
+      <a class="stat" routerLink="/gestion/options">
+        <span class="stat__label" i18n="@@admin.options">Groupes d'options</span>
+        <span class="stat__value">{{ optionGroupCount() }}</span>
+      </a>
+    </li>
+    <li>
+      <a class="stat" routerLink="/gestion/ingredients">
+        <span class="stat__label" i18n="@@dashboard.outOfStockIngredients">
+          Ingrédients en rupture
+        </span>
+        <span class="stat__value">{{ outOfStockIngredientCount() }}</span>
+      </a>
+    </li>
+  </ul>
+</section>

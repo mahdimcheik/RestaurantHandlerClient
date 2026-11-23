@@ -1,6 +1,11 @@
-<a class="skip-link" href="#contenu" i18n>Aller au contenu</a>
-<app-site-header />
+@if (!bare()) {
+  <a class="skip-link" href="#contenu" i18n="@@skipToContent">Aller au contenu</a>
+  <app-activation-banner />
+  <app-site-header />
+}
 <main id="contenu" tabindex="-1">
   <router-outlet />
 </main>
-<app-site-footer />
+@if (!bare()) {
+  <app-site-footer />
+}
