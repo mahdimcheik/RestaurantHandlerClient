@@ -16,7 +16,24 @@
       }
     </h1>
     @if (id() && !archived()) {
-      <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
+      <div class="toolbar">
+        @if (!available()) {
+          <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+        }
+        <button
+          type="button"
+          class="btn btn--outline"
+          [disabled]="togglingAvailability()"
+          (click)="toggleAvailability()"
+        >
+          @if (available()) {
+            <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+          } @else {
+            <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+          }
+        </button>
+        <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
+      </div>
     }
   </div>
 
@@ -161,26 +178,12 @@
                       }
                     </div>
                     <div class="stack-list__tools">
-                      <button
-                        type="button"
-                        class="icon-button"
-                        [disabled]="first"
-                        (click)="moveGroup(i, -1)"
-                        title="Monter « {{ label }} »"
-                        i18n-title="@@list.moveUp"
-                      >
-                        <app-icon name="up" />
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button"
-                        [disabled]="last"
-                        (click)="moveGroup(i, 1)"
-                        title="Descendre « {{ label }} »"
-                        i18n-title="@@list.moveDown"
-                      >
-                        <app-icon name="down" />
-                      </button>
+                      <app-move-buttons
+                        [name]="label"
+                        [first]="first"
+                        [last]="last"
+                        (moved)="moveGroup(i, $event)"
+                      />
                       <button
                         type="button"
                         class="icon-button"

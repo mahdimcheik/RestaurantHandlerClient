@@ -19,7 +19,7 @@ export interface SelectOption {
         [id]="id"
         [formField]="field()"
         [attr.aria-invalid]="showErrors()"
-        [attr.aria-describedby]="showErrors() ? id + '-errors' : null"
+        [attr.aria-describedby]="describedBy()"
       >
         @if (placeholder()) {
           <option value="">{{ placeholder() }}</option>
@@ -28,6 +28,9 @@ export interface SelectOption {
           <option [value]="option.value">{{ option.label }}</option>
         }
       </select>
+      @if (hint()) {
+        <p class="field__hint" [id]="id + '-hint'">{{ hint() }}</p>
+      }
       @if (showErrors()) {
         <ul class="field__errors" [id]="id + '-errors'">
           @for (error of state().errors(); track error.kind) {
@@ -43,8 +46,15 @@ export class SelectField {
   readonly label = input.required<string>();
   readonly options = input.required<readonly SelectOption[]>();
   readonly placeholder = input('');
+  readonly hint = input('');
 
   protected readonly id = `select-${nextId++}`;
   protected readonly state = computed(() => this.field()());
   protected readonly showErrors = computed(() => this.state().touched() && this.state().invalid());
+  protected readonly describedBy = computed(
+    () =>
+      [this.hint() ? `${this.id}-hint` : '', this.showErrors() ? `${this.id}-errors` : '']
+        .filter(Boolean)
+        .join(' ') || null,
+  );
 }

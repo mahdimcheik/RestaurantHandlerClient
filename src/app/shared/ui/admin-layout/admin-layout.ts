@@ -100,6 +100,12 @@ export class AdminLayout {
       exact: false,
     },
     {
+      path: '/gestion/menus',
+      icon: 'menus',
+      label: $localize`:@@admin.menus:Menus`,
+      exact: false,
+    },
+    {
       path: '/gestion/ingredients',
       icon: 'ingredients',
       label: $localize`:@@admin.ingredients:Ingrédients`,

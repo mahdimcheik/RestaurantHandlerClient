@@ -40,6 +40,24 @@ export const MENU_ADMIN_ROUTES: Routes = [
       import('./pages/product-edit-page/product-edit-page').then((m) => m.ProductEditPage),
   },
   {
+    path: 'menus',
+    title: $localize`:@@admin.menus:Menus` + suffix,
+    loadComponent: () =>
+      import('./pages/menu-list-page/menu-list-page').then((m) => m.MenuListPage),
+  },
+  {
+    path: 'menus/nouveau',
+    title: $localize`:@@menu.new:Nouveau menu` + suffix,
+    loadComponent: () =>
+      import('./pages/menu-edit-page/menu-edit-page').then((m) => m.MenuEditPage),
+  },
+  {
+    path: 'menus/:id',
+    title: $localize`:@@menu.edit:Menu` + suffix,
+    loadComponent: () =>
+      import('./pages/menu-edit-page/menu-edit-page').then((m) => m.MenuEditPage),
+  },
+  {
     path: 'ingredients',
     title: $localize`:@@admin.ingredients:Ingrédients` + suffix,
     loadComponent: () =>
