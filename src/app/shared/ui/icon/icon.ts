@@ -25,6 +25,19 @@ const PATHS = {
     'M5 13v7h14v-7',
   ],
   logout: ['M10 4H4v16h6', 'M15 8l4 4-4 4', 'M19 12H9'],
+  online: [
+    'M2 9a15 15 0 0 1 20 0',
+    'M5 12.5a10 10 0 0 1 14 0',
+    'M8.5 16a5 5 0 0 1 7 0',
+    'M12 20h.01',
+  ],
+  offline: [
+    'M2 9a15 15 0 0 1 20 0',
+    'M5 12.5a10 10 0 0 1 14 0',
+    'M8.5 16a5 5 0 0 1 7 0',
+    'M12 20h.01',
+    'M3 3l18 18',
+  ],
 } satisfies Record<string, string[]>;
 
 export type IconName = keyof typeof PATHS;

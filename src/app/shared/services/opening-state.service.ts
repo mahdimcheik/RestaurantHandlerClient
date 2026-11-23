@@ -1,14 +1,33 @@
 import { computed, effect, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Observable, tap } from 'rxjs';
+import { filter, merge, Observable, tap } from 'rxjs';
 import { OpeningStateDto, PauseRequest } from '../../core/api/generated';
+import { RealtimeService } from '../../core/realtime/realtime.service';
 import { PublicService } from './public.service';
 import { RestaurantService } from './restaurant.service';
 import { StoreService } from './store.service';
 import { splitMoment } from '../utils/restaurant-time';
 
-/** Relecture de l'état en attendant le temps réel (F4). */
-export const OPENING_STATE_POLL_MS = 60_000;
+/** Plafond du minuteur de relecture (au-delà, `setTimeout` déborde ; une relecture le réarme). */
+const MAX_TIMER_MS = 6 * 60 * 60_000;
+/** Échéance dépassée mais état inchangé (horloges décalées) : relire sans s'emballer. */
+const PAST_BOUNDARY_RETRY_MS = 5_000;
+
+/**
+ * Délai avant la prochaine bascule due à l'horloge (fin de pause, fermeture, ouverture), que le
+ * serveur ne pousse pas en temps réel ; `null` s'il n'y en a pas.
+ */
+export function nextBoundaryDelay(state: OpeningStateDto, now: number = Date.now()): number | null {
+  const boundaries = [state.pausedUntil, state.closesAt, state.nextOpeningAt]
+    .filter((moment): moment is string => !!moment)
+    .map((moment) => new Date(moment).getTime())
+    .filter((time) => !Number.isNaN(time));
+  if (boundaries.length === 0) {
+    return null;
+  }
+  const remaining = Math.min(...boundaries) - now;
+  return remaining > 0 ? Math.min(remaining + 1_000, MAX_TIMER_MS) : PAST_BOUNDARY_RETRY_MS;
+}
 
 /** État d'ouverture en une phrase : « Fermé — ouvre lundi à 18:30 ». */
 export function describeOpening(state: OpeningStateDto, now: Date = new Date()): string {
@@ -46,12 +65,15 @@ export function describeOpening(state: OpeningStateDto, now: Date = new Date()):
 /**
  * État d'ouverture du restaurant (ouvert, fermé, en pause) partagé par le back-office,
  * avec la pause et la reprise des commandes en ligne. Rien n'est demandé avant `load()`.
+ * Relu à chaque `AvailabilityChanged` (portée `opening`), à chaque resynchronisation et à
+ * l'échéance de la prochaine bascule horaire.
  */
 @Service()
 export class OpeningStateService {
   private readonly publicApi = inject(PublicService);
   private readonly restaurant = inject(RestaurantService);
   private readonly store = inject(StoreService);
+  private readonly realtime = inject(RealtimeService);
 
   private readonly requested = signal(false);
   private readonly resource = rxResource({
@@ -66,25 +88,25 @@ export class OpeningStateService {
   readonly error = this.resource.error;
 
   constructor() {
-    // Une pause à durée se termine côté serveur : relire l'état à son échéance.
+    // Les bascules dues à l'horloge ne sont pas poussées : relire à la prochaine échéance.
     effect((onCleanup) => {
-      const until = this.state()?.pausedUntil;
-      if (!until) {
+      const state = this.state();
+      const delay = state ? nextBoundaryDelay(state) : null;
+      if (delay === null) {
         return;
       }
-      const delay = Math.max(0, new Date(until).getTime() - Date.now()) + 1_000;
-      const timer = setTimeout(() => this.resource.reload(), delay);
+      const timer = setTimeout(() => this.reload(), delay);
       onCleanup(() => clearTimeout(timer));
     });
+    merge(
+      this.realtime.on('AvailabilityChanged').pipe(filter(({ scope }) => scope === 'opening')),
+      this.realtime.resync,
+    ).subscribe(() => this.reload());
   }
 
-  /** Premier chargement, puis relecture régulière. Sans effet après le premier appel. */
+  /** Premier chargement ; ensuite le temps réel et les échéances déclenchent les relectures. */
   load(): void {
-    if (this.requested()) {
-      return;
-    }
     this.requested.set(true);
-    setInterval(() => this.resource.reload(), OPENING_STATE_POLL_MS);
   }
 
   reload(): void {

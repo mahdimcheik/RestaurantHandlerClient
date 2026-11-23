@@ -1,7 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { merge } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
+import { ORDER_EVENT_NAMES } from '../../../../core/realtime/realtime-events';
+import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import {
   describeOpening,
   OpeningStateService,
@@ -58,5 +61,11 @@ export class DashboardPage {
     this.store.optionGroups.load();
     this.store.ingredients.load();
     this.opening.load();
+
+    // Chiffres du jour relus à chaque commande reçue ou modifiée, et après une coupure.
+    const realtime = inject(RealtimeService);
+    merge(...ORDER_EVENT_NAMES.map((name) => realtime.on(name)), realtime.resync)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.today.reload());
   }
 }

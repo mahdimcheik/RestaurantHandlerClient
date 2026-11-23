@@ -512,6 +512,25 @@ a.stat {
   font-weight: var(--weight-bold);
 }
 
+// État de la connexion temps réel : icône et libellé, la couleur ne fait que doubler le sens.
+.connection-status__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.connection-status--up .connection-status__state {
+  color: var(--color-success);
+}
+
+.connection-status--down .connection-status__state {
+  color: var(--color-danger);
+  font-weight: var(--weight-bold);
+}
+
 // Grandes touches de même taille (durées de pause), deux par ligne.
 .choice-grid {
   display: grid;
