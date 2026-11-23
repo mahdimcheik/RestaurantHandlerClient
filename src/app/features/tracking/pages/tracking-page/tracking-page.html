@@ -1,0 +1,161 @@
+<div class="gutter shop__page shop__page--narrow">
+  <div class="tracking__bar">
+    <h1 i18n="@@tracking.title">Suivi de commande</h1>
+    <app-connection-status />
+  </div>
+  <app-connection-banner />
+
+  @if (order(); as order) {
+    <section
+      class="tracking"
+      [class.tracking--ready]="ready()"
+      [class.tracking--closed]="final()"
+      aria-labelledby="tracking-number"
+    >
+      <p class="order-number">
+        <span class="order-number__label" i18n="@@tracking.yourNumber">Votre numéro</span>
+        <span id="tracking-number" class="order-number__value" i18n="@@order.dailyNumber"
+          >N° {{ order.dailyNumber }}</span
+        >
+      </p>
+      <p class="tracking__status" role="status" aria-live="polite">
+        <app-order-status [status]="order.status" [customer]="true" />
+      </p>
+      @if (ready()) {
+        <p class="tracking__ready" i18n="@@tracking.readyHint">
+          Votre commande vous attend au comptoir : donnez votre numéro.
+        </p>
+      }
+      @if (reason(); as reason) {
+        <p class="note">
+          <ng-container i18n="@@tracking.reason">Motif :</ng-container> {{ reason }}
+        </p>
+      }
+
+      <dl class="facts">
+        @if (!final()) {
+          <div>
+            <dt i18n="@@tracking.pickup">Retrait</dt>
+            <dd>
+              @if (order.pickupMode === 'Asap') {
+                <ng-container i18n="@@tracking.pickupAsap">Vers {{ pickupTime() }}</ng-container>
+              } @else {
+                <ng-container i18n="@@tracking.pickupSlot">À {{ pickupTime() }}</ng-container>
+              }
+            </dd>
+          </div>
+        }
+        <div>
+          <dt i18n="@@payment.total">Total</dt>
+          <dd>{{ order.totalCents | euros }}</dd>
+        </div>
+        @if (order.isPaid || !final()) {
+          <div>
+            <dt i18n="@@tracking.payment">Paiement</dt>
+            <dd>{{ payment() }}</dd>
+          </div>
+        }
+      </dl>
+
+      @if (awaitsPayment()) {
+        <div class="alert" role="status">
+          <p i18n="@@tracking.awaitingPayment">
+            Nous attendons la confirmation de votre paiement. Si vous avez quitté la page de
+            paiement, vous pouvez réessayer ou payer au retrait.
+          </p>
+          <div class="form__actions">
+            <button type="button" class="btn" [disabled]="busy()" (click)="retryPayment()">
+              <app-icon name="card" /><ng-container i18n="@@tracking.retryPayment"
+                >Payer en ligne</ng-container
+              >
+            </button>
+            <button
+              type="button"
+              class="btn btn--outline"
+              [disabled]="busy()"
+              (click)="switchToOnSite()"
+              i18n="@@tracking.switchOnSite"
+            >
+              Payer au retrait
+            </button>
+          </div>
+        </div>
+      }
+      @if (order.status === 'AwaitingApproval') {
+        <p class="note" i18n="@@tracking.awaitingApprovalHint">
+          Le restaurant va valider votre commande ; cette page se met à jour toute seule.
+        </p>
+      }
+
+      @if (error()) {
+        <p class="alert alert--error" role="alert">{{ error() }}</p>
+      }
+
+      <section class="ticket" aria-labelledby="tracking-items">
+        <h2 id="tracking-items" class="ticket__title" i18n="@@tracking.items">Votre commande</h2>
+        <ul class="ticket__lines">
+          @for (item of order.items; track item.id) {
+            <li class="ticket__line">
+              <div class="ticket__main">
+                <span class="ticket__name">{{ item.quantity }} × {{ item.name }}</span>
+                <span class="ticket__amount">{{ item.lineTotalCents | euros }}</span>
+              </div>
+              @if (itemDetails(item).length > 0) {
+                <ul class="ticket__mods">
+                  @for (detail of itemDetails(item); track $index) {
+                    <li>{{ detail }}</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+        @if (order.customerNote) {
+          <p class="note">
+            <ng-container i18n="@@tracking.note">Votre note :</ng-container>
+            {{ order.customerNote }}
+          </p>
+        }
+      </section>
+
+      <div class="form__actions">
+        @if (canCancel()) {
+          <button
+            type="button"
+            class="btn btn--outline"
+            [disabled]="busy()"
+            (click)="askCancel()"
+            i18n="@@tracking.cancel"
+          >
+            Annuler la commande
+          </button>
+        }
+        @if (final()) {
+          <a class="btn" routerLink="/commander" i18n="@@tracking.orderAgain">Commander</a>
+        }
+      </div>
+    </section>
+  } @else if (notFound()) {
+    <p class="alert alert--error" role="alert" i18n="@@tracking.notFound">
+      Commande introuvable sur ce compte.
+    </p>
+  } @else if (loadError()) {
+    <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+  } @else {
+    <p role="status" i18n="@@common.loading">Chargement…</p>
+  }
+</div>
+
+<app-confirm-dialog
+  #cancelDialog
+  title="Annuler la commande ?"
+  i18n-title="@@tracking.cancelTitle"
+  confirmLabel="Annuler la commande"
+  i18n-confirmLabel="@@tracking.cancelConfirm"
+  (confirmed)="cancel()"
+>
+  <ng-container i18n="@@tracking.cancelText"
+    >La commande ne sera pas préparée. Un paiement en ligne est remboursé
+    automatiquement.</ng-container
+  >
+</app-confirm-dialog>

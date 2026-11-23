@@ -16,13 +16,10 @@ import { EurosPipe } from '../../../../shared/utils/money';
 import { MenuComposer } from '../../components/menu-composer';
 import { PaymentPanel } from '../../components/payment-panel';
 import { ProductCustomizer } from '../../components/product-customizer';
-import { isCustomizable, requiresChoice } from '../../customization';
-import {
-  CounterCart,
-  CounterLine,
-  Customization,
-  MenuChoice,
-} from '../../data-access/counter-cart';
+import { CounterCart } from '../../data-access/counter-cart';
+import { Customization, lineLabels, MenuChoice, OrderLine } from '../../../../shared/ordering/cart';
+import { isCustomizable, requiresChoice } from '../../../../shared/ordering/customization';
+import { fromManageMenu, fromManageProduct } from '../../../../shared/ordering/model';
 
 /** Onglet « Menus » à côté des catégories. */
 const MENUS_TAB = 'menus';
@@ -129,28 +126,25 @@ export class CounterPage {
     this.opening.load();
   }
 
-  protected isCustomizableLine(line: CounterLine): boolean {
+  private readonly productsById = computed(
+    () => new Map(this.store.products.value().map((product) => [product.id, product])),
+  );
+
+  protected isCustomizableLine(line: OrderLine): boolean {
     if (line.kind === 'menu') {
       return true;
     }
-    const product = this.store.products.value().find((p) => p.id === line.productId);
-    return !!product && isCustomizable(product);
+    const product = this.productsById().get(line.productId);
+    return !!product && isCustomizable(fromManageProduct(product));
   }
 
-  protected labelsOf(line: CounterLine): string[] {
-    return line.kind === 'product'
-      ? line.customization.labels
-      : line.choices.map((choice) =>
-          choice.customization.labels.length > 0
-            ? `${choice.productName} (${choice.customization.labels.join(', ')})`
-            : choice.productName,
-        );
-  }
+  protected readonly labelsOf = lineLabels;
 
   protected addProduct(product: ProductDetails): void {
-    if (requiresChoice(product)) {
+    const model = fromManageProduct(product);
+    if (requiresChoice(model)) {
       this.editing.set({ kind: 'add', product });
-      this.customizer().open(product, undefined, true);
+      this.customizer().open(model, undefined, true);
       return;
     }
     this.cart.addProduct(product);
@@ -158,22 +152,22 @@ export class CounterPage {
 
   protected addMenu(menu: MenuDetails): void {
     this.editing.set({ kind: 'addMenu', menu });
-    this.composer().open(menu);
+    this.composer().open(fromManageMenu(menu, this.productsById()));
   }
 
-  protected customize(line: CounterLine): void {
+  protected customize(line: OrderLine): void {
     if (line.kind === 'product') {
-      const product = this.store.products.value().find((p) => p.id === line.productId);
+      const product = this.productsById().get(line.productId);
       if (product) {
         this.editing.set({ kind: 'product', key: line.key });
-        this.customizer().open(product, line.customization);
+        this.customizer().open(fromManageProduct(product), line.customization);
       }
       return;
     }
     const menu = this.store.menus.value().find((m) => m.id === line.menuId);
     if (menu) {
       this.editing.set({ kind: 'menu', key: line.key, menu });
-      this.composer().open(menu, line.choices);
+      this.composer().open(fromManageMenu(menu, this.productsById()), line.choices);
     }
   }
 

@@ -30,3 +30,13 @@ export class EurosPipe implements PipeTransform {
     return cents == null ? '' : formatEuros(cents);
   }
 }
+
+const rateFormat = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+
+/** Taux de TVA : 5.5 → « 5,5 ». */
+@Pipe({ name: 'rate' })
+export class RatePipe implements PipeTransform {
+  transform(rate: number | null | undefined): string {
+    return rate == null ? '' : rateFormat.format(rate);
+  }
+}

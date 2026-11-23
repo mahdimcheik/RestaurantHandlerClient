@@ -1,5 +1,4 @@
-import { TestBed } from '@angular/core/testing';
-import { CounterCart, Customization } from './counter-cart';
+import { Cart, Customization } from './cart';
 
 const withoutOnion: Customization = {
   modifications: [{ type: 'Remove', ingredientId: 'onion' }],
@@ -7,12 +6,11 @@ const withoutOnion: Customization = {
   labels: ['Sans oignon'],
 };
 
-describe('CounterCart', () => {
-  let cart: CounterCart;
+describe('Cart', () => {
+  let cart: Cart;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [CounterCart] });
-    cart = TestBed.inject(CounterCart);
+    cart = new Cart();
   });
 
   it('cumule un produit sans personnalisation, sépare un produit personnalisé', () => {

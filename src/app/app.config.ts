@@ -10,7 +10,7 @@ import {
   withInterceptors,
   withXsrfConfiguration,
 } from '@angular/common/http';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
 import { provideApiConfiguration } from './core/api/generated';
 import { authInterceptor } from './core/auth/auth.interceptor';
@@ -26,7 +26,11 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([idempotencyInterceptor, authInterceptor]),
     ),
     provideApiConfiguration('/api'),
-    provideRouter(routes, withComponentInputBinding()),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
+    ),
     provideAppInitializer(() => inject(SessionService).restore()),
   ],
 };

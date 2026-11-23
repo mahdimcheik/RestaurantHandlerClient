@@ -9,7 +9,7 @@ import { Icon, IconName } from '../../../shared/ui/icon/icon';
 import { paymentMethodLabel } from '../../../shared/ui/order-status/order-status';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { EurosPipe, parseEuros } from '../../../shared/utils/money';
-import { isConflict } from '../conflict';
+import { isConflict } from '../../../shared/utils/conflict';
 
 type OnSiteMethod = Extract<PaymentMethod, 'OnSiteCard' | 'OnSiteCash' | 'OnSiteOther'>;
 

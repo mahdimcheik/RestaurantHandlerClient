@@ -2556,6 +2556,16 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -2591,6 +2601,35 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OrderDetailsResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/checkout-options": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutOptionsResponse"
                 }
               }
             }
@@ -4018,6 +4057,24 @@
         },
         "additionalProperties": false
       },
+      "CartIssueDto": {
+        "required": [
+          "lineIndex",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "lineIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "CartLineDto": {
         "type": "object",
         "properties": {
@@ -4136,6 +4193,38 @@
             "minimum": 1,
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CartProblemDetails": {
+        "required": [
+          "issues",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartIssueDto"
+            }
           }
         },
         "additionalProperties": false
@@ -4276,6 +4365,52 @@
           "revenueCents": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CheckoutOptions": {
+        "required": [
+          "canPayOnSite",
+          "onlinePaymentEnabled"
+        ],
+        "type": "object",
+        "properties": {
+          "onlinePaymentEnabled": {
+            "type": "boolean"
+          },
+          "canPayOnSite": {
+            "type": "boolean"
+          },
+          "payOnSiteBlockedReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CheckoutOptionsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CheckoutOptions"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
           }
         },
         "additionalProperties": false

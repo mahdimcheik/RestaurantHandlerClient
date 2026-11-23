@@ -1,0 +1,121 @@
+<div class="gutter shop__page shop__page--narrow">
+  <h1 i18n="@@shop.cartTitle">Panier</h1>
+
+  @if (cart.removed().length > 0) {
+    <p class="alert alert--error" role="alert" i18n="@@shop.removedFromCart">
+      Retiré de votre panier, plus à la carte : {{ cart.removed().join(', ') }}.
+    </p>
+  }
+
+  @if (cart.isEmpty()) {
+    <p class="empty" i18n="@@shop.emptyCart">Votre panier est vide.</p>
+    <a class="btn" routerLink="/commander" i18n="@@shop.seeCard">Voir la carte</a>
+  } @else {
+    <section class="ticket" aria-labelledby="cart-lines-title">
+      <h2 id="cart-lines-title" class="visually-hidden" i18n="@@shop.cartLines">
+        Articles du panier
+      </h2>
+      <ul class="ticket__lines">
+        @for (line of cart.lines(); track line.key; let index = $index) {
+          <li class="ticket__line" [class.ticket__line--refused]="lineIssues().has(index)">
+            <div class="ticket__main">
+              <span class="ticket__name">{{ line.quantity }} × {{ line.name }}</span>
+              <span class="ticket__amount">{{ quote.lineTotals().get(index) | euros }}</span>
+            </div>
+            @if (labelsOf(line).length > 0) {
+              <ul class="ticket__mods">
+                @for (label of labelsOf(line); track $index) {
+                  <li>{{ label }}</li>
+                }
+              </ul>
+            }
+            @for (message of lineIssues().get(index); track $index) {
+              <p class="ticket__issue">
+                <app-icon name="alert" /><span>{{ message }}</span>
+              </p>
+            }
+            <div class="ticket__tools">
+              <span class="stepper">
+                <button
+                  type="button"
+                  class="icon-button"
+                  (click)="cart.setQuantity(line.key, line.quantity - 1)"
+                >
+                  <app-icon name="minus" />
+                  <span class="visually-hidden" i18n="@@counter.lessLine"
+                    >Un de moins : {{ line.name }}</span
+                  >
+                </button>
+                <span class="stepper__value stepper__value--small">{{ line.quantity }}</span>
+                <button
+                  type="button"
+                  class="icon-button"
+                  [disabled]="line.quantity >= 99"
+                  (click)="cart.setQuantity(line.key, line.quantity + 1)"
+                >
+                  <app-icon name="plus" />
+                  <span class="visually-hidden" i18n="@@counter.moreLine"
+                    >Un de plus : {{ line.name }}</span
+                  >
+                </button>
+              </span>
+              <a
+                class="btn btn--outline"
+                [routerLink]="editLink(line)"
+                [queryParams]="{ ligne: line.key }"
+              >
+                <ng-container i18n="@@shop.editLine">Modifier</ng-container>
+                <span class="visually-hidden">{{ line.name }}</span>
+              </a>
+              <button type="button" class="link-button" (click)="cart.remove(line.key)">
+                <ng-container i18n="@@counter.removeLine">Retirer</ng-container>
+                <span class="visually-hidden">{{ line.name }}</span>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      @for (message of cartIssues(); track $index) {
+        <p class="alert alert--error" role="alert">{{ message }}</p>
+      }
+      @if (blocked()) {
+        <p class="alert alert--error" role="alert" i18n="@@shop.fixCart">
+          Modifiez ou retirez les articles signalés pour continuer.
+        </p>
+      }
+      @if (quoteError()) {
+        <p class="alert alert--error" role="alert">{{ quoteError() }}</p>
+      }
+
+      <dl class="ticket__vat">
+        @for (vat of quote.vat(); track vat.rate) {
+          <div>
+            <dt i18n="@@order.vatRate">TVA {{ vat.rate | rate }} %</dt>
+            <dd>{{ vat.vatCents | euros }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="ticket__total" aria-live="polite">
+        <span i18n="@@shop.totalTtc">Total TTC</span>
+        <span class="ticket__total-value">
+          @if (quote.total() === null && !quoteError() && !blocked()) {
+            <ng-container i18n="@@counter.computing">Calcul…</ng-container>
+          } @else {
+            {{ quote.total() | euros }}
+          }
+        </span>
+      </p>
+      @if (blocked()) {
+        <button type="button" class="btn ticket__send" disabled i18n="@@shop.checkoutBlocked">
+          Valider ma commande
+        </button>
+      } @else {
+        <a class="btn ticket__send" routerLink="/commander/valider" i18n="@@shop.checkout"
+          >Valider ma commande</a
+        >
+      }
+      <a class="link-button" routerLink="/commander" i18n="@@shop.continue">Continuer mes achats</a>
+    </section>
+  }
+</div>

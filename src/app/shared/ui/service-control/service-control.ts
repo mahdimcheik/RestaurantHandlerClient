@@ -1,7 +1,10 @@
 import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
+import { OpeningStateDto } from '../../../core/api/generated';
 import { apiErrorMessage } from '../../../core/http/api-error';
 import { describeOpening, OpeningStateService } from '../../services/opening-state.service';
+import { RestaurantService } from '../../services/restaurant.service';
+import { StoreService } from '../../services/store.service';
 import { Icon, IconName } from '../icon/icon';
 
 interface PauseChoice {
@@ -129,6 +132,8 @@ const ASAP_MAX = 240;
 })
 export class ServiceControl {
   protected readonly opening = inject(OpeningStateService);
+  private readonly restaurant = inject(RestaurantService);
+  private readonly store = inject(StoreService);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
   protected readonly step = ASAP_STEP;
@@ -179,20 +184,30 @@ export class ServiceControl {
   }
 
   protected async pause(minutes: number | null): Promise<void> {
-    if (await this.run(this.opening.pause(minutes))) {
+    if (await this.run(this.applied(this.restaurant.pause({ durationMinutes: minutes })))) {
       this.close();
     }
   }
 
   protected async resume(): Promise<void> {
-    if (await this.run(this.opening.resume())) {
+    if (await this.run(this.applied(this.restaurant.resume()))) {
       this.close();
     }
   }
 
   protected async changeAsap(delta: number): Promise<void> {
     const next = Math.min(ASAP_MAX, Math.max(0, this.asap() + delta));
-    await this.run(this.opening.setAsapDelay(next));
+    await this.run(this.restaurant.updateAsapDelay(next).pipe(tap(() => this.opening.reload())));
+  }
+
+  /** Pause ou reprise : l'état renvoyé s'affiche aussitôt, les réglages en cache sont relus. */
+  private applied(action: Observable<OpeningStateDto>): Observable<OpeningStateDto> {
+    return action.pipe(
+      tap((state) => {
+        this.opening.apply(state);
+        this.store.settings.reload();
+      }),
+    );
   }
 
   private async run(action: Observable<unknown>): Promise<boolean> {
