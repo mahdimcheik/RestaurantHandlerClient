@@ -1,5 +1,12 @@
-<div class="page-head">
+<div class="page-head page-head--sticky">
   <h1>Horaires et fermetures</h1>
+  @if (!hoursLoadError() && hasHours()) {
+    <div class="toolbar">
+      <button type="submit" form="hours-form" class="btn" [disabled]="hoursForm().submitting()">
+        Enregistrer les horaires
+      </button>
+    </div>
+  }
 </div>
 
 <div class="sheet">
@@ -18,56 +25,55 @@
       @if (hoursError()) {
         <p class="alert alert--error" role="alert">{{ hoursError() }}</p>
       }
-      <form class="form" novalidate (submit)="saveHours($event)">
+      <p
+        role="status"
+        [class.alert]="hoursNotice() !== ''"
+        [class.alert--success]="hoursNotice() !== ''"
+      >
+        {{ hoursNotice() }}
+      </p>
+      <form id="hours-form" novalidate (submit)="saveHours($event)">
         <ol class="week-hours">
           @for (day of hoursForm.days; track $index; let d = $index, lastDay = $last) {
             @let dayName = dayNames[week().days[d].day];
             <li class="week-hours__day">
-              <fieldset class="form__group">
+              <fieldset class="week-hours__group">
                 <legend class="week-hours__name">{{ dayName }}</legend>
-                @for (range of day.ranges; track range; let r = $index) {
-                  <div class="week-hours__range">
-                    <app-text-field type="time" [field]="range.start" label="Début" />
-                    <app-text-field type="time" [field]="range.end" label="Fin" />
-                    <button
-                      type="button"
-                      class="icon-button"
-                      title="Retirer la plage {{ r + 1 }} du {{ dayName }}"
-                      (click)="removeRange(d, r)"
-                    >
-                      <app-icon name="remove" />
-                    </button>
-                  </div>
-                } @empty {
-                  <p class="week-hours__closed">Fermé</p>
-                }
+                <div class="week-hours__ranges">
+                  @for (range of day.ranges; track range; let r = $index) {
+                    <div class="week-hours__range">
+                      <app-text-field type="time" [field]="range.start" label="Début" />
+                      <span class="week-hours__dash" aria-hidden="true">–</span>
+                      <app-text-field type="time" [field]="range.end" label="Fin" />
+                      <button
+                        type="button"
+                        class="icon-button"
+                        title="Retirer la plage {{ r + 1 }} du {{ dayName }}"
+                        [attr.aria-label]="'Retirer la plage ' + (r + 1) + ' du ' + dayName"
+                        (click)="removeRange(d, r)"
+                      >
+                        <app-icon name="remove" />
+                      </button>
+                    </div>
+                  } @empty {
+                    <span class="badge badge--muted">Fermé</span>
+                  }
+                </div>
               </fieldset>
-              <div class="stack-list__tools">
+              <div class="week-hours__tools">
                 <button type="button" class="btn btn--outline btn--icon" (click)="addRange(d)">
                   <app-icon name="plus" />
                   <span>Ajouter une plage</span>
                 </button>
                 @if (!lastDay) {
                   <button type="button" class="btn btn--outline" (click)="copyForward(d)">
-                    <ng-container>Copier sur les jours suivants</ng-container>
+                    Copier sur les jours suivants
                   </button>
                 }
               </div>
             </li>
           }
         </ol>
-        <p
-          role="status"
-          [class.alert]="hoursNotice() !== ''"
-          [class.alert--success]="hoursNotice() !== ''"
-        >
-          {{ hoursNotice() }}
-        </p>
-        <div class="form__actions">
-          <button type="submit" [disabled]="hoursForm().submitting()">
-            Enregistrer les horaires
-          </button>
-        </div>
       </form>
     }
   </section>
@@ -130,8 +136,8 @@
       </ul>
     }
 
-    <h3>Ajouter une fermeture</h3>
-    <form class="form" novalidate (submit)="addClosure($event)">
+    <form class="panel form" novalidate (submit)="addClosure($event)">
+      <h3 class="panel__title">Ajouter une fermeture</h3>
       <app-checkbox-field [field]="closureForm.wholeDays"> Journées entières </app-checkbox-field>
       @if (closure().wholeDays) {
         <div class="form__row">
@@ -151,7 +157,9 @@
       }
       <app-text-field [field]="closureForm.reason" label="Motif affiché aux clients (facultatif)" />
       <div class="form__actions">
-        <button type="submit" [disabled]="closureForm().submitting()">Ajouter la fermeture</button>
+        <button type="submit" class="btn" [disabled]="closureForm().submitting()">
+          Ajouter la fermeture
+        </button>
       </div>
     </form>
   </section>
