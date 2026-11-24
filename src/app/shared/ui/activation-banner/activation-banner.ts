@@ -8,21 +8,15 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-activation-banner',
   template: `
     @if (session.needsActivation()) {
-      <div class="banner gutter">
-        <p class="banner__text" i18n="@@activation.banner">
+      <section class="banner gutter" aria-label="Activation du compte">
+        <p class="banner__text">
           Votre compte n'est pas encore activé : ouvrez le lien reçu par e-mail.
         </p>
-        <button
-          type="button"
-          class="btn btn--outline"
-          [disabled]="sending()"
-          (click)="resend()"
-          i18n="@@activation.resend"
-        >
+        <button type="button" class="btn btn--outline" [disabled]="sending()" (click)="resend()">
           Renvoyer le lien
         </button>
         <p class="banner__status" role="status">{{ status() }}</p>
-      </div>
+      </section>
     }
   `,
 })
@@ -37,9 +31,7 @@ export class ActivationBanner {
     this.auth.resendMyConfirmation().subscribe({
       next: () => {
         this.sending.set(false);
-        this.status.set(
-          $localize`:@@activation.sent:Un nouveau lien d'activation vient de vous être envoyé.`,
-        );
+        this.status.set(`Un nouveau lien d'activation vient de vous être envoyé.`);
       },
       error: (error: unknown) => {
         this.sending.set(false);

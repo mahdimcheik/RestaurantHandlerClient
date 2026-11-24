@@ -117,14 +117,12 @@ export function closurePeriod(closure: ClosureDetails): string {
     const first = closure.startLocal.slice(0, 10);
     const last = previousDay(closure.endLocal.slice(0, 10));
     const from = formatLocal(`${first}T00:00:00`);
-    return first === last
-      ? $localize`:@@closure.oneDay:Le ${from}:from:`
-      : $localize`:@@closure.days:Du ${from}:from: au ${formatLocal(`${last}T00:00:00`)}:to:`;
+    return first === last ? `Le ${from}` : `Du ${from} au ${formatLocal(`${last}T00:00:00`)}`;
   }
-  return $localize`:@@closure.range:Du ${formatLocal(closure.startLocal)}:from: au ${formatLocal(closure.endLocal)}:to:`;
+  return `Du ${formatLocal(closure.startLocal)} au ${formatLocal(closure.endLocal)}`;
 }
 
-const endAfterStart = $localize`:@@validation.endAfterStart:La fin doit suivre le début.`;
+const endAfterStart = 'La fin doit suivre le début.';
 
 /** Horaires de la semaine (US-E03-1) et fermetures exceptionnelles (US-E03-2). */
 @Component({
@@ -252,9 +250,7 @@ export class OpeningPage {
         ),
       };
     });
-    this.hoursNotice.set(
-      $localize`:@@hours.copied:Plages recopiées. Enregistrez pour les appliquer.`,
-    );
+    this.hoursNotice.set('Plages recopiées. Enregistrez pour les appliquer.');
   }
 
   protected async saveHours(event: Event): Promise<void> {
@@ -266,7 +262,7 @@ export class OpeningPage {
         try {
           await firstValueFrom(this.restaurant.updateOpeningHours(toWeekUpdate(this.week())));
           this.opening.reload();
-          this.hoursNotice.set($localize`:@@hours.saved:Horaires enregistrés.`);
+          this.hoursNotice.set('Horaires enregistrés.');
         } catch (error) {
           this.hoursError.set(apiErrorMessage(error));
         }
@@ -287,7 +283,7 @@ export class OpeningPage {
           this.afterClosureChange();
           this.closure.set(emptyClosure());
           this.closureForm().reset();
-          this.closureNotice.set($localize`:@@closure.added:Fermeture ajoutée.`);
+          this.closureNotice.set('Fermeture ajoutée.');
         } catch (error) {
           this.closureError.set(apiErrorMessage(error));
         }
@@ -313,7 +309,7 @@ export class OpeningPage {
     try {
       await firstValueFrom(this.restaurant.removeClosure(closure.id));
       this.afterClosureChange();
-      this.closureNotice.set($localize`:@@closure.removed:Fermeture supprimée.`);
+      this.closureNotice.set('Fermeture supprimée.');
     } catch (error) {
       this.closureError.set(apiErrorMessage(error));
     } finally {

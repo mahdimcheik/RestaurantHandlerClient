@@ -11,26 +11,26 @@ type Tone = 'warning' | 'info' | 'success' | 'muted';
 
 const STATUS: Record<OrderStatus, { label: string; icon: IconName; tone: Tone }> = {
   PendingPayment: {
-    label: $localize`:@@order.status.pendingPayment:Paiement en cours`,
+    label: 'Paiement en cours',
     icon: 'card',
     tone: 'muted',
   },
   AwaitingApproval: {
-    label: $localize`:@@order.status.awaitingApproval:À valider`,
+    label: 'À valider',
     icon: 'alert',
     tone: 'warning',
   },
-  Confirmed: { label: $localize`:@@order.status.confirmed:Confirmée`, icon: 'check', tone: 'info' },
+  Confirmed: { label: 'Confirmée', icon: 'check', tone: 'info' },
   InPreparation: {
-    label: $localize`:@@order.status.inPreparation:En préparation`,
+    label: 'En préparation',
     icon: 'flame',
     tone: 'info',
   },
-  Ready: { label: $localize`:@@order.status.ready:Prête`, icon: 'bell', tone: 'success' },
-  Completed: { label: $localize`:@@order.status.completed:Retirée`, icon: 'done', tone: 'muted' },
-  NoShow: { label: $localize`:@@order.status.noShow:Non venu`, icon: 'noShow', tone: 'muted' },
-  Refused: { label: $localize`:@@order.status.refused:Refusée`, icon: 'remove', tone: 'muted' },
-  Cancelled: { label: $localize`:@@order.status.cancelled:Annulée`, icon: 'remove', tone: 'muted' },
+  Ready: { label: 'Prête', icon: 'bell', tone: 'success' },
+  Completed: { label: 'Retirée', icon: 'done', tone: 'muted' },
+  NoShow: { label: 'Non venu', icon: 'noShow', tone: 'muted' },
+  Refused: { label: 'Refusée', icon: 'remove', tone: 'muted' },
+  Cancelled: { label: 'Annulée', icon: 'remove', tone: 'muted' },
 };
 
 /** Statuts définitifs : plus aucun geste possible. */
@@ -46,15 +46,15 @@ export function statusLabel(status: OrderStatus): string {
 }
 
 const CUSTOMER_STATUS: Record<OrderStatus, string> = {
-  PendingPayment: $localize`:@@order.customerStatus.pendingPayment:Paiement en attente`,
-  AwaitingApproval: $localize`:@@order.customerStatus.awaitingApproval:En attente de validation par le restaurant`,
-  Confirmed: $localize`:@@order.customerStatus.confirmed:Confirmée`,
-  InPreparation: $localize`:@@order.customerStatus.inPreparation:En préparation`,
-  Ready: $localize`:@@order.customerStatus.ready:Prête — venez la chercher`,
-  Completed: $localize`:@@order.customerStatus.completed:Retirée`,
-  NoShow: $localize`:@@order.customerStatus.noShow:Non retirée`,
-  Refused: $localize`:@@order.customerStatus.refused:Refusée par le restaurant`,
-  Cancelled: $localize`:@@order.customerStatus.cancelled:Annulée`,
+  PendingPayment: 'Paiement en attente',
+  AwaitingApproval: 'En attente de validation par Greenadine',
+  Confirmed: 'Confirmée',
+  InPreparation: 'En préparation',
+  Ready: 'Prête — venez la chercher',
+  Completed: 'Retirée',
+  NoShow: 'Non retirée',
+  Refused: 'Refusée par Greenadine',
+  Cancelled: 'Annulée',
 };
 
 /** Statut tel que le client le lit (suivi, historique, bandeau). */
@@ -63,16 +63,14 @@ export function customerStatusLabel(status: OrderStatus): string {
 }
 
 export function channelLabel(channel: OrderChannel): string {
-  return channel === 'Counter'
-    ? $localize`:@@order.channel.counter:Comptoir`
-    : $localize`:@@order.channel.online:En ligne`;
+  return channel === 'Counter' ? 'Comptoir' : 'En ligne';
 }
 
 const METHODS: Record<PaymentMethod, string> = {
-  SumupOnline: $localize`:@@payment.method.online:En ligne`,
-  OnSiteCard: $localize`:@@payment.method.card:Carte`,
-  OnSiteCash: $localize`:@@payment.method.cash:Espèces`,
-  OnSiteOther: $localize`:@@payment.method.other:Autre`,
+  SumupOnline: 'En ligne',
+  OnSiteCard: 'Carte',
+  OnSiteCash: 'Espèces',
+  OnSiteOther: 'Autre',
 };
 
 export function paymentMethodLabel(method: PaymentMethod): string {
@@ -80,11 +78,11 @@ export function paymentMethodLabel(method: PaymentMethod): string {
 }
 
 const PAYMENT_STATUSES: Record<PaymentStatus, string> = {
-  Pending: $localize`:@@payment.status.pending:En attente`,
-  Successful: $localize`:@@payment.status.successful:Réussi`,
-  Failed: $localize`:@@payment.status.failed:Échec`,
-  Cancelled: $localize`:@@payment.status.cancelled:Abandonné`,
-  Refunded: $localize`:@@payment.status.refunded:Remboursé`,
+  Pending: 'En attente',
+  Successful: 'Réussi',
+  Failed: 'Échec',
+  Cancelled: 'Abandonné',
+  Refunded: 'Remboursé',
 };
 
 export function paymentStatusLabel(status: PaymentStatus): string {
@@ -100,7 +98,7 @@ export function paymentStatusLabel(status: PaymentStatus): string {
 })
 export class OrderStatusBadge {
   readonly status = input.required<OrderStatus>();
-  /** Libellé côté client (« En attente de validation par le restaurant »…). */
+  /** Libellé côté client (« En attente de validation par Greenadine »…). */
   readonly customer = input(false);
   protected readonly info = computed(() => STATUS[this.status()]);
   protected readonly label = computed(() =>

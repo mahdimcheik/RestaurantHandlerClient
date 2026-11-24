@@ -64,6 +64,7 @@
 
 .field__control {
   display: flex;
+  gap: 4px;
 
   input {
     flex: 1;
@@ -142,6 +143,7 @@
   padding: var(--space-3) var(--space-4);
   border: var(--border);
   border-left-width: 6px;
+  border-radius: var(--radius);
   background: var(--surface-sunken);
 }
 

@@ -1,12 +1,12 @@
 <div class="gutter shop__page shop__page--narrow">
   <a class="link-button shop__back no-print" [routerLink]="['/commandes', id()]">
-    <app-icon name="back" /><ng-container i18n="@@receipt.back">Retour à la commande</ng-container>
+    <app-icon name="back" />Retour à la commande
   </a>
 
   @if (value(); as receipt) {
     <article class="receipt" aria-labelledby="receipt-title">
       <header class="receipt__head">
-        <h1 id="receipt-title" class="receipt__title" i18n="@@receipt.title">Reçu</h1>
+        <h1 id="receipt-title" class="receipt__title">Reçu</h1>
         <p class="receipt__seller">
           <strong>{{ receipt.tradeName }}</strong>
           @if (receipt.legalName && receipt.legalName !== receipt.tradeName) {
@@ -16,21 +16,17 @@
             <br />{{ receipt.address }}
           }
           @if (receipt.siret) {
-            <br /><ng-container i18n="@@receipt.siret">SIRET {{ receipt.siret }}</ng-container>
+            <br />SIRET {{ receipt.siret }}
           }
           @if (receipt.vatNumber) {
-            <br /><ng-container i18n="@@receipt.vatNumber"
-              >N° TVA {{ receipt.vatNumber }}</ng-container
-            >
+            <br /><ng-container>N° TVA {{ receipt.vatNumber }}</ng-container>
           }
         </p>
         <p class="receipt__meta">
-          <ng-container i18n="@@receipt.order"
+          <ng-container
             >Commande {{ receipt.orderNumber }} (n° du jour {{ receipt.dailyNumber }})</ng-container
           >
-          <br /><ng-container i18n="@@receipt.paidAt"
-            >Payée le {{ receipt.paidAt | restaurantDateTime }}</ng-container
-          >
+          <br /><ng-container>Payée le {{ receipt.paidAt | restaurantDateTime }}</ng-container>
         </p>
       </header>
 
@@ -54,44 +50,42 @@
 
       <dl class="ticket__vat">
         <div>
-          <dt i18n="@@receipt.net">Total HT</dt>
+          <dt>Total HT</dt>
           <dd>{{ netCents() | euros }}</dd>
         </div>
         @for (vat of receipt.vat; track vat.rate) {
           <div>
-            <dt i18n="@@receipt.vatLine">
-              TVA {{ vat.rate | rate }} % sur {{ vat.netCents | euros }}
-            </dt>
+            <dt>TVA {{ vat.rate | rate }} % sur {{ vat.netCents | euros }}</dt>
             <dd>{{ vat.vatCents | euros }}</dd>
           </div>
         }
       </dl>
       <p class="ticket__total">
-        <span i18n="@@shop.totalTtc">Total TTC</span>
+        <span>Total TTC</span>
         <span class="ticket__total-value">{{ receipt.totalCents | euros }}</span>
       </p>
 
       <ul class="receipt__payments">
         @for (payment of payments(); track payment.id) {
           <li>
-            <ng-container i18n="@@receipt.payment"
+            <ng-container
               >Réglé : {{ methodLabel(payment.method) }},
               {{ payment.amountCents | euros }}</ng-container
             >
           </li>
         }
       </ul>
-      <p class="note" i18n="@@receipt.notice">
+      <p class="note">
         Justificatif de paiement en ligne. Le ticket de caisse est disponible sur demande au
         comptoir.
       </p>
     </article>
-    <button type="button" class="btn no-print" (click)="print()" i18n="@@receipt.print">
+    <button type="button" class="btn no-print" (click)="print()">
       Imprimer ou enregistrer en PDF
     </button>
   } @else if (error()) {
     <p class="alert alert--error" role="alert">{{ error() }}</p>
   } @else {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   }
 </div>

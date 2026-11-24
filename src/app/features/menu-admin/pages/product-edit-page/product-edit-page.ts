@@ -47,9 +47,9 @@ interface ProductModel {
 }
 
 const KINDS: readonly SelectOption[] = [
-  { value: 'Dish', label: $localize`:@@kind.dish:Plat` },
-  { value: 'Drink', label: $localize`:@@kind.drink:Boisson` },
-  { value: 'Dessert', label: $localize`:@@kind.dessert:Dessert` },
+  { value: 'Dish', label: 'Plat' },
+  { value: 'Drink', label: 'Boisson' },
+  { value: 'Dessert', label: 'Dessert' },
 ];
 
 const toModel = (product: ProductDetails | undefined, categoryId: string): ProductModel => ({
@@ -210,7 +210,7 @@ export class ProductEditPage {
             const updated = await firstValueFrom(this.products.update(id, toWrite(this.model())));
             this.model.set(toModel(updated, ''));
             this.name.set(updated.name);
-            this.notice.set($localize`:@@sheet.saved:Modifications enregistrées.`);
+            this.notice.set('Modifications enregistrées.');
           } else {
             const created = await firstValueFrom(this.products.create(toWrite(this.model())));
             await this.router.navigate(['/gestion/produits', created.id], { replaceUrl: true });
@@ -251,7 +251,7 @@ export class ProductEditPage {
             this.products.setOptionGroups(this.id()!, this.groupLinks().links.map(toLinkWrite)),
           );
           this.groupLinks.set({ links: updated.optionGroups.map(toLink) });
-          this.groupsNotice.set($localize`:@@product.groupsSaved:Groupes d'options enregistrés.`);
+          this.groupsNotice.set(`Groupes d'options enregistrés.`);
         } catch (error) {
           this.groupsError.set(apiErrorMessage(error));
         } finally {
@@ -279,8 +279,8 @@ export class ProductEditPage {
       this.available.set(updated.isAvailable);
       this.notice.set(
         updated.isAvailable
-          ? $localize`:@@product.markedIn:« ${updated.name}:name: » est de nouveau disponible.`
-          : $localize`:@@product.markedOut:« ${updated.name}:name: » est en rupture.`,
+          ? `« ${updated.name} » est de nouveau disponible.`
+          : `« ${updated.name} » est en rupture.`,
       );
     } catch (error) {
       this.error.set(apiErrorMessage(error));

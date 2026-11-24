@@ -32,9 +32,9 @@ let nextId = 0;
             (click)="revealed.set(!revealed())"
           >
             @if (revealed()) {
-              <ng-container i18n="@@field.hidePassword">Masquer</ng-container>
+              Masquer
             } @else {
-              <ng-container i18n="@@field.showPassword">Afficher</ng-container>
+              Afficher
             }
           </button>
         }

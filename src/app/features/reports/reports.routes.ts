@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
-const suffix = $localize`:@@admin.titleSuffix: — Gestion`;
+const suffix = ' — Gestion';
 
 /** Statistiques de pilotage, sous `/gestion`. */
 export const REPORTS_ROUTES: Routes = [
   {
     path: 'statistiques',
-    title: $localize`:@@admin.stats:Statistiques` + suffix,
+    title: 'Statistiques' + suffix,
     loadComponent: () => import('./pages/stats-page/stats-page').then((m) => m.StatsPage),
   },
 ];

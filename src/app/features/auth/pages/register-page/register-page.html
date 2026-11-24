@@ -1,18 +1,16 @@
-<app-auth-layout>
+<app-auth-layout tagline="Rejoignez la maison">
   @if (registeredEmail(); as sentTo) {
-    <h1 class="auth__title" i18n="@@register.doneTitle">Vérifiez vos e-mails</h1>
-    <p class="alert alert--success" role="status" i18n="@@register.done">
+    <h1 class="display-title display-title--md">Vérifiez vos e-mails</h1>
+    <p class="alert alert--success" role="status">
       Compte créé. Un lien d'activation vient d'être envoyé à <strong>{{ sentTo }}</strong>.
     </p>
-    <p class="auth__lead" i18n="@@register.doneHint">
-      Rien reçu ? Regardez dans les courriers indésirables.
-    </p>
-    <a class="btn form__submit" routerLink="/auth/connexion" i18n="@@auth.goToLogin">
+    <p class="auth__lead">Rien reçu ? Regardez dans les courriers indésirables.</p>
+    <a class="btn-brand btn-brand--solid form__submit" routerLink="/auth/connexion">
       Aller à la connexion
     </a>
   } @else {
-    <h1 class="auth__title" i18n="@@register.title">Créer un compte</h1>
-    <p class="auth__lead" i18n="@@register.lead">
+    <h1 class="display-title display-title--md">Créer un compte</h1>
+    <p class="auth__lead">
       Déjà inscrit ?
       <a routerLink="/auth/connexion" [queryParams]="{ returnUrl: returnUrl() }">Se connecter</a>
     </p>
@@ -23,63 +21,46 @@
 
     <form class="form" novalidate (submit)="onSubmit($event)">
       <div class="form__row">
-        <app-text-field
-          [field]="form.firstName"
-          autocomplete="given-name"
-          label="Prénom"
-          i18n-label="@@field.firstName"
-        />
-        <app-text-field
-          [field]="form.lastName"
-          autocomplete="family-name"
-          label="Nom"
-          i18n-label="@@field.lastName"
-        />
+        <app-text-field [field]="form.firstName" autocomplete="given-name" label="Prénom" />
+        <app-text-field [field]="form.lastName" autocomplete="family-name" label="Nom" />
       </div>
-      <app-text-field
-        [field]="form.email"
-        type="email"
-        autocomplete="email"
-        label="E-mail"
-        i18n-label="@@field.email"
-      />
+      <app-text-field [field]="form.email" type="email" autocomplete="email" label="E-mail" />
       <app-text-field
         [field]="form.password"
         type="password"
         autocomplete="new-password"
         label="Mot de passe"
-        i18n-label="@@field.password"
         [hint]="passwordHint"
       />
 
       <fieldset class="form__group">
-        <legend class="field__label" i18n="@@register.consents">Consentements</legend>
-        <app-checkbox-field [field]="form.termsConsent" i18n="@@register.terms">
+        <legend class="field__label">Consentements</legend>
+        <app-checkbox-field [field]="form.termsConsent">
           J'accepte les conditions générales d'utilisation.
         </app-checkbox-field>
-        <app-checkbox-field [field]="form.privacyPolicyConsent" i18n="@@register.privacy">
+        <app-checkbox-field [field]="form.privacyPolicyConsent">
           J'ai lu la politique de confidentialité.
         </app-checkbox-field>
-        <app-checkbox-field [field]="form.dataProcessingConsent" i18n="@@register.processing">
+        <app-checkbox-field [field]="form.dataProcessingConsent">
           J'accepte le traitement de mes données pour gérer mon compte et mes commandes.
         </app-checkbox-field>
         <p class="field__hint">
-          <ng-container i18n="@@register.readTexts">À lire :</ng-container>
-          <a routerLink="/cgv" target="_blank" i18n="@@legal.termsTitle"
-            >Conditions générales de vente</a
-          >,
-          <a routerLink="/confidentialite" target="_blank" i18n="@@legal.privacyTitle"
-            >Politique de confidentialité</a
-          >
-          <ng-container i18n="@@register.newTab">(nouvel onglet)</ng-container>
+          À lire :
+          <a routerLink="/cgv" target="_blank">Conditions générales de vente</a>,
+          <a routerLink="/confidentialite" target="_blank">Politique de confidentialité</a>
+          (nouvel onglet)
         </p>
       </fieldset>
 
-      <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+      <button
+        type="submit"
+        class="btn-brand btn-brand--solid form__submit"
+        [disabled]="form().submitting()"
+      >
         @if (form().submitting()) {
-          <ng-container i18n="@@register.submitting">Création…</ng-container>
+          Création…
         } @else {
-          <ng-container i18n="@@register.submit">Créer mon compte</ng-container>
+          Créer mon compte
         }
       </button>
     </form>

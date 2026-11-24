@@ -34,18 +34,10 @@ let nextId = 0;
             (picked)="picked()"
           />
           <div class="form__actions">
-            <button
-              type="button"
-              class="btn"
-              [disabled]="missing().length > 0"
-              (click)="apply()"
-              i18n="@@counter.applyCustomization"
-            >
+            <button type="button" class="btn" [disabled]="missing().length > 0" (click)="apply()">
               Valider
             </button>
-            <button type="button" class="btn btn--outline" (click)="close()" i18n="@@dialog.cancel">
-              Annuler
-            </button>
+            <button type="button" class="btn btn--outline" (click)="close()">Annuler</button>
           </div>
         </div>
       }

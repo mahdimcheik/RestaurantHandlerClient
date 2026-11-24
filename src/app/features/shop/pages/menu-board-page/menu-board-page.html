@@ -1,0 +1,78 @@
+<div class="brand brand--1 brand-ui brand-page brand-page--sticky">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar />
+
+  <div class="order-page gutter">
+    <header class="order-page__head">
+      <p class="eyebrow">Notre carte</p>
+      <h1 class="display-title display-title--md">La carte</h1>
+      @if (openingText()) {
+        <p class="shop__opening" role="status">
+          <app-icon
+            [name]="status() === 'Open' ? 'store' : status() === 'Paused' ? 'pause' : 'clock'"
+          />
+          <span>{{ openingText() }}</span>
+        </p>
+      }
+      <a class="btn-brand btn-brand--solid" routerLink="/commander">Commander</a>
+    </header>
+
+    @if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    } @else if (loading()) {
+      <p role="status">Chargement…</p>
+    } @else if (sections().length === 0) {
+      <p class="empty">La carte n'est pas encore en ligne.</p>
+    } @else {
+      <nav class="menu-board__nav" aria-label="Rubriques de la carte">
+        <ul class="menu-board__links">
+          @for (section of sections(); track section.id) {
+            <li>
+              <a class="menu-board__link" routerLink="/carte" [fragment]="anchor(section.id)">{{
+                section.name
+              }}</a>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <div class="menu-board">
+        @for (section of sections(); track section.id) {
+          <section
+            class="order-dishes menu-board__section"
+            [id]="anchor(section.id)"
+            [attr.aria-labelledby]="anchor(section.id) + '-titre'"
+          >
+            <h2
+              class="display-title display-title--md order-dishes__title"
+              [id]="anchor(section.id) + '-titre'"
+            >
+              {{ section.name }}
+            </h2>
+            @if (section.description) {
+              <p class="order-dishes__lead">{{ section.description }}</p>
+            }
+            <ul class="dish-grid">
+              @for (dish of section.dishes; track dish.id) {
+                <li app-dish-card [dish]="dish" (info)="showIngredients(dish)"></li>
+              } @empty {
+                <li class="empty">Rien dans cette rubrique pour le moment.</li>
+              }
+            </ul>
+          </section>
+        }
+
+        <p class="order-dishes__note">
+          <a routerLink="/allergenes">Informations allergènes disponibles</a>
+          · Prix TTC.
+        </p>
+      </div>
+    }
+
+    <app-order-dialog labelledBy="ingredients-title" [(open)]="ingredientsOpen">
+      @if (ingredientsOf(); as dish) {
+        <app-ingredients-info [dish]="dish" titleId="ingredients-title" />
+      }
+    </app-order-dialog>
+  </div>
+</div>

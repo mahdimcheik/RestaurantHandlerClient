@@ -1,8 +1,8 @@
 <div class="page-head">
-  <h1 i18n="@@admin.menus">Menus</h1>
+  <h1>Menus</h1>
   <a class="btn btn--icon" routerLink="nouveau">
     <app-icon name="plus" />
-    <span i18n="@@menu.add">Ajouter un menu</span>
+    <span>Ajouter un menu</span>
   </a>
 </div>
 
@@ -14,7 +14,7 @@
       [checked]="showArchived()"
       (change)="showArchived.set(archivedBox.checked)"
     />
-    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+    <span class="checkbox__label">Afficher les archivés</span>
   </label>
 </div>
 
@@ -26,22 +26,22 @@
 @if (error()) {
   <p class="alert alert--error" role="alert">{{ error() }}</p>
 } @else if (loading() && rows().length === 0) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (rows().length === 0) {
-  <p class="empty" i18n="@@menu.empty">Aucun menu pour l'instant.</p>
+  <p class="empty">Aucun menu pour l'instant.</p>
 } @else {
   <table class="data-table">
-    <caption class="visually-hidden" i18n="@@admin.menus">
+    <caption class="visually-hidden">
       Menus
     </caption>
     <thead>
       <tr>
-        <th scope="col" i18n="@@field.name">Nom</th>
-        <th scope="col" i18n="@@menu.slots">Emplacements</th>
-        <th scope="col" i18n="@@product.price">Prix TTC</th>
-        <th scope="col" i18n="@@list.status">Statut</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Emplacements</th>
+        <th scope="col">Prix TTC</th>
+        <th scope="col">Statut</th>
         @if (!showArchived()) {
-          <th scope="col" i18n="@@list.order">Ordre</th>
+          <th scope="col">Ordre</th>
         }
       </tr>
     </thead>
@@ -51,17 +51,17 @@
           <td class="data-table__main">
             <a [routerLink]="menu.id">{{ menu.name }}</a>
           </td>
-          <td class="data-table__num" data-label="Emplacements" i18n-data-label="@@menu.slots">
+          <td class="data-table__num" data-label="Emplacements">
             {{ menu.slots.length }}
           </td>
-          <td class="data-table__num" data-label="Prix TTC" i18n-data-label="@@product.price">
+          <td class="data-table__num" data-label="Prix TTC">
             {{ menu.priceCents | euros }}
           </td>
-          <td data-label="Statut" i18n-data-label="@@list.status">
+          <td data-label="Statut">
             <app-status-badges [archived]="menu.isArchived" [active]="menu.isActive" />
           </td>
           @if (!showArchived()) {
-            <td data-label="Ordre" i18n-data-label="@@list.order">
+            <td data-label="Ordre">
               <app-move-buttons
                 [name]="menu.name"
                 [first]="first"

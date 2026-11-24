@@ -16,9 +16,7 @@ import { customerStatusLabel } from '../order-status/order-status';
         [routerLink]="['/commandes', order.id]"
       >
         <app-icon [name]="order.status === 'Ready' ? 'bell' : 'orders'" />
-        <span i18n="@@currentOrder.text"
-          >Commande n° {{ order.dailyNumber }} — {{ label(order.status) }}</span
-        >
+        <span>Commande n° {{ order.dailyNumber }} — {{ label(order.status) }}</span>
         <app-icon name="forward" />
       </a>
     }

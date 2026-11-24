@@ -1,4 +1,6 @@
-// Back-office : menu latéral, barre du haut, listes, fiches. Appliqués par classe.
+// Back-office au nouveau design : posé sur la surface `.brand--1 .brand-ui` de la coquille,
+// les anciennes classes y prennent l'encre et le fond du parfum. Cartes à bord plein et coins
+// arrondis, voile clair, titres en police d'affiche. Appliqués par classe.
 
 // Menu à gauche : icône et texte à partir de 64 rem, rail d'icônes en dessous (les textes
 // restent lus par les lecteurs d'écran).
@@ -6,6 +8,11 @@
   display: grid;
   grid-template-columns: auto 1fr;
   min-height: 100dvh;
+
+  > :not(.waves, .skip-link) {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .admin__nav {
@@ -17,12 +24,12 @@
   width: calc(var(--tap-min) + 2 * var(--space-3));
   height: 100dvh;
   padding: var(--space-4) var(--space-3);
-  border-right: var(--border);
-  background: var(--surface-sunken);
+  border-right: var(--border-width-strong) solid currentColor;
+  background: var(--brand-glaze);
   overflow-y: auto;
 
   @media (min-width: 64rem) {
-    width: 15rem;
+    width: 16rem;
     padding-inline: var(--space-4);
   }
 }
@@ -32,8 +39,61 @@
   align-items: center;
   gap: var(--space-3);
   min-height: var(--tap-min);
-  font-weight: var(--weight-bold);
   text-decoration: none;
+
+  @media (max-width: 63.99rem) {
+    justify-content: center;
+  }
+
+  @media (min-width: 64rem) {
+    padding-inline: var(--space-3);
+
+    .admin__brand-icon {
+      display: none;
+    }
+  }
+}
+
+.admin__brand-text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.admin__brand-name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin__brand-sub {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.admin__group {
+  display: grid;
+  gap: var(--space-2);
+
+  & + & {
+    @media (max-width: 63.99rem) {
+      padding-top: var(--space-3);
+      border-top: var(--border-width) solid var(--brand-shade-mid);
+    }
+  }
+}
+
+.admin__group-title {
+  padding-inline: var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
 }
 
 .admin__links {
@@ -45,33 +105,43 @@
 
 .admin__links--end {
   margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--brand-shade-mid);
 }
 
 .admin__link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
   min-height: var(--tap-min);
   padding: var(--space-2) var(--space-3);
-  border: var(--border-width) solid transparent;
+  border: 0;
+  border-radius: var(--brand-radius);
   background: none;
-  color: var(--color-ink);
-  font-weight: var(--weight-medium);
-  letter-spacing: normal;
+  color: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-align: start;
   text-decoration: none;
-  text-transform: none;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    border-color: var(--color-line);
-    background: var(--surface-page);
-    color: var(--color-ink);
+    background: var(--brand-shade-light);
+    color: inherit;
   }
 
   &[aria-current='page'] {
-    background: var(--surface-inverse);
-    color: var(--on-inverse);
+    background: var(--brand-ink);
+    color: var(--brand-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
   }
 
   @media (max-width: 63.99rem) {
@@ -81,30 +151,34 @@
 }
 
 // Nombre en attente sur un lien du menu (commandes à valider) : reste visible en rail d'icônes.
-.admin__link {
-  position: relative;
-}
-
+// Pastille inversée par rapport au lien, lisible sur le lien actif comme sur le menu.
 .admin__count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 1.5rem;
+  height: 1.5rem;
   margin-inline-start: auto;
   padding: 0 var(--space-1);
-  border: var(--border-width) solid var(--color-warning);
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-bold);
+  border-radius: 999px;
+  background: var(--brand-ink);
+  color: var(--brand-bg);
+  font-size: var(--text-xs);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+
+  [aria-current='page'] > & {
+    background: var(--brand-bg);
+    color: var(--brand-ink);
+  }
 
   @media (max-width: 63.99rem) {
     position: absolute;
-    inset-block-start: 0;
-    inset-inline-end: 0;
+    inset-block-start: -0.25rem;
+    inset-inline-end: -0.25rem;
     min-width: 1.25rem;
-    font-size: var(--text-xs);
+    height: 1.25rem;
   }
 }
 
@@ -131,17 +205,21 @@
 }
 
 .admin__bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3) var(--space-5);
   padding-block: var(--space-3);
-  border-bottom: var(--border-soft);
+  border-bottom: var(--border-width) solid var(--brand-shade-mid);
+  background: var(--brand-bg);
 }
 
 .admin__user {
-  color: var(--color-muted);
+  font-weight: 600;
 }
 
 .admin__content {
@@ -149,8 +227,8 @@
   align-content: start;
   gap: var(--space-6);
   width: 100%;
-  max-width: 72rem;
-  padding-block: var(--space-6) var(--space-8);
+  max-width: 76rem;
+  padding-block: var(--space-6) var(--space-9);
 }
 
 .icon {
@@ -175,7 +253,10 @@
   gap: var(--space-4);
 
   h1 {
-    font-size: var(--text-2xl);
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.05;
   }
 }
 
@@ -183,6 +264,10 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--tap-min);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
 .toolbar {
@@ -200,34 +285,54 @@
 
 .btn--danger {
   border-color: var(--color-danger);
+  border-style: dashed;
   background: var(--surface-page);
   color: var(--color-danger);
 
   &:hover {
+    border-style: solid;
     background: var(--color-danger);
     color: var(--color-paper);
   }
 }
 
+// Carte du nouveau design : bord plein, coins arrondis, voile clair et ombre douce.
+%admin-card {
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg, 0);
+  background: var(--brand-glaze, var(--surface-raised));
+  box-shadow: 0 18px 28px var(--brand-shade, transparent);
+}
+
 // Tableau de données ; sous 48 rem, chaque ligne devient une carte avec ses libellés.
 .data-table {
+  @extend %admin-card;
+
   width: 100%;
-  border-collapse: collapse;
+  border-spacing: 0;
+  overflow: hidden;
 
   th,
   td {
-    padding: var(--space-3);
+    padding: var(--space-3) var(--space-4);
     border-bottom: var(--border-soft);
     text-align: start;
     vertical-align: middle;
   }
 
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover {
+    background: var(--brand-shade-light, transparent);
+  }
+
   thead th {
     border-bottom: var(--border);
-    color: var(--color-muted);
-    font-size: var(--text-sm);
-    font-weight: var(--weight-medium);
-    letter-spacing: var(--tracking-caps);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
   }
 
@@ -243,7 +348,7 @@
     tr {
       display: grid;
       gap: var(--space-1);
-      padding-block: var(--space-3);
+      padding: var(--space-3) var(--space-4);
       border-bottom: var(--border-soft);
     }
 
@@ -278,6 +383,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border: var(--border);
+  border-radius: var(--radius);
   background: var(--surface-sunken);
   object-fit: cover;
 }
@@ -289,8 +395,9 @@
 // Statut écrit en toutes lettres (jamais porté par la couleur seule).
 .badge {
   display: inline-block;
-  padding: 0 var(--space-2);
+  padding: 0.125rem var(--space-2);
   border: var(--border);
+  border-radius: var(--radius);
   font-size: var(--text-xs);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-caps);
@@ -305,7 +412,8 @@
 
 .badge--danger {
   border-color: var(--color-danger);
-  color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-paper);
 }
 
 .badges {
@@ -316,7 +424,8 @@
 
 .empty {
   padding: var(--space-6);
-  border: var(--border-soft);
+  border: var(--border-width-strong) dashed currentColor;
+  border-radius: var(--brand-radius-lg, 0);
   color: var(--color-muted);
   text-align: center;
 }
@@ -333,7 +442,9 @@
   gap: var(--space-5);
 
   h2 {
+    font-family: var(--font-display);
     font-size: var(--text-xl);
+    font-weight: 400;
   }
 
   & + & {
@@ -367,11 +478,12 @@
 }
 
 .stack-list__item {
+  @extend %admin-card;
+
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
-  border: var(--border);
-  background: var(--surface-raised);
+  box-shadow: none;
 }
 
 // Élément sur une seule ligne (nom, réglage, bouton), qui passe à la ligne sur petit écran.
@@ -418,6 +530,7 @@
   width: var(--tap-min);
   min-width: var(--tap-min);
   padding: 0;
+  border-radius: var(--radius);
   background: var(--surface-page);
   color: var(--color-ink);
 
@@ -444,6 +557,7 @@
   width: 10rem;
   height: 7.5rem;
   border: var(--border);
+  border-radius: var(--radius);
   background: var(--surface-sunken);
   object-fit: cover;
 }
@@ -454,6 +568,7 @@
   width: 10rem;
   height: 7.5rem;
   border: var(--border-width) dashed var(--color-line-mid);
+  border-radius: var(--radius);
   color: var(--color-muted);
   font-size: var(--text-sm);
 }
@@ -473,34 +588,64 @@
 }
 
 .stat {
+  @extend %admin-card;
+
   display: grid;
+  align-content: start;
   gap: var(--space-2);
+  height: 100%;
   padding: var(--space-5);
-  border: var(--border);
-  background: var(--surface-raised);
 }
 
 a.stat {
   text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 
   &:hover {
-    background: var(--surface-sunken);
+    background: var(--brand-bg, var(--surface-sunken));
+    color: inherit;
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
   }
 }
 
 .stat__label {
-  color: var(--color-muted);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-caps);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
 .stat__value {
+  font-family: var(--font-display);
   font-size: var(--text-2xl);
-  font-weight: var(--weight-bold);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   line-height: var(--leading-tight);
+}
+
+// Chiffre phare : plus grand, encre et fond inversés.
+.stat--hero {
+  padding: var(--space-6);
+  background: var(--brand-ink, var(--surface-inverse));
+  color: var(--brand-bg, var(--on-inverse));
+
+  .stat__value {
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+  }
+}
+
+.stats--hero {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
 .stat__detail {
@@ -515,6 +660,7 @@ a.stat {
   width: min(28rem, calc(100vw - 2 * var(--space-4)));
   padding: var(--space-6);
   border: var(--border);
+  border-radius: var(--brand-radius-lg, 0);
   background: var(--surface-page);
   color: var(--color-ink);
 
@@ -613,11 +759,12 @@ a.stat {
 }
 
 .week-hours__day {
+  @extend %admin-card;
+
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
-  border: var(--border);
-  background: var(--surface-raised);
+  box-shadow: none;
 }
 
 .week-hours__name {
@@ -649,4 +796,87 @@ a.stat {
 // Touche de rupture : largeur fixe pour que la liste reste alignée.
 .stock-toggle {
   min-width: 13rem;
+}
+
+// Tableau de bord : accroche, chiffres du jour, étapes du service, carte « Service ».
+.dashboard__intro {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  padding-block: var(--space-4) var(--space-2);
+
+  .eyebrow {
+    white-space: normal;
+  }
+}
+
+.dashboard__grid {
+  display: grid;
+  gap: var(--space-5);
+
+  @media (min-width: 64rem) {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+}
+
+// Comptes par étape : pastilles rondes, nombre en grand et libellé dessous.
+.step-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-counts__item {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-1);
+  width: 7rem;
+  aspect-ratio: 1;
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: 50%;
+  text-align: center;
+
+  dd {
+    order: -1;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  dt {
+    max-width: 6em;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+}
+
+// Étape non vide : pastille pleine.
+.step-counts__item--active {
+  background: var(--brand-ink, var(--surface-inverse));
+  color: var(--brand-bg, var(--on-inverse));
+}
+
+// Carte « Service » : raccourcis empilés, libellés libres de passer à la ligne.
+.dashboard__service {
+  background: var(--brand-glaze);
+
+  .actions {
+    display: grid;
+  }
+
+  .btn-brand {
+    justify-content: flex-start;
+    white-space: normal;
+    text-align: start;
+  }
 }

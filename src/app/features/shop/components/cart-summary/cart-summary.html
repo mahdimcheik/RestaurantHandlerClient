@@ -1,0 +1,111 @@
+@if (cart.isEmpty()) {
+  <p class="empty">Votre panier est vide.</p>
+} @else {
+  <div class="ticket">
+    <div class="ticket__scroll">
+      <ul class="ticket__lines">
+        @for (line of cart.lines(); track line.key; let index = $index) {
+          <li class="ticket__line" [class.ticket__line--refused]="lineIssues().has(index)">
+            <div class="ticket__main">
+              <span class="ticket__name">{{ line.quantity }} × {{ line.name }}</span>
+              <span class="ticket__amount">{{ quote.lineTotals().get(index) | euros }}</span>
+            </div>
+            @if (labelsOf(line).length > 0) {
+              <ul class="ticket__mods">
+                @for (label of labelsOf(line); track $index) {
+                  <li>{{ label }}</li>
+                }
+              </ul>
+            }
+            @for (message of lineIssues().get(index); track $index) {
+              <p class="ticket__issue">
+                <app-icon name="alert" /><span>{{ message }}</span>
+              </p>
+            }
+            <div class="ticket__tools">
+              <span class="stepper">
+                <button
+                  type="button"
+                  class="icon-button"
+                  (click)="cart.setQuantity(line.key, line.quantity - 1)"
+                >
+                  <app-icon name="minus" />
+                  <span class="visually-hidden">Un de moins : {{ line.name }}</span>
+                </button>
+                <span class="stepper__value stepper__value--small">{{ line.quantity }}</span>
+                <button
+                  type="button"
+                  class="icon-button"
+                  [disabled]="line.quantity >= 99"
+                  (click)="cart.setQuantity(line.key, line.quantity + 1)"
+                >
+                  <app-icon name="plus" />
+                  <span class="visually-hidden">Un de plus : {{ line.name }}</span>
+                </button>
+              </span>
+              <a
+                class="btn btn--outline"
+                [routerLink]="editLink(line)"
+                [queryParams]="{ ligne: line.key }"
+                scroll="manual"
+                (click)="navigated.emit()"
+              >
+                Modifier
+                <span class="visually-hidden">{{ line.name }}</span>
+              </a>
+              <button type="button" class="link-button" (click)="cart.remove(line.key)">
+                Retirer
+                <span class="visually-hidden">{{ line.name }}</span>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="ticket__foot">
+      @for (message of cartIssues(); track $index) {
+        <p class="alert alert--error" role="alert">{{ message }}</p>
+      }
+      @if (blocked()) {
+        <p class="alert alert--error" role="alert">
+          Modifiez ou retirez les articles signalés pour continuer.
+        </p>
+      }
+      @if (quoteError()) {
+        <p class="alert alert--error" role="alert">{{ quoteError() }}</p>
+      }
+
+      <dl class="ticket__vat">
+        @for (vat of quote.vat(); track vat.rate) {
+          <div>
+            <dt>TVA {{ vat.rate | rate }} %</dt>
+            <dd>{{ vat.vatCents | euros }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="ticket__total" aria-live="polite">
+        <span>Total TTC</span>
+        <span class="ticket__total-value">
+          @if (quote.total() === null && !quoteError() && !blocked()) {
+            Calcul…
+          } @else {
+            {{ quote.total() | euros }}
+          }
+        </span>
+      </p>
+      @if (blocked()) {
+        <button type="button" class="btn-brand btn-brand--solid ticket__send" disabled>
+          Valider ma commande
+        </button>
+      } @else {
+        <a
+          class="btn-brand btn-brand--solid ticket__send"
+          routerLink="/commander/valider"
+          (click)="navigated.emit()"
+          >Valider ma commande</a
+        >
+      }
+    </div>
+  </div>
+}

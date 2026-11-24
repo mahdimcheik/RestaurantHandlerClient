@@ -88,7 +88,7 @@ export class CategoryEditPage {
             this.category.set(
               await firstValueFrom(this.categories.update(id, toWrite(this.model()))),
             );
-            this.notice.set($localize`:@@sheet.saved:Modifications enregistrées.`);
+            this.notice.set('Modifications enregistrées.');
           } else {
             const created = await firstValueFrom(this.categories.create(toWrite(this.model())));
             await this.router.navigate(['/gestion/categories', created.id], { replaceUrl: true });

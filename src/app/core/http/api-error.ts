@@ -8,7 +8,7 @@ import { CartIssueDto } from '../api/generated';
 export function apiErrorMessage(error: unknown): string {
   if (error instanceof HttpErrorResponse) {
     if (error.status === 0) {
-      return $localize`:@@error.network:Le serveur est injoignable. Vérifiez votre connexion et réessayez.`;
+      return 'Le serveur est injoignable. Vérifiez votre connexion et réessayez.';
     }
     const body: unknown = error.error;
     if (
@@ -21,7 +21,7 @@ export function apiErrorMessage(error: unknown): string {
       return body.message;
     }
   }
-  return $localize`:@@error.generic:Une erreur est survenue. Réessayez dans un instant.`;
+  return 'Une erreur est survenue. Réessayez dans un instant.';
 }
 
 /**

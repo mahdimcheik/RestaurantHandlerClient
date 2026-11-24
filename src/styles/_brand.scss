@@ -1,0 +1,576 @@
+// Nouveau design, commun à toute l'application : surface colorée (`.brand`), fond ondulé,
+// sur-titre à filets, grand titre, bouton à bord arrondi, barre du haut. Les tailles suivent
+// l'unité `--u` quand un bloc la définit (accueil), sinon 1px.
+
+// Surface du nouveau design : fond et encre d'un parfum (`--flavour-N-*`), lus par tout le bloc.
+.brand {
+  --brand-bg: var(--flavour-1-bg);
+  --brand-ink: var(--flavour-1-ink);
+
+  position: relative;
+  background-color: var(--brand-bg);
+  color: var(--brand-ink);
+  font-family: var(--font-body);
+  isolation: isolate;
+
+  ::selection {
+    background: var(--brand-ink);
+    color: var(--brand-bg);
+  }
+}
+
+@for $i from 1 through 5 {
+  .brand--#{$i} {
+    --brand-bg: var(--flavour-#{$i}-bg);
+    --brand-ink: var(--flavour-#{$i}-ink);
+  }
+}
+
+// Lignes ondulées de fond : motif SVG en masque, teinte portée par un jeton.
+.waves {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+  background-color: var(--brand-wave);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 C 15 4, 30 4, 45 14 S 75 24, 90 14 S 112 6, 120 14' fill='none' stroke='black' stroke-width='1.1'/%3E%3C/svg%3E");
+  mask-size: calc(120 * var(--u, 1px)) calc(28 * var(--u, 1px));
+  mask-repeat: repeat;
+  pointer-events: none;
+}
+
+// Sur-titre en capitales espacées, encadré de deux filets.
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--u, 1px));
+  margin: 0;
+  font-size: max(0.75rem, calc(15 * var(--u, 1px)));
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &::before,
+  &::after {
+    content: '';
+    display: block;
+    flex: none;
+    width: calc(64 * var(--u, 1px));
+    height: max(1px, calc(1.5 * var(--u, 1px)));
+    background-color: currentColor;
+  }
+
+  &::after {
+    margin-left: calc(-6 * var(--u, 1px));
+  }
+}
+
+// Grand titre en police d'affiche.
+.display-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.display-title--md {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+// Texte d'introduction.
+.lead {
+  max-width: 60ch;
+  font-size: clamp(var(--text-lg), 1.6vw, 1.375rem);
+  line-height: 1.55;
+}
+
+// Bouton ou lien d'action : bord plein, coins arrondis, inversé au survol.
+.btn-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: max(var(--tap-min), calc(50 * var(--u, 1px)));
+  padding: 0 max(var(--space-5), calc(28 * var(--u, 1px)));
+  border: max(1px, calc(2 * var(--u, 1px))) solid currentColor;
+  border-radius: var(--brand-radius);
+  background: transparent;
+  color: inherit;
+  font-size: max(0.75rem, calc(14 * var(--u, 1px)));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+
+  &:hover {
+    background-color: var(--brand-ink);
+    color: var(--brand-bg);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 3px;
+  }
+}
+
+.btn-brand--solid {
+  background-color: var(--brand-ink);
+  color: var(--brand-bg);
+
+  &:hover {
+    background-color: transparent;
+    color: var(--brand-ink);
+  }
+}
+
+// Barre du haut du nouveau design : logo à gauche, navigation au milieu, actions à droite.
+// Boutons carrés aux coins arrondis, encre du bloc parent. Sous 64rem, la navigation du milieu
+// et le bouton Commander passent dans le bouton Menu.
+.topbar {
+  --topbar-size: max(var(--tap-min), calc(60 * var(--u, 1px)));
+  --topbar-inset: calc(40 * var(--u, 1px));
+  --topbar-gap: max(var(--space-2), calc(12 * var(--u, 1px)));
+
+  position: absolute;
+  top: calc(26 * var(--u, 1px));
+  right: var(--topbar-inset);
+  left: var(--topbar-inset);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--topbar-gap);
+  color: var(--brand-ink, var(--color-ink));
+  font-family: var(--font-body);
+
+  .showcase--portrait & {
+    --topbar-size: max(var(--tap-min), calc(48 * var(--u, 1px)));
+    --topbar-inset: calc(18 * var(--u, 1px));
+
+    top: calc(18 * var(--u, 1px));
+  }
+}
+
+.topbar__start,
+.topbar__end {
+  display: flex;
+  align-items: center;
+  gap: var(--topbar-gap);
+}
+
+.topbar__start {
+  justify-self: start;
+}
+
+.topbar__end {
+  justify-self: end;
+}
+
+.topbar__brand {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--topbar-size);
+  font-family: var(--font-display);
+  font-size: max(1.125rem, calc(24 * var(--u, 1px)));
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:has(.topbar__logo) {
+    width: calc(var(--topbar-size) * 2.5);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.topbar__logo {
+  object-fit: contain;
+  object-position: left center;
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: max(var(--space-5), calc(36 * var(--u, 1px)));
+}
+
+.topbar__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-size: max(0.8125rem, calc(14 * var(--u, 1px)));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:hover,
+  &--active {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.topbar__btn {
+  display: grid;
+  place-items: center;
+  width: var(--topbar-size);
+  height: var(--topbar-size);
+  padding: 0;
+  border: max(1px, calc(1.5 * var(--u, 1px))) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.25s ease;
+
+  &:hover {
+    background: var(--brand-shade-light);
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.topbar__btn--text {
+  width: auto;
+  padding-inline: max(var(--space-4), calc(22 * var(--u, 1px)));
+  font-size: max(0.8125rem, calc(14 * var(--u, 1px)));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.topbar__menu {
+  position: relative;
+}
+
+.topbar__menu--nav {
+  display: none;
+}
+
+@media (max-width: 64rem) {
+  .topbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .topbar__nav,
+  .topbar__btn--text {
+    display: none;
+  }
+
+  .topbar__menu--nav {
+    display: block;
+  }
+}
+
+// Téléphone : boutons à la taille tactile minimale, marges réduites, nom du restaurant tronqué
+// plutôt que de pousser les boutons hors de l'écran.
+@media (max-width: 40rem) {
+  .topbar {
+    --topbar-size: var(--tap-min);
+    --topbar-inset: var(--space-4);
+    --topbar-gap: var(--space-2);
+
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .topbar__start {
+    justify-self: stretch;
+    min-width: 0;
+  }
+
+  .topbar__brand {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    line-height: var(--topbar-size);
+    text-overflow: ellipsis;
+  }
+}
+
+.topbar__panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 30;
+  min-width: 14rem;
+  margin: 0;
+  padding: var(--space-2);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-bg, var(--surface-page));
+}
+
+.topbar__panel--end {
+  right: 0;
+  left: auto;
+}
+
+.topbar__who {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid currentColor;
+  font-weight: 700;
+}
+
+.topbar__links {
+  display: grid;
+  padding: 0;
+  list-style: none;
+
+  a,
+  .topbar__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: var(--tap-min);
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--brand-radius);
+    background: transparent;
+    color: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-align: left;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  a:hover,
+  .topbar__item:hover {
+    background: var(--brand-shade-light);
+    color: inherit;
+  }
+
+  a:focus-visible,
+  .topbar__item:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  // Thème choisi : souligné et coché, pas seulement mis en évidence.
+  .topbar__item[aria-pressed='true'] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+
+    &::after {
+      content: '✓' / '';
+      margin-left: auto;
+    }
+  }
+}
+
+// Page du nouveau design : la barre du haut est posée en haut, le contenu commence dessous.
+.brand-page {
+  min-height: 100svh;
+  padding-top: calc(var(--tap-min) + 26px + var(--space-8));
+  overflow: hidden;
+
+  > :not(.waves, app-site-topbar) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Section de page : espacement vertical généreux, contenu centré dans une largeur lisible.
+.brand-section {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-block: var(--space-9);
+}
+
+.brand-section--center {
+  justify-items: center;
+  text-align: center;
+
+  .actions {
+    justify-content: center;
+  }
+}
+
+// Introduction en deux colonnes : texte, puis visuel (empilés sur écran étroit).
+.intro {
+  display: grid;
+  align-items: center;
+  gap: var(--space-8);
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-block: var(--space-6) var(--space-9);
+
+  @media (min-width: 60rem) {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.intro__text {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-6);
+}
+
+// Rangée de boutons d'action.
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+// Assiette détourée posée sur le fond, avec son ombre portée.
+.plate {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 30rem);
+}
+
+.plate__image {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 18px 28px var(--brand-shade-strong));
+}
+
+// Pastille chiffrée posée sur un visuel : grand nombre et libellé.
+.stat-badge {
+  position: absolute;
+  bottom: 4%;
+  left: -2%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  width: clamp(7.5rem, 30%, 9.5rem);
+  aspect-ratio: 1;
+  margin: 0;
+  border-radius: var(--radius-round);
+  background: var(--brand-ink);
+  color: var(--brand-bg);
+  text-align: center;
+}
+
+.stat-badge__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.25rem);
+  line-height: 1;
+}
+
+.stat-badge__label {
+  max-width: 7em;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+// Liste d'engagements en cartes bordées, numérotées.
+.pillars {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 60rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pillar {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+
+  p {
+    line-height: 1.6;
+  }
+}
+
+.pillar__index {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+}
+
+// Écrans de compte (connexion, inscription…) : accroche et assiette à gauche, formulaire dans
+// une carte à droite. Sous 60rem, la carte seule, pour que le formulaire vienne en premier.
+.auth {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  gap: var(--space-8);
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-block: var(--space-4) var(--space-9);
+
+  @media (min-width: 60rem) {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.auth__aside {
+  display: none;
+
+  @media (min-width: 60rem) {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    justify-self: stretch;
+
+    .plate {
+      width: min(100%, 22rem);
+    }
+  }
+}
+
+.auth__card {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 30rem;
+  padding: var(--space-5);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+  box-shadow: 0 18px 28px var(--brand-shade);
+
+  @media (min-width: 40rem) {
+    padding: var(--space-7);
+  }
+
+  .form__submit {
+    white-space: normal;
+  }
+}
+
+.auth__lead {
+  line-height: 1.55;
+}

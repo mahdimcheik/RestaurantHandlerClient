@@ -1,20 +1,20 @@
 <div class="page-head">
-  <h1 i18n="@@admin.products">Produits</h1>
+  <h1>Produits</h1>
   <a
     class="btn btn--icon"
     routerLink="nouveau"
     [queryParams]="categoryId() ? { categorie: categoryId() } : {}"
   >
     <app-icon name="plus" />
-    <span i18n="@@product.add">Ajouter un produit</span>
+    <span>Ajouter un produit</span>
   </a>
 </div>
 
 <div class="toolbar">
   <div class="field">
-    <label class="field__label" for="product-filter" i18n="@@product.filter">Catégorie</label>
+    <label class="field__label" for="product-filter">Catégorie</label>
     <select #filterBox id="product-filter" (change)="filter(filterBox.value)">
-      <option value="" i18n="@@product.allCategories">Toutes les catégories</option>
+      <option value="">Toutes les catégories</option>
       @for (category of categories(); track category.id) {
         <option [value]="category.id" [selected]="category.id === categoryId()">
           {{ category.name }}
@@ -29,14 +29,12 @@
       [checked]="showArchived()"
       (change)="showArchived.set(archivedBox.checked)"
     />
-    <span class="checkbox__label" i18n="@@list.showArchived">Afficher les archivés</span>
+    <span class="checkbox__label">Afficher les archivés</span>
   </label>
 </div>
 
 @if (!showArchived() && categoryId() === '') {
-  <p class="sheet__lead" i18n="@@product.reorderHint">
-    Choisissez une catégorie pour changer l'ordre des produits.
-  </p>
+  <p class="sheet__lead">Choisissez une catégorie pour changer l'ordre des produits.</p>
 }
 @if (order.error()) {
   <p class="alert alert--error" role="alert">{{ order.error() }}</p>
@@ -52,23 +50,23 @@
 @if (error()) {
   <p class="alert alert--error" role="alert">{{ error() }}</p>
 } @else if (loading() && rows().length === 0) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (rows().length === 0) {
-  <p class="empty" i18n="@@product.empty">Aucun produit ici pour l'instant.</p>
+  <p class="empty">Aucun produit ici pour l'instant.</p>
 } @else {
   <table class="data-table">
-    <caption class="visually-hidden" i18n="@@admin.products">
+    <caption class="visually-hidden">
       Produits
     </caption>
     <thead>
       <tr>
-        <th scope="col" i18n="@@field.name">Nom</th>
-        <th scope="col" i18n="@@product.category">Catégorie</th>
-        <th scope="col" i18n="@@product.price">Prix TTC</th>
-        <th scope="col" i18n="@@list.status">Statut</th>
-        <th scope="col" i18n="@@list.actions">Actions</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Catégorie</th>
+        <th scope="col">Prix TTC</th>
+        <th scope="col">Statut</th>
+        <th scope="col">Actions</th>
         @if (canReorder()) {
-          <th scope="col" i18n="@@list.order">Ordre</th>
+          <th scope="col">Ordre</th>
         }
       </tr>
     </thead>
@@ -78,20 +76,20 @@
           <td class="data-table__main">
             <a [routerLink]="product.id">{{ product.name }}</a>
           </td>
-          <td data-label="Catégorie" i18n-data-label="@@product.category">
+          <td data-label="Catégorie">
             {{ product.categoryName }}
           </td>
-          <td class="data-table__num" data-label="Prix TTC" i18n-data-label="@@product.price">
+          <td class="data-table__num" data-label="Prix TTC">
             {{ product.priceCents | euros }}
           </td>
-          <td data-label="Statut" i18n-data-label="@@list.status">
+          <td data-label="Statut">
             <app-status-badges
               [archived]="product.isArchived"
               [active]="product.isActive"
               [available]="product.isAvailable"
             />
           </td>
-          <td data-label="Actions" i18n-data-label="@@list.actions">
+          <td data-label="Actions">
             @if (!product.isArchived) {
               <button
                 type="button"
@@ -100,15 +98,15 @@
                 (click)="toggleAvailability(product)"
               >
                 @if (product.isAvailable) {
-                  <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+                  Marquer en rupture
                 } @else {
-                  <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+                  Remettre en vente
                 }
               </button>
             }
           </td>
           @if (canReorder()) {
-            <td data-label="Ordre" i18n-data-label="@@list.order">
+            <td data-label="Ordre">
               <app-move-buttons
                 [name]="product.name"
                 [first]="first"

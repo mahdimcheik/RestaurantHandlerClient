@@ -1,71 +1,71 @@
 import { Routes } from '@angular/router';
 
-const suffix = $localize`:@@admin.titleSuffix: — Gestion`;
+const suffix = ' — Gestion';
 
 export const MENU_ADMIN_ROUTES: Routes = [
   {
     path: 'categories',
-    title: $localize`:@@admin.categories:Catégories` + suffix,
+    title: 'Catégories' + suffix,
     loadComponent: () =>
       import('./pages/category-list-page/category-list-page').then((m) => m.CategoryListPage),
   },
   {
     path: 'categories/nouvelle',
-    title: $localize`:@@category.new:Nouvelle catégorie` + suffix,
+    title: 'Nouvelle catégorie' + suffix,
     loadComponent: () =>
       import('./pages/category-edit-page/category-edit-page').then((m) => m.CategoryEditPage),
   },
   {
     path: 'categories/:id',
-    title: $localize`:@@category.edit:Catégorie` + suffix,
+    title: 'Catégorie' + suffix,
     loadComponent: () =>
       import('./pages/category-edit-page/category-edit-page').then((m) => m.CategoryEditPage),
   },
   {
     path: 'produits',
-    title: $localize`:@@admin.products:Produits` + suffix,
+    title: 'Produits' + suffix,
     loadComponent: () =>
       import('./pages/product-list-page/product-list-page').then((m) => m.ProductListPage),
   },
   {
     path: 'produits/nouveau',
-    title: $localize`:@@product.new:Nouveau produit` + suffix,
+    title: 'Nouveau produit' + suffix,
     loadComponent: () =>
       import('./pages/product-edit-page/product-edit-page').then((m) => m.ProductEditPage),
   },
   {
     path: 'produits/:id',
-    title: $localize`:@@product.edit:Produit` + suffix,
+    title: 'Produit' + suffix,
     loadComponent: () =>
       import('./pages/product-edit-page/product-edit-page').then((m) => m.ProductEditPage),
   },
   {
     path: 'menus',
-    title: $localize`:@@admin.menus:Menus` + suffix,
+    title: 'Menus' + suffix,
     loadComponent: () =>
       import('./pages/menu-list-page/menu-list-page').then((m) => m.MenuListPage),
   },
   {
     path: 'menus/nouveau',
-    title: $localize`:@@menu.new:Nouveau menu` + suffix,
+    title: 'Nouveau menu' + suffix,
     loadComponent: () =>
       import('./pages/menu-edit-page/menu-edit-page').then((m) => m.MenuEditPage),
   },
   {
     path: 'menus/:id',
-    title: $localize`:@@menu.edit:Menu` + suffix,
+    title: 'Menu' + suffix,
     loadComponent: () =>
       import('./pages/menu-edit-page/menu-edit-page').then((m) => m.MenuEditPage),
   },
   {
     path: 'ingredients',
-    title: $localize`:@@admin.ingredients:Ingrédients` + suffix,
+    title: 'Ingrédients' + suffix,
     loadComponent: () =>
       import('./pages/ingredient-list-page/ingredient-list-page').then((m) => m.IngredientListPage),
   },
   {
     path: 'options',
-    title: $localize`:@@admin.options:Groupes d'options` + suffix,
+    title: `Groupes d'options` + suffix,
     loadComponent: () =>
       import('./pages/option-group-list-page/option-group-list-page').then(
         (m) => m.OptionGroupListPage,
@@ -73,7 +73,7 @@ export const MENU_ADMIN_ROUTES: Routes = [
   },
   {
     path: 'options/nouveau',
-    title: $localize`:@@optionGroup.new:Nouveau groupe d'options` + suffix,
+    title: `Nouveau groupe d'options` + suffix,
     loadComponent: () =>
       import('./pages/option-group-edit-page/option-group-edit-page').then(
         (m) => m.OptionGroupEditPage,
@@ -81,7 +81,7 @@ export const MENU_ADMIN_ROUTES: Routes = [
   },
   {
     path: 'options/:id',
-    title: $localize`:@@optionGroup.edit:Groupe d'options` + suffix,
+    title: `Groupe d'options` + suffix,
     loadComponent: () =>
       import('./pages/option-group-edit-page/option-group-edit-page').then(
         (m) => m.OptionGroupEditPage,

@@ -157,7 +157,7 @@ export class TrackingPage {
       this.window?.location.assign(url);
     } else if (order) {
       this.error.set(
-        $localize`:@@tracking.paymentUnavailable:Le paiement en ligne est indisponible pour le moment. Réessayez ou payez au retrait.`,
+        'Le paiement en ligne est indisponible pour le moment. Réessayez ou payez au retrait.',
       );
     }
   }

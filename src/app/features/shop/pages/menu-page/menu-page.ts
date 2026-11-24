@@ -10,7 +10,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { MenuChoice, MenuLine, toCartLines } from '../../../../shared/ordering/cart';
 import {
@@ -26,21 +26,22 @@ import {
   MenuSlots,
   prefilledChoices,
 } from '../../../../shared/ordering/menu-slots';
+import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
-import { Icon } from '../../../../shared/ui/icon/icon';
 import { EurosPipe } from '../../../../shared/utils/money';
+import { OrderDialog } from '../../components/order-dialog/order-dialog';
 import { CartStore } from '../../data-access/cart.store';
 import { quoteOf } from '../../data-access/quote';
 
 /**
  * Composition d'un menu (US-E04-2) : un produit par emplacement dans ses bornes, chaque produit
- * personnalisable comme sur sa fiche ; prix du menu et surcoûts par le devis du serveur.
+ * personnalisable comme sur sa fiche (composition, puis options pas à pas dans un second
+ * dialogue) ; prix du menu et surcoûts par le devis du serveur.
  */
 @Component({
   selector: 'app-menu-page',
-  host: { class: 'shop' },
-  imports: [RouterLink, NgOptimizedImage, EurosPipe, Icon, MenuSlots, ProductOptions],
+  imports: [NgOptimizedImage, EurosPipe, MenuSlots, ProductOptions, OptionsWizard, OrderDialog],
   templateUrl: './menu-page.html',
 })
 export class MenuPage {
@@ -74,14 +75,14 @@ export class MenuPage {
       return line ? line.choices : menu ? prefilledChoices(menu) : [];
     },
   });
-  protected readonly quantity = linkedSignal<string, number>({
-    source: () => `${this.id()}|${this.ligne() ?? ''}`,
-    computation: () => untracked(this.line)?.quantity ?? 1,
-  });
+  /** Une portion par ligne (petites commandes) ; une ligne modifiée garde sa quantité. */
+  private readonly quantity = computed(() => this.line()?.quantity ?? 1);
 
   /** Produit choisi en cours de personnalisation, et son état. */
   protected readonly editing = signal<CustomizeRequest | null>(null);
   protected readonly editState = signal<CustomizationState>(EMPTY_STATE);
+  /** Assistant des groupes d'options du produit en cours, par-dessus la fiche du menu. */
+  protected readonly wizardOpen = signal(false);
   protected readonly editMissing = computed(() => {
     const editing = this.editing();
     return editing ? missingGroups(editing.product, this.editState()) : [];
@@ -117,7 +118,11 @@ export class MenuPage {
   protected customize(request: CustomizeRequest): void {
     this.editing.set(request);
     this.editState.set(request.quick ? EMPTY_STATE : stateOf(request.choice.customization));
-    queueMicrotask(() => this.heading()?.nativeElement.focus());
+    // Choix obligatoire à l'ajout du produit : l'assistant s'ouvre tout de suite.
+    this.wizardOpen.set(request.quick && request.product.groups.length > 0);
+    if (!this.wizardOpen()) {
+      queueMicrotask(() => this.heading()?.nativeElement.focus());
+    }
   }
 
   protected applyCustomization(): void {
@@ -134,15 +139,23 @@ export class MenuPage {
     this.choices.update((choices) =>
       choices.map((choice) => (choice === editing.choice ? { ...choice, customization } : choice)),
     );
+    this.wizardOpen.set(false);
     this.editing.set(null);
   }
 
   protected cancelCustomization(): void {
+    this.wizardOpen.set(false);
     this.editing.set(null);
   }
 
-  protected step(delta: 1 | -1): void {
-    this.quantity.update((quantity) => Math.min(99, Math.max(1, quantity + delta)));
+  /** Assistant refermé sans valider : retour à la composition, ou au menu s'il s'est ouvert seul. */
+  protected onWizardClosed(): void {
+    if (this.editing()?.quick) {
+      this.cancelCustomization();
+      return;
+    }
+    this.wizardOpen.set(false);
+    queueMicrotask(() => this.heading()?.nativeElement.focus());
   }
 
   protected async add(): Promise<void> {
@@ -153,11 +166,15 @@ export class MenuPage {
     const line = this.line();
     if (line) {
       this.cart.replaceMenuChoices(line.key, this.choices());
-      this.cart.setQuantity(line.key, this.quantity());
-      await this.router.navigateByUrl('/panier');
+      await this.close();
       return;
     }
     this.cart.addMenu(menu, this.choices(), this.quantity());
-    await this.router.navigateByUrl('/commander');
+    await this.close();
+  }
+
+  /** Retour à la carte, qui referme le dialogue sans la faire défiler. */
+  private async close(): Promise<void> {
+    await this.router.navigate(['/commander'], { scroll: 'manual' });
   }
 }

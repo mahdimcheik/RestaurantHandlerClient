@@ -9,12 +9,12 @@ import { AuthLayout } from '../../../../shared/ui/auth-layout/auth-layout';
   imports: [AuthLayout, RouterLink],
   template: `
     <app-auth-layout>
-      <h1 class="auth__title">{{ heading() }}</h1>
+      <h1 class="display-title display-title--md">{{ heading() }}</h1>
       <p class="alert alert--success" role="status">{{ message() }}</p>
       @if (session.isAuthenticated()) {
-        <a class="btn form__submit" routerLink="/" i18n="@@auth.goHome">Retour à l'accueil</a>
+        <a class="btn-brand btn-brand--solid form__submit" routerLink="/">Retour à l'accueil</a>
       } @else {
-        <a class="btn form__submit" routerLink="/auth/connexion" i18n="@@auth.goToLogin">
+        <a class="btn-brand btn-brand--solid form__submit" routerLink="/auth/connexion">
           Aller à la connexion
         </a>
       }

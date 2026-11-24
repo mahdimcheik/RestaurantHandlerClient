@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 export const KITCHEN_ROUTES: Routes = [
   {
     path: '',
-    title: $localize`:@@kitchen.pageTitle:Cuisine`,
+    title: 'Cuisine',
     loadComponent: () => import('./pages/kitchen-page/kitchen-page').then((m) => m.KitchenPage),
   },
 ];

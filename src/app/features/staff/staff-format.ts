@@ -4,9 +4,9 @@ import { accountStatusOf } from '../../shared/services/user-management.service';
 export const ACCOUNT_STATUSES: readonly AccountStatusEnum[] = ['Active', 'Pending', 'Banned'];
 
 export const ACCOUNT_STATUS_LABELS: Record<AccountStatusEnum, string> = {
-  Active: $localize`:@@account.status.active:Actif`,
-  Pending: $localize`:@@account.status.pending:En attente`,
-  Banned: $localize`:@@account.status.banned:Banni`,
+  Active: 'Actif',
+  Pending: 'En attente',
+  Banned: 'Banni',
 };
 
 /** Statut d'un compte, d'après son identifiant ou à défaut son nom technique. */

@@ -8,21 +8,19 @@ import { ThemeSwitcher } from '../theme-switcher/theme-switcher';
   template: `
     <footer class="site-footer gutter">
       <ul class="inline-list">
-        <li><a routerLink="/" fragment="infos" i18n="@@footer.contact">Contact</a></li>
+        <li><a routerLink="/" fragment="infos">Contact</a></li>
         <li>
-          <a href="https://www.instagram.com/" rel="noopener" i18n="@@footer.instagram">
-            Instagram
-          </a>
+          <a href="https://www.instagram.com/" rel="noopener"> Instagram </a>
         </li>
-        <li><a routerLink="/mentions-legales" i18n="@@footer.legal">Mentions légales</a></li>
-        <li><a routerLink="/cgv" i18n="@@footer.terms">CGV</a></li>
+        <li><a routerLink="/mentions-legales">Mentions légales</a></li>
+        <li><a routerLink="/cgv">CGV</a></li>
         <li>
-          <a routerLink="/confidentialite" i18n="@@footer.privacy">Confidentialité</a>
+          <a routerLink="/confidentialite">Confidentialité</a>
         </li>
-        <li><a routerLink="/allergenes" i18n="@@footer.allergens">Allergènes</a></li>
+        <li><a routerLink="/allergenes">Allergènes</a></li>
       </ul>
       <app-theme-switcher />
-      <p class="site-footer__copy" i18n="@@footer.copy">© {{ year }} Le Restaurant</p>
+      <p class="site-footer__copy">© {{ year }} Greenadine</p>
     </footer>
   `,
 })

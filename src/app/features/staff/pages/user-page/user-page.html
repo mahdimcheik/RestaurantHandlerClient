@@ -1,6 +1,4 @@
-<a class="page-head__back" routerLink="/gestion/utilisateurs" i18n="@@users.back">
-  ← Tous les utilisateurs
-</a>
+<a class="page-head__back" routerLink="/gestion/utilisateurs"> ← Tous les utilisateurs </a>
 
 @if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
@@ -18,39 +16,39 @@
 
   <div class="sheet">
     <section class="sheet__section" aria-labelledby="user-info">
-      <h2 id="user-info" i18n="@@sheet.info">Informations</h2>
+      <h2 id="user-info">Informations</h2>
       <dl class="summary">
         <div>
-          <dt i18n="@@field.email">E-mail</dt>
+          <dt>E-mail</dt>
           <dd>{{ account.email }}</dd>
         </div>
         <div>
-          <dt i18n="@@field.phone">Téléphone</dt>
+          <dt>Téléphone</dt>
           <dd>{{ account.phoneNumber || '—' }}</dd>
         </div>
         <div>
-          <dt i18n="@@users.role">Rôle</dt>
+          <dt>Rôle</dt>
           <dd>{{ roleNames(account) }}</dd>
         </div>
         <div>
-          <dt i18n="@@user.createdAt">Inscription</dt>
+          <dt>Inscription</dt>
           <dd>{{ account.createdAt | restaurantDateTime }}</dd>
         </div>
       </dl>
     </section>
 
     <section class="sheet__section" aria-labelledby="user-status">
-      <h2 id="user-status" i18n="@@list.status">Statut</h2>
+      <h2 id="user-status">Statut</h2>
       @if (status(); as current) {
         <p class="summary__strong">{{ statusLabels[current] }}</p>
       }
       @if (isSelf()) {
-        <p class="sheet__lead" i18n="@@user.self">C'est votre compte.</p>
+        <p class="sheet__lead">C'est votre compte.</p>
       } @else {
         <div class="action-bar">
           @if (status() !== 'Active') {
             <button type="button" class="btn" [disabled]="busy()" (click)="setStatus('Active')">
-              <ng-container i18n="@@user.activate">Activer le compte</ng-container>
+              Activer le compte
             </button>
           }
           @if (status() !== 'Banned') {
@@ -61,7 +59,7 @@
               (click)="askBan()"
             >
               <app-icon name="remove" />
-              <span i18n="@@user.ban">Bannir</span>
+              <span>Bannir</span>
             </button>
           }
         </div>
@@ -69,61 +67,63 @@
     </section>
 
     <section class="sheet__section" aria-labelledby="user-no-shows">
-      <h2 id="user-no-shows" i18n="@@user.noShows">Non-venues</h2>
-      <p class="summary__strong" i18n="@@user.noShowCount">
-        {account.noShowCount, plural,
-          =0 {Aucune non-venue}
-          =1 {1 non-venue}
-          other {{{ account.noShowCount }} non-venues}
+      <h2 id="user-no-shows">Non-venues</h2>
+      <p class="summary__strong">
+        @if (account.noShowCount === 0) {
+          Aucune non-venue
+        } @else if (account.noShowCount === 1) {
+          1 non-venue
+        } @else {
+          {{ account.noShowCount }} non-venues
         }
       </p>
       @if (account.noShowCount > 0) {
-        <p class="sheet__lead" i18n="@@user.noShowsLead">
-          Au-delà du seuil réglé pour le restaurant, le client ne peut plus choisir le paiement au
+        <p class="sheet__lead">
+          Au-delà du seuil réglé pour Greenadine, le client ne peut plus choisir le paiement au
           retrait.
         </p>
         <button type="button" class="btn btn--outline" [disabled]="busy()" (click)="askReset()">
-          <ng-container i18n="@@user.resetNoShows">Réautoriser le paiement au retrait</ng-container>
+          Réautoriser le paiement au retrait
         </button>
       }
     </section>
 
     <section class="sheet__section" aria-labelledby="user-orders">
-      <h2 id="user-orders" i18n="@@admin.orders">Commandes</h2>
+      <h2 id="user-orders">Commandes</h2>
       @if (ordersError()) {
         <p class="alert alert--error" role="alert">{{ ordersError() }}</p>
       } @else if (customerOrders.value(); as page) {
         @if (page.items.length === 0) {
-          <p class="empty" i18n="@@user.noOrders">Aucune commande.</p>
+          <p class="empty">Aucune commande.</p>
         } @else {
           <table class="data-table" aria-labelledby="user-orders">
             <thead>
               <tr>
-                <th scope="col" i18n="@@orders.number">N°</th>
-                <th scope="col" i18n="@@orders.pickup">Retrait</th>
-                <th scope="col" i18n="@@orders.channel">Canal</th>
-                <th scope="col" i18n="@@list.status">Statut</th>
-                <th scope="col" class="data-table__num" i18n="@@payment.total">Total</th>
+                <th scope="col">N°</th>
+                <th scope="col">Retrait</th>
+                <th scope="col">Canal</th>
+                <th scope="col">Statut</th>
+                <th scope="col" class="data-table__num">Total</th>
               </tr>
             </thead>
             <tbody>
               @for (order of page.items; track order.id) {
                 <tr>
                   <td class="data-table__main data-table__num">
-                    <a [routerLink]="['/gestion/commandes', order.id]" i18n="@@order.dailyNumber"
+                    <a [routerLink]="['/gestion/commandes', order.id]"
                       >N° {{ order.dailyNumber }}</a
                     >
                   </td>
-                  <td data-label="Retrait" i18n-data-label="@@orders.pickup">
+                  <td data-label="Retrait">
                     {{ order.pickupAt | restaurantDateTime }}
                   </td>
-                  <td data-label="Canal" i18n-data-label="@@orders.channel">
+                  <td data-label="Canal">
                     {{ channelLabel(order.channel) }}
                   </td>
-                  <td data-label="Statut" i18n-data-label="@@list.status">
+                  <td data-label="Statut">
                     <app-order-status [status]="order.status" />
                   </td>
-                  <td class="data-table__num" data-label="Total" i18n-data-label="@@payment.total">
+                  <td class="data-table__num" data-label="Total">
                     {{ order.totalCents | euros }}
                   </td>
                 </tr>
@@ -131,7 +131,7 @@
             </tbody>
           </table>
           @if (ordersPageCount() > 1) {
-            <nav class="day-stepper" aria-label="Pages" i18n-aria-label="@@users.pages">
+            <nav class="day-stepper" aria-label="Pages">
               <button
                 type="button"
                 class="icon-button"
@@ -139,9 +139,9 @@
                 (click)="previousOrders()"
               >
                 <app-icon name="back" />
-                <span class="visually-hidden" i18n="@@users.previousPage">Page précédente</span>
+                <span class="visually-hidden">Page précédente</span>
               </button>
-              <span class="day-stepper__value" aria-live="polite" i18n="@@users.pageOf"
+              <span class="day-stepper__value" aria-live="polite"
                 >Page {{ ordersPage() }} sur {{ ordersPageCount() }}</span
               >
               <button
@@ -151,13 +151,13 @@
                 (click)="nextOrders()"
               >
                 <app-icon name="forward" />
-                <span class="visually-hidden" i18n="@@users.nextPage">Page suivante</span>
+                <span class="visually-hidden">Page suivante</span>
               </button>
             </nav>
           }
         }
       } @else {
-        <p role="status" i18n="@@common.loading">Chargement…</p>
+        <p role="status">Chargement…</p>
       }
     </section>
   </div>
@@ -165,12 +165,10 @@
   <app-confirm-dialog
     #banDialog
     title="Bannir ce compte ?"
-    i18n-title="@@user.banTitle"
     confirmLabel="Bannir"
-    i18n-confirmLabel="@@user.ban"
     (confirmed)="setStatus('Banned')"
   >
-    <ng-container i18n="@@user.banText"
+    <ng-container
       >{{ userName(account) }} ne pourra plus se connecter et ses sessions seront
       fermées.</ng-container
     >
@@ -178,15 +176,11 @@
   <app-confirm-dialog
     #resetDialog
     title="Réautoriser le paiement au retrait ?"
-    i18n-title="@@user.resetTitle"
     confirmLabel="Réautoriser"
-    i18n-confirmLabel="@@user.resetConfirm"
     (confirmed)="resetNoShows()"
   >
-    <ng-container i18n="@@user.resetText"
-      >Le compteur de non-venues repasse à zéro. L'action est historisée.</ng-container
-    >
+    <ng-container>Le compteur de non-venues repasse à zéro. L'action est historisée.</ng-container>
   </app-confirm-dialog>
 } @else {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 }

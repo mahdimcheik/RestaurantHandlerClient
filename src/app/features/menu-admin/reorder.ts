@@ -40,9 +40,7 @@ export class ListOrder {
       const ids = moveItem(items, index, offset).map((entry) => entry.id);
       await firstValueFrom(this.send(ids), { defaultValue: undefined });
       const position = index + offset + 1;
-      this.notice.set(
-        $localize`:@@list.moved:« ${itemName(item)}:name: » déplacé en position ${position}:position:.`,
-      );
+      this.notice.set(`« ${itemName(item)} » déplacé en position ${position}.`);
     } catch (error) {
       this.error.set(apiErrorMessage(error));
       this.reload();

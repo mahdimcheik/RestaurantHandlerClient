@@ -8,6 +8,7 @@
   gap: var(--space-2);
   padding: var(--space-1) var(--space-2);
   border: var(--border);
+  border-radius: var(--radius);
   font-size: var(--text-sm);
   font-weight: var(--weight-bold);
   white-space: nowrap;
@@ -122,6 +123,19 @@
   }
 }
 
+// Tuile illustrée (choix d'option avec photo) : visuel en tête, à taille fixe.
+.tile--media {
+  justify-content: flex-start;
+}
+
+.tile__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
 .tile__name {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
@@ -162,6 +176,7 @@
   gap: var(--space-4);
   padding: var(--space-4);
   border: var(--border-strong);
+  border-radius: var(--radius);
   background: var(--surface-raised);
 }
 
@@ -373,6 +388,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+.picker__image {
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border-radius: var(--radius);
+  object-fit: cover;
 }
 
 .picker__chosen {

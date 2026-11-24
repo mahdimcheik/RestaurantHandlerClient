@@ -46,14 +46,14 @@ export class UserCreatePage {
     newPasswordRules(path.password);
     mustBeChecked(
       path.consents,
-      $localize`:@@user.consentsRequired:Confirmez que la personne a accepté la politique de confidentialité et le traitement de ses données.`,
+      'Confirmez que la personne a accepté la politique de confidentialité et le traitement de ses données.',
     );
   });
 
   protected readonly managerRoleId = computed(
     () => this.store.roles.value().find((role) => role.name === MANAGER_ROLE)?.id ?? null,
   );
-  protected readonly passwordHint = $localize`:@@user.passwordHint:Au moins ${PASSWORD_MIN_LENGTH}:min: caractères, à transmettre à la personne.`;
+  protected readonly passwordHint = `Au moins ${PASSWORD_MIN_LENGTH} caractères, à transmettre à la personne.`;
   protected readonly error = signal('');
 
   constructor() {
@@ -65,9 +65,7 @@ export class UserCreatePage {
     this.error.set('');
     const roleId = this.managerRoleId();
     if (!roleId) {
-      this.error.set(
-        $localize`:@@user.noManagerRole:Le rôle Manager est introuvable. Rechargez la page.`,
-      );
+      this.error.set('Le rôle Manager est introuvable. Rechargez la page.');
       return;
     }
     await submit(this.form, {

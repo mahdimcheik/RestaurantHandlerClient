@@ -9,19 +9,15 @@ import { Icon } from '../../../shared/ui/icon/icon';
   template: `
     <button type="button" class="btn btn--danger btn--icon" [disabled]="busy()" (click)="ask()">
       <app-icon name="archive" />
-      <span i18n="@@archive.action">Archiver</span>
+      <span>Archiver</span>
     </button>
     <app-confirm-dialog
       title="Archiver « {{ name() }} » ?"
-      i18n-title="@@archive.title"
       confirmLabel="Archiver définitivement"
-      i18n-confirmLabel="@@archive.confirm"
       (confirmed)="confirmed.emit()"
     >
-      <ng-container i18n="@@archive.text">
-        L'élément disparaît de la carte et ne pourra plus être modifié ni restauré. Les commandes
-        passées le conservent.
-      </ng-container>
+      L'élément disparaît de la carte et ne pourra plus être modifié ni restauré. Les commandes
+      passées le conservent.
     </app-confirm-dialog>
   `,
 })

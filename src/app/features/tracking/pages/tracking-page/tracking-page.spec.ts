@@ -126,7 +126,7 @@ describe('TrackingPage', () => {
         envelope({ ...online, status: 'AwaitingApproval', paymentChoice: 'OnSite', isPaid: false }),
       );
     await settle();
-    expect(text(fixture)).toContain('En attente de validation par le restaurant');
+    expect(text(fixture)).toContain('En attente de validation par Greenadine');
     expect(text(fixture)).toContain('À payer au retrait');
   });
 

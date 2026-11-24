@@ -1,23 +1,43 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, input } from '@angular/core';
+import { SiteTopbar } from '../site-topbar/site-topbar';
 
-/** Mise en page des écrans d'authentification : image d'un côté, contenu de l'autre. */
+/**
+ * Mise en page des écrans de compte, au nouveau design : barre du haut, accroche et assiette à
+ * gauche (grand écran seulement), contenu de la page dans une carte à droite.
+ */
 @Component({
   selector: 'app-auth-layout',
-  imports: [NgOptimizedImage, RouterLink],
+  imports: [NgOptimizedImage, SiteTopbar],
   template: `
-    <div class="auth">
-      <div class="auth__media">
-        <img ngSrc="images/auth.webp" alt="" fill priority sizes="50vw" />
-      </div>
-      <div class="auth__panel gutter">
-        <a class="auth__brand" routerLink="/" i18n="@@brand">Le Restaurant</a>
-        <div class="auth__content">
+    <div class="brand brand--1 brand-ui brand-page">
+      <div class="waves" aria-hidden="true"></div>
+      <app-site-topbar />
+      <div class="auth gutter">
+        <div class="auth__aside">
+          <p class="eyebrow">Espace client</p>
+          <p class="display-title">{{ tagline() }}</p>
+          <p class="lead">{{ lead() }}</p>
+          <div class="plate">
+            <img
+              class="plate__image"
+              ngSrc="https://ik.imagekit.io/accompagnement/margaritta.png"
+              width="525"
+              height="526"
+              priority
+              alt=""
+            />
+          </div>
+        </div>
+        <div class="auth__card">
           <ng-content />
         </div>
       </div>
     </div>
   `,
 })
-export class AuthLayout {}
+export class AuthLayout {
+  /** Accroche en grand à gauche. */
+  readonly tagline = input('Votre compte');
+  readonly lead = input('Commandez en ligne et suivez vos commandes.');
+}

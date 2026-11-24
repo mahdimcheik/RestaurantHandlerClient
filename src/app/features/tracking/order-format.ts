@@ -37,9 +37,7 @@ export function itemDetails(item: OrderItemDto): string[] {
 /** Payée, à payer au retrait, ou paiement en ligne en attente. */
 export function paymentText(order: OrderDetails): string {
   if (order.isPaid) {
-    return $localize`:@@tracking.paid:Payée`;
+    return 'Payée';
   }
-  return order.paymentChoice === 'OnSite'
-    ? $localize`:@@tracking.payOnSite:À payer au retrait`
-    : $localize`:@@tracking.payPending:Paiement en ligne non reçu`;
+  return order.paymentChoice === 'OnSite' ? 'À payer au retrait' : 'Paiement en ligne non reçu';
 }

@@ -10,22 +10,23 @@ import {
   stateOf,
   toCustomization,
 } from '../../../../shared/ordering/customization';
+import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
-import { Icon } from '../../../../shared/ui/icon/icon';
 import { EurosPipe } from '../../../../shared/utils/money';
+import { OrderDialog } from '../../components/order-dialog/order-dialog';
 import { CartStore } from '../../data-access/cart.store';
 import { quoteOf } from '../../data-access/quote';
 
 /**
- * Fiche produit (US-E04-1) : retraits, remplacements au surcoût affiché, options dans leurs
- * bornes, quantité ; le prix de la ligne vient du devis du serveur à chaque choix. `ligne`
+ * Fiche produit (US-E04-1) : retraits, remplacements au surcoût affiché et quantité sur la fiche ;
+ * les groupes d'options se choisissent pas à pas dans un second dialogue (`app-options-wizard`).
+ * Le prix de la ligne vient du devis du serveur à chaque choix. `ligne`
  * (paramètre d'adresse) rouvre une ligne du panier pour la modifier.
  */
 @Component({
   selector: 'app-product-page',
-  host: { class: 'shop' },
-  imports: [RouterLink, NgOptimizedImage, EurosPipe, Icon, ProductOptions],
+  imports: [RouterLink, NgOptimizedImage, EurosPipe, ProductOptions, OptionsWizard, OrderDialog],
   templateUrl: './product-page.html',
 })
 export class ProductPage {
@@ -56,20 +57,25 @@ export class ProductPage {
       return line ? stateOf(line.customization) : EMPTY_STATE;
     },
   });
-  protected readonly quantity = linkedSignal<string, number>({
-    source: () => `${this.id()}|${this.ligne() ?? ''}`,
-    computation: () => untracked(this.line)?.quantity ?? 1,
-  });
+  /** Une portion par ligne (petites commandes) ; une ligne modifiée garde sa quantité. */
+  private readonly quantity = computed(() => this.line()?.quantity ?? 1);
 
   protected readonly missing = computed(() => {
     const product = this.product();
     return product ? missingGroups(product, this.state()) : [];
   });
-  protected readonly missingLabels = computed(() =>
-    this.missing()
-      .map((group) => group.label)
-      .join(', '),
-  );
+  /**
+   * Assistant des groupes d'options, par-dessus la fiche : ouvert d'office dès qu'un produit
+   * commandable à options s'affiche (pas de nouveau à une relecture de la carte).
+   */
+  protected readonly wizardOpen = linkedSignal<string, boolean>({
+    source: () => {
+      const product = this.product();
+      const ready = !!product?.isAvailable && product.groups.length > 0;
+      return `${this.id()}|${this.ligne() ?? ''}|${ready}`;
+    },
+    computation: (key) => key.endsWith('|true'),
+  });
   private readonly customization = computed(() => {
     const product = this.product();
     if (!product) {
@@ -96,23 +102,24 @@ export class ProductPage {
     this.store.card.load();
   }
 
-  protected step(delta: 1 | -1): void {
-    this.quantity.update((quantity) => Math.min(99, Math.max(1, quantity + delta)));
-  }
-
   protected async add(): Promise<void> {
     const product = this.product();
     if (!product || !this.canAdd()) {
       return;
     }
+    this.wizardOpen.set(false);
     const line = this.line();
     if (line) {
       this.cart.customize(line.key, this.customization());
-      this.cart.setQuantity(line.key, this.quantity());
-      await this.router.navigateByUrl('/panier');
+      await this.close();
       return;
     }
     this.cart.addProduct(product, this.customization(), this.quantity());
-    await this.router.navigateByUrl('/commander');
+    await this.close();
+  }
+
+  /** Retour à la carte, qui referme le dialogue sans la faire défiler. */
+  private async close(): Promise<void> {
+    await this.router.navigate(['/commander'], { scroll: 'manual' });
   }
 }

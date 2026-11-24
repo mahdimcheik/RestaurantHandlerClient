@@ -1,6 +1,6 @@
 <div class="gutter shop__page shop__page--narrow">
   <div class="tracking__bar">
-    <h1 i18n="@@tracking.title">Suivi de commande</h1>
+    <h1>Suivi de commande</h1>
     <app-connection-status />
   </div>
   <app-connection-banner />
@@ -13,45 +13,39 @@
       aria-labelledby="tracking-number"
     >
       <p class="order-number">
-        <span class="order-number__label" i18n="@@tracking.yourNumber">Votre numéro</span>
-        <span id="tracking-number" class="order-number__value" i18n="@@order.dailyNumber"
-          >N° {{ order.dailyNumber }}</span
-        >
+        <span class="order-number__label">Votre numéro</span>
+        <span id="tracking-number" class="order-number__value">N° {{ order.dailyNumber }}</span>
       </p>
       <p class="tracking__status" role="status" aria-live="polite">
         <app-order-status [status]="order.status" [customer]="true" />
       </p>
       @if (ready()) {
-        <p class="tracking__ready" i18n="@@tracking.readyHint">
-          Votre commande vous attend au comptoir : donnez votre numéro.
-        </p>
+        <p class="tracking__ready">Votre commande vous attend au comptoir : donnez votre numéro.</p>
       }
       @if (reason(); as reason) {
-        <p class="note">
-          <ng-container i18n="@@tracking.reason">Motif :</ng-container> {{ reason }}
-        </p>
+        <p class="note">Motif : {{ reason }}</p>
       }
 
       <dl class="facts">
         @if (!final()) {
           <div>
-            <dt i18n="@@tracking.pickup">Retrait</dt>
+            <dt>Retrait</dt>
             <dd>
               @if (order.pickupMode === 'Asap') {
-                <ng-container i18n="@@tracking.pickupAsap">Vers {{ pickupTime() }}</ng-container>
+                Vers {{ pickupTime() }}
               } @else {
-                <ng-container i18n="@@tracking.pickupSlot">À {{ pickupTime() }}</ng-container>
+                À {{ pickupTime() }}
               }
             </dd>
           </div>
         }
         <div>
-          <dt i18n="@@payment.total">Total</dt>
+          <dt>Total</dt>
           <dd>{{ order.totalCents | euros }}</dd>
         </div>
         @if (order.isPaid || !final()) {
           <div>
-            <dt i18n="@@tracking.payment">Paiement</dt>
+            <dt>Paiement</dt>
             <dd>{{ payment() }}</dd>
           </div>
         }
@@ -59,22 +53,19 @@
 
       @if (awaitsPayment()) {
         <div class="alert" role="status">
-          <p i18n="@@tracking.awaitingPayment">
+          <p>
             Nous attendons la confirmation de votre paiement. Si vous avez quitté la page de
             paiement, vous pouvez réessayer ou payer au retrait.
           </p>
           <div class="form__actions">
             <button type="button" class="btn" [disabled]="busy()" (click)="retryPayment()">
-              <app-icon name="card" /><ng-container i18n="@@tracking.retryPayment"
-                >Payer en ligne</ng-container
-              >
+              <app-icon name="card" /><ng-container>Payer en ligne</ng-container>
             </button>
             <button
               type="button"
               class="btn btn--outline"
               [disabled]="busy()"
               (click)="switchToOnSite()"
-              i18n="@@tracking.switchOnSite"
             >
               Payer au retrait
             </button>
@@ -82,8 +73,8 @@
         </div>
       }
       @if (order.status === 'AwaitingApproval') {
-        <p class="note" i18n="@@tracking.awaitingApprovalHint">
-          Le restaurant va valider votre commande ; cette page se met à jour toute seule.
+        <p class="note">
+          Greenadine va valider votre commande ; cette page se met à jour toute seule.
         </p>
       }
 
@@ -92,7 +83,7 @@
       }
 
       <section class="ticket" aria-labelledby="tracking-items">
-        <h2 id="tracking-items" class="ticket__title" i18n="@@tracking.items">Votre commande</h2>
+        <h2 id="tracking-items" class="ticket__title">Votre commande</h2>
         <ul class="ticket__lines">
           @for (item of order.items; track item.id) {
             <li class="ticket__line">
@@ -112,7 +103,7 @@
         </ul>
         @if (order.customerNote) {
           <p class="note">
-            <ng-container i18n="@@tracking.note">Votre note :</ng-container>
+            Votre note :
             {{ order.customerNote }}
           </p>
         }
@@ -120,52 +111,35 @@
 
       <div class="form__actions">
         @if (canCancel()) {
-          <button
-            type="button"
-            class="btn btn--outline"
-            [disabled]="busy()"
-            (click)="askCancel()"
-            i18n="@@tracking.cancel"
-          >
+          <button type="button" class="btn btn--outline" [disabled]="busy()" (click)="askCancel()">
             Annuler la commande
           </button>
         }
         @if (order.isPaid && order.paymentChoice === 'Online') {
-          <a
-            class="btn btn--outline"
-            [routerLink]="['/commandes', order.id, 'recu']"
-            i18n="@@tracking.receipt"
-            >Reçu</a
-          >
+          <a class="btn btn--outline" [routerLink]="['/commandes', order.id, 'recu']">Reçu</a>
         }
         @if (final()) {
-          <a class="btn" routerLink="/commander" i18n="@@tracking.orderAgain">Commander</a>
+          <a class="btn" routerLink="/commander">Commander</a>
         }
-        <a class="link-button" routerLink="/commandes" i18n="@@tracking.allOrders"
-          >Toutes mes commandes</a
-        >
+        <a class="link-button" routerLink="/commandes">Toutes mes commandes</a>
       </div>
     </section>
   } @else if (notFound()) {
-    <p class="alert alert--error" role="alert" i18n="@@tracking.notFound">
-      Commande introuvable sur ce compte.
-    </p>
+    <p class="alert alert--error" role="alert">Commande introuvable sur ce compte.</p>
   } @else if (loadError()) {
     <p class="alert alert--error" role="alert">{{ loadError() }}</p>
   } @else {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   }
 </div>
 
 <app-confirm-dialog
   #cancelDialog
   title="Annuler la commande ?"
-  i18n-title="@@tracking.cancelTitle"
   confirmLabel="Annuler la commande"
-  i18n-confirmLabel="@@tracking.cancelConfirm"
   (confirmed)="cancel()"
 >
-  <ng-container i18n="@@tracking.cancelText"
+  <ng-container
     >La commande ne sera pas préparée. Un paiement en ligne est remboursé
     automatiquement.</ng-container
   >

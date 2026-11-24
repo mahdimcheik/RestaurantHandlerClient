@@ -121,7 +121,7 @@ export class CheckoutPage {
 
   protected asapText(): string {
     const minutes = this.state()?.asapDelayMinutes ?? 0;
-    return $localize`:@@shop.asapEstimate:Dès que possible (prête dans ~${minutes}:minutes: min)`;
+    return `Dès que possible (prête dans ~${minutes} min)`;
   }
 
   /** Un échec garde le panier et sa clé : un nouvel essai ne crée pas de doublon (R10). */

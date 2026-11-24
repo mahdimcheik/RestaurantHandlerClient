@@ -99,10 +99,10 @@ export class RestaurantPage {
     lengthRule(path.address, 256);
     lengthRule(path.phone, 32);
     pattern(path.siret, /^\s*(\d\s*){14}$|^\s*$/, {
-      message: $localize`:@@restaurant.siretFormat:Le SIRET compte 14 chiffres.`,
+      message: 'Le SIRET compte 14 chiffres.',
     });
     pattern(path.vatNumber, /^\s*[Ff][Rr]\s*([0-9A-Za-z]\s*){2}(\d\s*){9}$|^\s*$/, {
-      message: $localize`:@@restaurant.vatFormat:N° de TVA au format FRxx123456789.`,
+      message: 'N° de TVA au format FRxx123456789.',
     });
     integerRange(path.asapDelayMinutes, 0, 240);
     integerRange(path.slotDurationMinutes, 5, 120);
@@ -138,7 +138,7 @@ export class RestaurantPage {
           await firstValueFrom(this.restaurant.updateSettings(toSettingsWrite(this.model())));
           this.history.reload();
           this.opening.reload();
-          this.notice.set($localize`:@@sheet.saved:Modifications enregistrées.`);
+          this.notice.set('Modifications enregistrées.');
         } catch (error) {
           this.error.set(apiErrorMessage(error));
         }

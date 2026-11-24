@@ -23,7 +23,7 @@ const info: RestaurantInfo = {
 };
 
 describe('HomePage', () => {
-  it('affiche le restaurant de l’API, son état d’ouverture et le lien vers la carte', async () => {
+  it('affiche le carrousel au nom du restaurant, son état d’ouverture et les infos pratiques', async () => {
     TestBed.configureTestingModule({
       imports: [HomePage],
       providers: [
@@ -45,8 +45,10 @@ describe('HomePage', () => {
 
     expect(el.querySelectorAll('h1').length).toBe(1);
     expect(el.querySelector('h1')?.textContent).toContain('Chez Nino');
-    expect(el.querySelector('a.btn')?.getAttribute('href')).toBe('/commander');
-    expect(text(fixture)).toContain('Ouvert');
+    expect(el.querySelector('.showcase a[href="/commander"]')).not.toBeNull();
+    expect(el.querySelector('.showcase a[href="/panier"]')).not.toBeNull();
+    expect(el.querySelector('.showcase__pause')?.textContent).toContain('pause');
+    expect(el.querySelector('#infos')?.textContent).toContain('Ouvert');
     expect(text(fixture)).toContain('3 place du Marché');
     expect(text(fixture)).toContain('11:30 – 14:30');
     expect(text(fixture)).toContain('Noël');

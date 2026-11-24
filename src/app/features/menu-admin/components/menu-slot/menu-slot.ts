@@ -133,7 +133,7 @@ export class MenuSlot {
             minChoices: rules.minChoices,
             maxChoices: rules.maxChoices,
           }),
-          $localize`:@@menuSlot.saved:Emplacement enregistré.`,
+          'Emplacement enregistré.',
         );
         return undefined;
       },
@@ -170,7 +170,7 @@ export class MenuSlot {
               extraPriceCents: parseEuros(option.extraPrice) ?? 0,
             })),
           }),
-          $localize`:@@menuSlot.productsSaved:Produits de l'emplacement enregistrés.`,
+          `Produits de l'emplacement enregistrés.`,
         );
         return undefined;
       },

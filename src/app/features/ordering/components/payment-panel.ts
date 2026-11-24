@@ -30,25 +30,25 @@ let nextId = 0;
   imports: [Icon, EurosPipe, TextField],
   template: `
     <section class="payment" [attr.aria-labelledby]="id + '-title'">
-      <h2 [id]="id + '-title'" i18n="@@payment.title">Encaissement</h2>
+      <h2 [id]="id + '-title'">Encaissement</h2>
       <dl class="payment__amounts">
         <div>
-          <dt i18n="@@payment.total">Total</dt>
+          <dt>Total</dt>
           <dd>{{ order().totalCents | euros }}</dd>
         </div>
         @if (order().paidCents > 0) {
           <div>
-            <dt i18n="@@payment.paid">Déjà payé</dt>
+            <dt>Déjà payé</dt>
             <dd>{{ order().paidCents | euros }}</dd>
           </div>
         }
         <div class="payment__due">
-          <dt i18n="@@payment.due">Reste à encaisser</dt>
+          <dt>Reste à encaisser</dt>
           <dd>{{ remaining() | euros }}</dd>
         </div>
       </dl>
 
-      <p class="field__hint" i18n="@@payment.oneTap">
+      <p class="field__hint">
         Une touche enregistre tout le reste avec ce moyen, après encaissement sur la caisse.
       </p>
       <div class="payment__methods">
@@ -65,16 +65,15 @@ let nextId = 0;
       </div>
 
       <details class="payment__mixed">
-        <summary i18n="@@payment.mixed">Paiement mixte</summary>
+        <summary>Paiement mixte</summary>
         <form class="form" novalidate (submit)="declarePart($event)">
           <app-text-field
             [field]="partForm.amount"
             label="Montant encaissé (€)"
-            i18n-label="@@payment.amount"
             inputmode="decimal"
           />
           <fieldset class="segmented">
-            <legend class="segmented__legend" i18n="@@payment.method">Moyen</legend>
+            <legend class="segmented__legend">Moyen</legend>
             @for (option of methods; track option.method) {
               <label class="segmented__option">
                 <input
@@ -89,9 +88,7 @@ let nextId = 0;
             }
           </fieldset>
           <div class="form__actions">
-            <button type="submit" class="btn" [disabled]="busy()" i18n="@@payment.recordPart">
-              Enregistrer ce montant
-            </button>
+            <button type="submit" class="btn" [disabled]="busy()">Enregistrer ce montant</button>
           </div>
         </form>
       </details>
@@ -126,7 +123,7 @@ export class PaymentPanel {
     validate(path.amount, ({ value }) => {
       const cents = parseEuros(value());
       return cents !== null && cents <= 0
-        ? { kind: 'positive', message: $localize`:@@payment.positive:Montant supérieur à zéro.` }
+        ? { kind: 'positive', message: 'Montant supérieur à zéro.' }
         : null;
     });
   });

@@ -6,16 +6,16 @@ import { Component, input } from '@angular/core';
   template: `
     <span class="badges">
       @if (archived()) {
-        <span class="badge badge--muted" i18n="@@status.archived">Archivé</span>
+        <span class="badge badge--muted">Archivé</span>
       } @else {
         @if (!active()) {
-          <span class="badge badge--muted" i18n="@@status.inactive">Inactif</span>
+          <span class="badge badge--muted">Inactif</span>
         }
         @if (!available()) {
-          <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+          <span class="badge badge--danger">Rupture</span>
         }
         @if (active() && available()) {
-          <span class="badge" i18n="@@status.active">Actif</span>
+          <span class="badge">Actif</span>
         }
       }
     </span>

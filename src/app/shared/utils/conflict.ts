@@ -5,4 +5,4 @@ export function isConflict(error: unknown): boolean {
   return error instanceof HttpErrorResponse && error.status === 409;
 }
 
-export const CONFLICT_MESSAGE = $localize`:@@order.conflict:La commande a changé entre-temps : elle a été rechargée.`;
+export const CONFLICT_MESSAGE = 'La commande a changé entre-temps : elle a été rechargée.';

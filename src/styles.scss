@@ -2,6 +2,11 @@
 // @use '@fontsource/barlow/400.css';
 // @use '@fontsource/barlow/500.css';
 // @use '@fontsource/barlow/700.css';
+// Polices du nouveau design (à activer après `npm install @fontsource/dela-gothic-one @fontsource/archivo`) :
+// @use '@fontsource/dela-gothic-one/400.css';
+// @use '@fontsource/archivo/500.css';
+// @use '@fontsource/archivo/600.css';
+// @use '@fontsource/archivo/700.css';
 @use 'styles/tokens';
 @use 'styles/base';
 @use 'styles/layout';
@@ -12,3 +17,6 @@
 @use 'styles/kitchen';
 @use 'styles/reports';
 @use 'styles/shop';
+@use 'styles/brand';
+@use 'styles/order-page';
+@use 'styles/hero';

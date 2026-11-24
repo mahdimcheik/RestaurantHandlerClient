@@ -38,16 +38,16 @@ const ASAP_MAX = 240;
     >
       @if (paused()) {
         <app-icon name="play" />
-        <span i18n="@@service.openResume">Reprendre…</span>
+        <span>Reprendre…</span>
       } @else {
         <app-icon name="pause" />
-        <span i18n="@@service.openPause">Pause…</span>
+        <span>Pause…</span>
       }
     </button>
 
     <dialog #dialog class="dialog" aria-labelledby="service-title">
       <div class="dialog__body">
-        <h2 id="service-title" i18n="@@service.title">Commandes en ligne</h2>
+        <h2 id="service-title">Commandes en ligne</h2>
         <p class="service-control__state">
           <app-icon [name]="icon()" />
           <span>{{ label() }}</span>
@@ -67,11 +67,11 @@ const ASAP_MAX = 240;
             (click)="resume()"
           >
             <app-icon name="play" />
-            <span i18n="@@service.resume">Reprendre les commandes</span>
+            <span>Reprendre les commandes</span>
           </button>
         } @else {
           <fieldset class="form__group">
-            <legend class="field__label" i18n="@@service.pauseLegend">Mettre en pause</legend>
+            <legend class="field__label">Mettre en pause</legend>
             <div class="choice-grid">
               @for (choice of pauseChoices; track choice.minutes) {
                 <button
@@ -86,33 +86,27 @@ const ASAP_MAX = 240;
             </div>
           </fieldset>
         }
-        <p class="sheet__lead" i18n="@@service.counterHint">
+        <p class="sheet__lead">
           La pause bloque seulement les commandes en ligne : la saisie au comptoir reste possible.
         </p>
 
         <fieldset class="form__group">
-          <legend class="field__label" i18n="@@service.asapLegend">
-            Délai de préparation annoncé
-          </legend>
+          <legend class="field__label">Délai de préparation annoncé</legend>
           <div class="stepper">
             <button
               type="button"
               class="icon-button"
               title="Réduire de 5 minutes"
-              i18n-title="@@service.asapLess"
               [disabled]="busy() || asap() <= 0"
               (click)="changeAsap(-step)"
             >
               −
             </button>
-            <output class="stepper__value" aria-live="polite">
-              <ng-container i18n="@@service.asapValue">{{ asap() }} min</ng-container>
-            </output>
+            <output class="stepper__value" aria-live="polite"> {{ asap() }} min </output>
             <button
               type="button"
               class="icon-button"
               title="Augmenter de 5 minutes"
-              i18n-title="@@service.asapMore"
               [disabled]="busy() || asap() >= max"
               (click)="changeAsap(step)"
             >
@@ -122,9 +116,7 @@ const ASAP_MAX = 240;
         </fieldset>
 
         <div class="form__actions">
-          <button type="button" class="btn btn--outline" (click)="close()" i18n="@@dialog.close">
-            Fermer
-          </button>
+          <button type="button" class="btn btn--outline" (click)="close()">Fermer</button>
         </div>
       </div>
     </dialog>
@@ -139,10 +131,10 @@ export class ServiceControl {
   protected readonly step = ASAP_STEP;
   protected readonly max = ASAP_MAX;
   protected readonly pauseChoices: readonly PauseChoice[] = [
-    { minutes: 15, label: $localize`:@@service.pause15:15 min` },
-    { minutes: 30, label: $localize`:@@service.pause30:30 min` },
-    { minutes: 60, label: $localize`:@@service.pause60:1 heure` },
-    { minutes: null, label: $localize`:@@service.pauseOpen:Jusqu'à reprise` },
+    { minutes: 15, label: '15 min' },
+    { minutes: 30, label: '30 min' },
+    { minutes: 60, label: '1 heure' },
+    { minutes: null, label: `Jusqu'à reprise` },
   ];
 
   protected readonly paused = computed(() => this.opening.state()?.status === 'Paused');
@@ -152,9 +144,7 @@ export class ServiceControl {
     if (state) {
       return describeOpening(state);
     }
-    return this.opening.error()
-      ? $localize`:@@service.unknown:État d'ouverture indisponible`
-      : $localize`:@@common.loading:Chargement…`;
+    return this.opening.error() ? `État d'ouverture indisponible` : 'Chargement…';
   });
   protected readonly icon = computed<IconName>(() => {
     switch (this.opening.state()?.status) {

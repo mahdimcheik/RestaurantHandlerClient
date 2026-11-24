@@ -79,7 +79,7 @@ export function prefilledChoices(menu: ComposableMenu): MenuChoice[] {
             >
               <span class="tile__name">{{ option.name }}</span>
               @if (!option.isAvailable) {
-                <span class="tile__meta" i18n="@@status.outOfStock">Rupture</span>
+                <span class="tile__meta">Rupture</span>
               } @else if (option.extraPriceCents > 0) {
                 <span class="tile__meta">+ {{ option.extraPriceCents | euros }}</span>
               }
@@ -96,16 +96,13 @@ export function prefilledChoices(menu: ComposableMenu): MenuChoice[] {
                     — {{ choice.customization.labels.join(', ') }}
                   }
                   @if (needsOptions(choice)) {
-                    <span class="badge badge--danger" i18n="@@counter.choiceMissing"
-                      >Choix à faire</span
-                    >
+                    <span class="badge badge--danger">Choix à faire</span>
                   }
                 </span>
                 <button
                   type="button"
                   class="btn btn--outline"
                   (click)="customize.emit({ choice, product, quick: false })"
-                  i18n="@@counter.customizeNamed"
                 >
                   Personnaliser {{ choice.productName }}
                 </button>

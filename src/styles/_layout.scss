@@ -95,24 +95,6 @@ main {
   }
 }
 
-// Bloc d'accueil centré : titre, accroche, action.
-.hero {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-5);
-  padding-block: var(--space-10);
-  text-align: center;
-}
-
-.hero__title {
-  font-size: clamp(var(--text-2xl), 10vw, var(--text-3xl));
-}
-
-.hero__lead {
-  font-size: var(--text-lg);
-  color: var(--color-muted);
-}
-
 .site-header__user {
   color: var(--color-muted);
 }
@@ -134,63 +116,4 @@ main {
 
 .banner__status:empty {
   display: none;
-}
-
-// Écrans d'authentification : image et formulaire côte à côte, formulaire seul sur mobile.
-.auth {
-  display: grid;
-  min-height: 100dvh;
-
-  @media (min-width: 64rem) {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.auth__media {
-  position: relative;
-  display: none;
-  border-right: var(--border);
-  background: var(--surface-sunken);
-
-  img {
-    object-fit: cover;
-  }
-
-  @media (min-width: 64rem) {
-    display: block;
-  }
-}
-
-.auth__panel {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: var(--space-6);
-  padding-block: var(--space-5) var(--space-7);
-}
-
-.auth__brand {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--tap-min);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  text-decoration: none;
-}
-
-.auth__content {
-  display: grid;
-  align-content: center;
-  gap: var(--space-5);
-  width: 100%;
-  max-width: 28rem;
-  margin-inline: auto;
-}
-
-.auth__title {
-  font-size: var(--text-2xl);
-}
-
-.auth__lead {
-  color: var(--color-muted);
 }

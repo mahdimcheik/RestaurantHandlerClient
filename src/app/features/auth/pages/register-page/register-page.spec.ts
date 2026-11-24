@@ -3,7 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { envelope } from '../../../../core/auth/testing';
-import { submitForm, text, typeInto } from '../../testing';
+import { fakeRealtime } from '../../../../core/realtime/testing';
+import { flushRestaurantInfo, submitForm, text, typeInto } from '../../testing';
 import { RegisterPage } from './register-page';
 
 describe('RegisterPage', () => {
@@ -25,14 +26,24 @@ describe('RegisterPage', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [RegisterPage],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        fakeRealtime().provider,
+      ],
     });
     fixture = TestBed.createComponent(RegisterPage);
     http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    flushRestaurantInfo(http);
     await fixture.whenStable();
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    flushRestaurantInfo(http);
+    http.verify();
+  });
 
   it('exige les consentements, un mot de passe de 8 caractères et une adresse sans +', async () => {
     typeInto(fixture, 2, 'ana+test@b.fr');

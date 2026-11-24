@@ -1,24 +1,14 @@
 import { Component, computed, input, model, output } from '@angular/core';
-import { Icon } from '../ui/icon/icon';
-import { EurosPipe, formatEuros } from '../utils/money';
-import {
-  canAddChoice,
-  CustomizationState,
-  isSingleChoice,
-  missingGroups,
-  pickChoice,
-  ruleText,
-  setIngredient,
-  stepChoice,
-} from './customization';
+import { formatEuros } from '../utils/money';
+import { CustomizationState, missingGroups, ruleText, setIngredient } from './customization';
 import {
   ChoiceGroup,
-  ChoiceOption,
   CustomizableProduct,
   ProductIngredient,
   ReplacementOption,
   replacementSurcharge,
 } from './model';
+import { OptionGroup } from './option-group';
 
 /**
  * Réglages d'un produit : « Sans X », remplacement par un ingrédient proposé (ADR-0012), choix
@@ -27,11 +17,11 @@ import {
  */
 @Component({
   selector: 'app-product-options',
-  imports: [Icon, EurosPipe],
+  imports: [OptionGroup],
   template: `
     @if (removable().length > 0) {
       <fieldset class="picker">
-        <legend class="picker__legend" i18n="@@counter.composition">Composition</legend>
+        <legend class="picker__legend">Composition</legend>
         <ul class="picker__rows">
           @for (ingredient of removable(); track ingredient.id) {
             <li class="picker__row">
@@ -40,24 +30,21 @@ import {
                 class="chip"
                 [attr.aria-pressed]="isRemoved(ingredient.id)"
                 (click)="toggleRemove(ingredient.id)"
-                i18n="@@counter.withoutButton"
               >
                 Sans {{ ingredient.name }}
               </button>
               @if (!ingredient.isAvailable) {
-                <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+                <span class="badge badge--danger">Rupture</span>
               }
               @if (candidates(ingredient).length > 0) {
                 <label class="picker__replace">
-                  <span class="visually-hidden" i18n="@@counter.replaceLabel"
-                    >Remplacer {{ ingredient.name }} par</span
-                  >
+                  <span class="visually-hidden">Remplacer {{ ingredient.name }} par</span>
                   <select
                     #replace
                     [value]="replacementOf(ingredient.id)"
                     (change)="setReplacement(ingredient.id, replace.value)"
                   >
-                    <option value="" i18n="@@counter.noReplacement">Pas de remplacement</option>
+                    <option value="">Pas de remplacement</option>
                     @for (candidate of candidates(ingredient); track candidate.id) {
                       <option
                         [value]="candidate.id"
@@ -75,73 +62,16 @@ import {
       </fieldset>
     }
 
-    @for (group of product().groups; track group.id) {
-      <fieldset class="picker" [class.picker--missing]="isMissing(group)">
-        <legend class="picker__legend">
-          {{ group.label }}
-          <span class="picker__rule">{{ rule(group) }}</span>
-        </legend>
-        @if (isSingle(group)) {
-          <div class="tiles tiles--compact">
-            @for (choice of group.choices; track choice.id) {
-              <button
-                type="button"
-                class="tile"
-                [attr.aria-pressed]="quantityOf(choice) > 0"
-                [disabled]="!choice.isAvailable"
-                (click)="pick(group, choice)"
-              >
-                <span class="tile__name">{{ choice.name }}</span>
-                @if (!choice.isAvailable) {
-                  <span class="tile__meta" i18n="@@status.outOfStock">Rupture</span>
-                } @else if (choice.extraPriceCents > 0) {
-                  <span class="tile__meta">+ {{ choice.extraPriceCents | euros }}</span>
-                }
-              </button>
-            }
-          </div>
-        } @else {
-          <ul class="picker__rows">
-            @for (choice of group.choices; track choice.id) {
-              <li class="picker__row">
-                <span class="picker__name">
-                  {{ choice.name }}
-                  @if (!choice.isAvailable) {
-                    <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
-                  } @else if (choice.extraPriceCents > 0) {
-                    <span class="picker__price">+ {{ choice.extraPriceCents | euros }}</span>
-                  }
-                </span>
-                <span class="stepper">
-                  <button
-                    type="button"
-                    class="icon-button"
-                    [disabled]="quantityOf(choice) === 0"
-                    (click)="step(group, choice, -1)"
-                  >
-                    <app-icon name="minus" />
-                    <span class="visually-hidden" i18n="@@counter.less"
-                      >Un de moins : {{ choice.name }}</span
-                    >
-                  </button>
-                  <span class="stepper__value stepper__value--small">{{ quantityOf(choice) }}</span>
-                  <button
-                    type="button"
-                    class="icon-button"
-                    [disabled]="!canAdd(group, choice)"
-                    (click)="step(group, choice, 1)"
-                  >
-                    <app-icon name="plus" />
-                    <span class="visually-hidden" i18n="@@counter.more"
-                      >Un de plus : {{ choice.name }}</span
-                    >
-                  </button>
-                </span>
-              </li>
-            }
-          </ul>
-        }
-      </fieldset>
+    @if (groups()) {
+      @for (group of product().groups; track group.id) {
+        <fieldset class="picker" [class.picker--missing]="isMissing(group)">
+          <legend class="picker__legend">
+            {{ group.label }}
+            <span class="picker__rule">{{ rule(group) }}</span>
+          </legend>
+          <app-option-group [group]="group" [(state)]="state" (picked)="picked.emit()" />
+        </fieldset>
+      }
     }
   `,
 })
@@ -149,6 +79,8 @@ export class ProductOptions {
   readonly product = input.required<CustomizableProduct>();
   readonly replacements = input<readonly ReplacementOption[]>([]);
   readonly state = model.required<CustomizationState>();
+  /** `false` : la composition seule, les groupes étant choisis ailleurs (assistant pas à pas). */
+  readonly groups = input(true);
   /** Un choix unique vient d'être fait (le comptoir valide alors en mode rapide). */
   readonly picked = output<void>();
 
@@ -164,8 +96,8 @@ export class ProductOptions {
   protected replaceText(ingredient: ProductIngredient, candidate: ReplacementOption): string {
     const extra = replacementSurcharge(ingredient, candidate);
     return extra
-      ? $localize`:@@order.replaceWithPrice:Remplacer par ${candidate.name}:name: (+ ${formatEuros(extra)}:price:)`
-      : $localize`:@@counter.replaceWith:Remplacer par ${candidate.name}:name:`;
+      ? `Remplacer par ${candidate.name} (+ ${formatEuros(extra)})`
+      : `Remplacer par ${candidate.name}`;
   }
 
   protected isRemoved(ingredientId: string): boolean {
@@ -189,32 +121,11 @@ export class ProductOptions {
     );
   }
 
-  protected isSingle(group: ChoiceGroup): boolean {
-    return isSingleChoice(group);
-  }
-
   protected isMissing(group: ChoiceGroup): boolean {
     return this.missing().includes(group);
   }
 
   protected rule(group: ChoiceGroup): string {
     return ruleText(group.min, group.max);
-  }
-
-  protected quantityOf(choice: ChoiceOption): number {
-    return this.state().choices[choice.id] ?? 0;
-  }
-
-  protected canAdd(group: ChoiceGroup, choice: ChoiceOption): boolean {
-    return canAddChoice(group, choice, this.state());
-  }
-
-  protected pick(group: ChoiceGroup, choice: ChoiceOption): void {
-    this.state.update((state) => pickChoice(state, group, choice));
-    this.picked.emit();
-  }
-
-  protected step(group: ChoiceGroup, choice: ChoiceOption, delta: 1 | -1): void {
-    this.state.update((state) => stepChoice(state, group, choice, delta));
   }
 }

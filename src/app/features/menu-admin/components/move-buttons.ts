@@ -13,7 +13,6 @@ import { Icon } from '../../../shared/ui/icon/icon';
       [disabled]="disabled() || first()"
       (click)="moved.emit(-1)"
       title="Monter « {{ name() }} »"
-      i18n-title="@@list.moveUp"
     >
       <app-icon name="up" />
     </button>
@@ -23,7 +22,6 @@ import { Icon } from '../../../shared/ui/icon/icon';
       [disabled]="disabled() || last()"
       (click)="moved.emit(1)"
       title="Descendre « {{ name() }} »"
-      i18n-title="@@list.moveDown"
     >
       <app-icon name="down" />
     </button>

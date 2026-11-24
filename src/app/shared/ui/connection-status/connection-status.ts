@@ -7,11 +7,11 @@ import { Icon, IconName } from '../icon/icon';
 export const CONNECTION_LOST_DELAY_MS = 5_000;
 
 const LABELS: Record<ConnectionState, string> = {
-  idle: $localize`:@@realtime.idle:Temps réel inactif`,
-  connecting: $localize`:@@realtime.connecting:Connexion…`,
-  connected: $localize`:@@realtime.connected:Temps réel connecté`,
-  reconnecting: $localize`:@@realtime.reconnecting:Reconnexion…`,
-  offline: $localize`:@@realtime.offline:Hors ligne`,
+  idle: 'Temps réel inactif',
+  connecting: 'Connexion…',
+  connected: 'Temps réel connecté',
+  reconnecting: 'Reconnexion…',
+  offline: 'Hors ligne',
 };
 
 const ICONS: Record<ConnectionState, IconName> = {
@@ -66,7 +66,7 @@ export class ConnectionStatus {
   selector: 'app-connection-banner',
   template: `
     @if (lost()) {
-      <p class="alert alert--error" role="alert" i18n="@@realtime.lost">
+      <p class="alert alert--error" role="alert">
         Connexion perdue : les informations affichées peuvent ne plus être à jour. Reconnexion
         automatique en cours…
       </p>

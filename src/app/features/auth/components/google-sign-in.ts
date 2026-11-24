@@ -14,12 +14,10 @@ import { GoogleIdentityService } from '../../../core/auth/google-identity.servic
   selector: 'app-google-sign-in',
   template: `
     @if (google.enabled) {
-      <p class="divider" i18n="@@auth.or">ou</p>
+      <p class="divider">ou</p>
       <div #button class="google-button"></div>
       @if (unavailable()) {
-        <p class="field__hint" i18n="@@auth.googleUnavailable">
-          La connexion avec Google est indisponible pour le moment.
-        </p>
+        <p class="field__hint">La connexion avec Google est indisponible pour le moment.</p>
       }
     }
   `,

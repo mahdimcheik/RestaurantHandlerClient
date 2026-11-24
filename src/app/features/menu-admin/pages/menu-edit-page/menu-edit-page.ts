@@ -142,7 +142,7 @@ export class MenuEditPage {
             const updated = await firstValueFrom(this.menus.update(id, toWrite(this.model())));
             this.menu.set(updated);
             this.model.set(toModel(updated));
-            this.notice.set($localize`:@@sheet.saved:Modifications enregistrées.`);
+            this.notice.set('Modifications enregistrées.');
           } else {
             const created = await firstValueFrom(this.menus.create(toWrite(this.model())));
             await this.router.navigate(['/gestion/menus', created.id], { replaceUrl: true });
@@ -170,9 +170,7 @@ export class MenuEditPage {
           this.menu.set(updated);
           this.newSlot.set(emptySlot());
           this.slotForm().reset();
-          this.slotsNotice.set(
-            $localize`:@@menu.slotAdded:Emplacement « ${slot.label.trim()}:label: » ajouté.`,
-          );
+          this.slotsNotice.set(`Emplacement « ${slot.label.trim()} » ajouté.`);
         } catch (error) {
           this.slotsError.set(apiErrorMessage(error));
         }

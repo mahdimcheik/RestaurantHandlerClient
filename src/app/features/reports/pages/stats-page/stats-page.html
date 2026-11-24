@@ -1,10 +1,10 @@
 <div class="page-head">
-  <h1 i18n="@@admin.stats">Statistiques</h1>
+  <h1>Statistiques</h1>
 </div>
 
 <div class="toolbar">
   <fieldset class="segmented">
-    <legend class="segmented__legend" i18n="@@stats.period">Période</legend>
+    <legend class="segmented__legend">Période</legend>
     @for (option of periods; track option.value) {
       <label class="segmented__option">
         <input
@@ -25,9 +25,9 @@
   <div class="field">
     <label class="field__label" for="stats-from">
       @if (choice().period === 'Custom') {
-        <ng-container i18n="@@stats.from">Du</ng-container>
+        Du
       } @else {
-        <ng-container i18n="@@stats.reference">Jour de référence</ng-container>
+        Jour de référence
       }
     </label>
     <input
@@ -41,7 +41,7 @@
   </div>
   @if (choice().period === 'Custom') {
     <div class="field">
-      <label class="field__label" for="stats-to" i18n="@@stats.to">Au (inclus)</label>
+      <label class="field__label" for="stats-to">Au (inclus)</label>
       <input
         #toBox
         id="stats-to"
@@ -55,42 +55,38 @@
 </div>
 
 @if (range()) {
-  <p class="sheet__lead" aria-live="polite" i18n="@@stats.covered">Période : {{ range() }}</p>
+  <p class="sheet__lead" aria-live="polite">Période : {{ range() }}</p>
 }
 
 <section class="sheet__section" aria-labelledby="stats-sales">
-  <h2 id="stats-sales" i18n="@@stats.sales">Ventes</h2>
+  <h2 id="stats-sales">Ventes</h2>
   @if (salesError()) {
     <p class="alert alert--error" role="alert">{{ salesError() }}</p>
   } @else if (sales.value(); as report) {
-    <h3 id="stats-products" i18n="@@admin.products">Produits</h3>
+    <h3 id="stats-products">Produits</h3>
     @if (report.products.length === 0) {
-      <p class="empty" i18n="@@stats.noSales">Aucune vente sur cette période.</p>
+      <p class="empty">Aucune vente sur cette période.</p>
     } @else {
       <table class="data-table" aria-labelledby="stats-products">
         <thead>
           <tr>
-            <th scope="col" i18n="@@stats.product">Produit</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.alone">Seul</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.inMenus">Dans un menu</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.revenue">CA TTC</th>
+            <th scope="col">Produit</th>
+            <th scope="col" class="data-table__num">Seul</th>
+            <th scope="col" class="data-table__num">Dans un menu</th>
+            <th scope="col" class="data-table__num">CA TTC</th>
           </tr>
         </thead>
         <tbody>
           @for (line of report.products; track line.productId) {
             <tr>
               <th scope="row" class="data-table__main">{{ line.name }}</th>
-              <td class="data-table__num" data-label="Seul" i18n-data-label="@@stats.alone">
+              <td class="data-table__num" data-label="Seul">
                 {{ line.quantityAlone }}
               </td>
-              <td
-                class="data-table__num"
-                data-label="Dans un menu"
-                i18n-data-label="@@stats.inMenus"
-              >
+              <td class="data-table__num" data-label="Dans un menu">
                 {{ line.quantityInMenus }}
               </td>
-              <td class="data-table__num" data-label="CA TTC" i18n-data-label="@@stats.revenue">
+              <td class="data-table__num" data-label="CA TTC">
                 {{ line.revenueCents | euros }}
               </td>
             </tr>
@@ -99,26 +95,26 @@
       </table>
     }
 
-    <h3 id="stats-menus" i18n="@@admin.menus">Menus</h3>
+    <h3 id="stats-menus">Menus</h3>
     @if (report.menus.length === 0) {
-      <p class="empty" i18n="@@stats.noSales">Aucune vente sur cette période.</p>
+      <p class="empty">Aucune vente sur cette période.</p>
     } @else {
       <table class="data-table" aria-labelledby="stats-menus">
         <thead>
           <tr>
-            <th scope="col" i18n="@@stats.menu">Menu</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.quantity">Quantité</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.revenue">CA TTC</th>
+            <th scope="col">Menu</th>
+            <th scope="col" class="data-table__num">Quantité</th>
+            <th scope="col" class="data-table__num">CA TTC</th>
           </tr>
         </thead>
         <tbody>
           @for (line of report.menus; track line.menuId) {
             <tr>
               <th scope="row" class="data-table__main">{{ line.name }}</th>
-              <td class="data-table__num" data-label="Quantité" i18n-data-label="@@stats.quantity">
+              <td class="data-table__num" data-label="Quantité">
                 {{ line.quantity }}
               </td>
-              <td class="data-table__num" data-label="CA TTC" i18n-data-label="@@stats.revenue">
+              <td class="data-table__num" data-label="CA TTC">
                 {{ line.revenueCents | euros }}
               </td>
             </tr>
@@ -127,26 +123,26 @@
       </table>
     }
 
-    <h3 id="stats-supplements" i18n="@@stats.supplements">Suppléments</h3>
+    <h3 id="stats-supplements">Suppléments</h3>
     @if (report.supplements.length === 0) {
-      <p class="empty" i18n="@@stats.noSupplements">Aucun supplément vendu sur cette période.</p>
+      <p class="empty">Aucun supplément vendu sur cette période.</p>
     } @else {
       <table class="data-table" aria-labelledby="stats-supplements">
         <thead>
           <tr>
-            <th scope="col" i18n="@@stats.supplement">Supplément</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.quantity">Quantité</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.revenue">CA TTC</th>
+            <th scope="col">Supplément</th>
+            <th scope="col" class="data-table__num">Quantité</th>
+            <th scope="col" class="data-table__num">CA TTC</th>
           </tr>
         </thead>
         <tbody>
           @for (line of report.supplements; track line.ingredientId) {
             <tr>
               <th scope="row" class="data-table__main">{{ line.name }}</th>
-              <td class="data-table__num" data-label="Quantité" i18n-data-label="@@stats.quantity">
+              <td class="data-table__num" data-label="Quantité">
                 {{ line.quantity }}
               </td>
-              <td class="data-table__num" data-label="CA TTC" i18n-data-label="@@stats.revenue">
+              <td class="data-table__num" data-label="CA TTC">
                 {{ line.revenueCents | euros }}
               </td>
             </tr>
@@ -155,15 +151,15 @@
       </table>
     }
   } @else {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   }
 </section>
 
 <section class="sheet__section" aria-labelledby="stats-peaks">
-  <h2 id="stats-peaks" i18n="@@stats.peaks">Heures de pointe</h2>
+  <h2 id="stats-peaks">Heures de pointe</h2>
   <div class="toolbar">
     <fieldset class="segmented">
-      <legend class="segmented__legend" i18n="@@stats.bucket">Tranche</legend>
+      <legend class="segmented__legend">Tranche</legend>
       @for (minutes of buckets; track minutes) {
         <label class="segmented__option">
           <input
@@ -174,12 +170,12 @@
             [checked]="bucket() === minutes"
             (change)="setBucket(minutes)"
           />
-          <ng-container i18n="@@stats.minutes">{{ minutes }} min</ng-container>
+          {{ minutes }} min
         </label>
       }
     </fieldset>
     <div class="field">
-      <label class="field__label" for="stats-day" i18n="@@stats.weekday">Jour de la semaine</label>
+      <label class="field__label" for="stats-day">Jour de la semaine</label>
       <select #dayBox id="stats-day" (change)="setDay(dayBox.value)">
         @for (option of days; track option.value) {
           <option [value]="option.value" [selected]="day() === option.value">
@@ -194,17 +190,15 @@
     <p class="alert alert--error" role="alert">{{ peaksError() }}</p>
   } @else if (peaks.value(); as report) {
     @if (rows().length === 0) {
-      <p class="empty" i18n="@@stats.noOrders">Aucune commande comptée sur cette période.</p>
+      <p class="empty">Aucune commande comptée sur cette période.</p>
     } @else {
       <table class="data-table" aria-labelledby="stats-peaks">
         <thead>
           <tr>
-            <th scope="col" i18n="@@stats.slot">Tranche</th>
-            <th scope="col" i18n="@@stats.orders">Commandes</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.revenue">CA TTC</th>
-            <th scope="col" class="data-table__num" i18n="@@stats.preparation">
-              Préparation moyenne
-            </th>
+            <th scope="col">Tranche</th>
+            <th scope="col">Commandes</th>
+            <th scope="col" class="data-table__num">CA TTC</th>
+            <th scope="col" class="data-table__num">Préparation moyenne</th>
           </tr>
         </thead>
         <tbody>
@@ -213,7 +207,7 @@
               <th scope="row" class="data-table__main data-table__num">
                 {{ bucketLabel(row.start, report.bucketMinutes) }}
               </th>
-              <td data-label="Commandes" i18n-data-label="@@stats.orders">
+              <td data-label="Commandes">
                 <span class="bar">
                   <span class="bar__track" aria-hidden="true">
                     <span class="bar__fill" [style.inline-size.%]="row.share"></span>
@@ -221,14 +215,10 @@
                   <span class="bar__value">{{ row.orders }}</span>
                 </span>
               </td>
-              <td class="data-table__num" data-label="CA TTC" i18n-data-label="@@stats.revenue">
+              <td class="data-table__num" data-label="CA TTC">
                 {{ row.revenueCents | euros }}
               </td>
-              <td
-                class="data-table__num"
-                data-label="Préparation moyenne"
-                i18n-data-label="@@stats.preparation"
-              >
+              <td class="data-table__num" data-label="Préparation moyenne">
                 {{ formatMinutes(row.averagePreparationMinutes) }}
               </td>
             </tr>
@@ -237,6 +227,6 @@
       </table>
     }
   } @else {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   }
 </section>

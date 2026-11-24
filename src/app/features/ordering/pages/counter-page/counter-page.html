@@ -1,29 +1,25 @@
 <div class="page-head">
-  <h1 i18n="@@admin.counter">Comptoir</h1>
+  <h1>Comptoir</h1>
 </div>
 
 @if (closed()) {
-  <p class="alert alert--error" role="alert" i18n="@@counter.closed">
-    Le restaurant est fermé : le serveur refusera les commandes comptoir.
+  <p class="alert alert--error" role="alert">
+    Greenadine est fermé : le serveur refusera les commandes comptoir.
   </p>
 }
 
 @if (placed(); as order) {
   <section class="done-panel" aria-labelledby="counter-done-title">
-    <h2 id="counter-done-title" class="visually-hidden" i18n="@@counter.sent">Commande envoyée</h2>
+    <h2 id="counter-done-title" class="visually-hidden">Commande envoyée</h2>
     <p class="order-number" role="status">
-      <span class="order-number__label" i18n="@@counter.sentNumber"
-        >Commande envoyée en cuisine</span
-      >
-      <span class="order-number__value" i18n="@@order.dailyNumber">N° {{ order.dailyNumber }}</span>
+      <span class="order-number__label">Commande envoyée en cuisine</span>
+      <span class="order-number__value">N° {{ order.dailyNumber }}</span>
       @if (order.customerLabel) {
         <span class="order-number__label">{{ order.customerLabel }}</span>
       }
     </p>
     @if (order.isPaid) {
-      <p class="alert alert--success" role="status" i18n="@@counter.paid">
-        Payée : {{ order.totalCents | euros }}.
-      </p>
+      <p class="alert alert--success" role="status">Payée : {{ order.totalCents | euros }}.</p>
     } @else {
       <app-payment-panel [order]="order" (paid)="paid($event)" (conflict)="reloadPlaced()" />
     }
@@ -32,15 +28,9 @@
     }
     <div class="form__actions">
       <button type="button" class="btn btn--icon" (click)="newOrder()">
-        <app-icon name="plus" /><ng-container i18n="@@counter.newOrder"
-          >Nouvelle commande</ng-container
-        >
+        <app-icon name="plus" /><ng-container>Nouvelle commande</ng-container>
       </button>
-      <a
-        class="btn btn--outline"
-        [routerLink]="['/gestion/commandes', order.id]"
-        i18n="@@counter.openOrder"
-      >
+      <a class="btn btn--outline" [routerLink]="['/gestion/commandes', order.id]">
         Voir la commande
       </a>
     </div>
@@ -48,13 +38,13 @@
 } @else {
   <div class="split">
     <section class="split__main" aria-labelledby="counter-catalog-title">
-      <h2 id="counter-catalog-title" class="visually-hidden" i18n="@@counter.catalog">Carte</h2>
+      <h2 id="counter-catalog-title" class="visually-hidden">Carte</h2>
       @if (loadError()) {
         <p class="alert alert--error" role="alert">{{ loadError() }}</p>
       } @else if (loading() && categories().length === 0) {
-        <p role="status" i18n="@@common.loading">Chargement…</p>
+        <p role="status">Chargement…</p>
       } @else {
-        <div class="tabs" role="group" aria-label="Catégories" i18n-aria-label="@@admin.categories">
+        <div class="tabs" role="group" aria-label="Catégories">
           @for (category of categories(); track category.id) {
             <button
               type="button"
@@ -71,7 +61,6 @@
               class="chip chip--large"
               [attr.aria-pressed]="tab() === menusTab"
               (click)="tab.set(menusTab)"
-              i18n="@@admin.menus"
             >
               Menus
             </button>
@@ -98,13 +87,11 @@
                 @if (product.isAvailable) {
                   <span class="tile__meta">{{ product.priceCents | euros }}</span>
                 } @else {
-                  <span class="tile__meta" i18n="@@status.outOfStock">Rupture</span>
+                  <span class="tile__meta">Rupture</span>
                 }
               </button>
             } @empty {
-              <p class="empty" i18n="@@counter.noProducts">
-                Aucun produit actif dans cette catégorie.
-              </p>
+              <p class="empty">Aucun produit actif dans cette catégorie.</p>
             }
           }
         </div>
@@ -117,13 +104,19 @@
       aria-labelledby="counter-ticket-title"
       (submit)="send($event)"
     >
-      <h2 id="counter-ticket-title" class="ticket__title" i18n="@@counter.ticket">
+      <h2 id="counter-ticket-title" class="ticket__title">
         Ticket ·
-        {cart.itemCount(), plural, =0 {vide} =1 {1 article} other {{{ cart.itemCount() }} articles}}
+        @if (cart.itemCount() === 0) {
+          vide
+        } @else if (cart.itemCount() === 1) {
+          1 article
+        } @else {
+          {{ cart.itemCount() }} articles
+        }
       </h2>
 
       @if (cart.isEmpty()) {
-        <p class="empty" i18n="@@counter.emptyTicket">Touchez un produit pour l'ajouter.</p>
+        <p class="empty">Touchez un produit pour l'ajouter.</p>
       } @else {
         <ul class="ticket__lines">
           @for (line of cart.lines(); track line.key; let index = $index) {
@@ -147,9 +140,7 @@
                     (click)="cart.setQuantity(line.key, line.quantity - 1)"
                   >
                     <app-icon name="minus" />
-                    <span class="visually-hidden" i18n="@@counter.lessLine"
-                      >Un de moins : {{ line.name }}</span
-                    >
+                    <span class="visually-hidden">Un de moins : {{ line.name }}</span>
                   </button>
                   <span class="stepper__value stepper__value--small">{{ line.quantity }}</span>
                   <button
@@ -158,19 +149,17 @@
                     (click)="cart.setQuantity(line.key, line.quantity + 1)"
                   >
                     <app-icon name="plus" />
-                    <span class="visually-hidden" i18n="@@counter.moreLine"
-                      >Un de plus : {{ line.name }}</span
-                    >
+                    <span class="visually-hidden">Un de plus : {{ line.name }}</span>
                   </button>
                 </span>
                 @if (isCustomizableLine(line)) {
                   <button type="button" class="btn btn--outline" (click)="customize(line)">
-                    <ng-container i18n="@@counter.customize">Personnaliser</ng-container>
+                    Personnaliser
                     <span class="visually-hidden">{{ line.name }}</span>
                   </button>
                 }
                 <button type="button" class="link-button" (click)="cart.remove(line.key)">
-                  <ng-container i18n="@@counter.removeLine">Retirer</ng-container>
+                  Retirer
                   <span class="visually-hidden">{{ line.name }}</span>
                 </button>
               </div>
@@ -183,23 +172,18 @@
         <app-text-field
           [field]="detailsForm.firstName"
           label="Prénom pour l'appel (facultatif)"
-          i18n-label="@@counter.firstName"
           autocomplete="off"
         />
-        <app-text-field
-          [field]="detailsForm.note"
-          label="Note pour la cuisine (facultative)"
-          i18n-label="@@counter.note"
-        />
+        <app-text-field [field]="detailsForm.note" label="Note pour la cuisine (facultative)" />
       </div>
 
       <p class="ticket__total" aria-live="polite">
-        <span i18n="@@payment.total">Total</span>
+        <span>Total</span>
         <span class="ticket__total-value">
           @if (cart.isEmpty()) {
             {{ 0 | euros }}
           } @else if (total() === null && !quoteError()) {
-            <ng-container i18n="@@counter.computing">Calcul…</ng-container>
+            Calcul…
           } @else {
             {{ total() | euros }}
           }
@@ -211,12 +195,7 @@
       @if (error()) {
         <p class="alert alert--error" role="alert">{{ error() }}</p>
       }
-      <button
-        type="submit"
-        class="btn ticket__send"
-        [disabled]="cart.isEmpty() || sending()"
-        i18n="@@counter.send"
-      >
+      <button type="submit" class="btn ticket__send" [disabled]="cart.isEmpty() || sending()">
         Envoyer en cuisine
       </button>
     </form>
