@@ -1,4 +1,14 @@
-import { Component, computed, inject, linkedSignal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  linkedSignal,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
@@ -39,7 +49,10 @@ interface NavGroup {
     ConnectionStatus,
     ConnectionBanner,
   ],
-  host: { class: 'admin brand brand--1 brand-ui' },
+  host: {
+    class: 'admin brand brand--1 brand-ui',
+    '[style.--admin-bar-height.px]': 'barHeight()',
+  },
   template: `
     <a class="skip-link" href="#contenu-gestion">Aller au contenu</a>
     <div class="waves" aria-hidden="true"></div>
@@ -99,7 +112,7 @@ interface NavGroup {
       </ul>
     </nav>
     <div class="admin__main">
-      <div class="admin__bar gutter">
+      <div #bar class="admin__bar gutter">
         <app-service-control />
         <div class="admin__tools">
           <button
@@ -143,7 +156,12 @@ export class AdminLayout {
         : (previous?.value ?? ''),
   });
 
+  /** Hauteur de la barre du haut, sous laquelle se collent les en-têtes de fiche. */
+  protected readonly barHeight = signal(0);
+  private readonly bar = viewChild.required<ElementRef<HTMLElement>>('bar');
+
   constructor() {
+    this.watchBarHeight();
     this.store.info.load();
     inject(RealtimeService).start();
     this.approvals.start();
@@ -188,6 +206,20 @@ export class AdminLayout {
       ],
     },
   ];
+
+  /** La barre passe sur plusieurs lignes en écran étroit : sa hauteur est suivie. */
+  private watchBarHeight(): void {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      if (typeof ResizeObserver === 'undefined') {
+        return;
+      }
+      const element = this.bar().nativeElement;
+      const observer = new ResizeObserver(() => this.barHeight.set(element.offsetHeight));
+      observer.observe(element);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   protected logout(): void {
     this.session.logout().subscribe(() => void this.router.navigateByUrl('/'));

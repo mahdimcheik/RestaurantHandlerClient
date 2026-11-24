@@ -7,6 +7,7 @@ import {
   linkedSignal,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { applyEach, form, submit, validate } from '@angular/forms/signals';
@@ -30,6 +31,7 @@ import { SelectField, SelectOption } from '../../../../shared/ui/select-field/se
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { centsToInput, parseEuros } from '../../../../shared/utils/money';
 import { ArchiveButton } from '../../components/archive-button';
+import { ChoiceAddDialog, NewChoice } from '../../components/choice-add-dialog';
 
 interface ChoiceModel {
   /** Null pour un choix pas encore enregistré. */
@@ -47,19 +49,18 @@ interface GroupModel {
   choices: ChoiceModel[];
 }
 
-const newChoice = (): ChoiceModel => ({ id: null, name: '', extraPrice: '0,00', ingredientId: '' });
-
 const toModel = (group: OptionGroupDetails | undefined): GroupModel => ({
   label: group?.label ?? '',
   minChoices: group?.minChoices ?? 1,
   maxChoices: group?.maxChoices ?? 1,
   maxPerChoice: group?.maxPerChoice ?? 1,
-  choices: group?.choices.map((choice) => ({
-    id: choice.id,
-    name: choice.name,
-    extraPrice: centsToInput(choice.extraPriceCents),
-    ingredientId: choice.ingredientId ?? '',
-  })) ?? [newChoice(), newChoice()],
+  choices:
+    group?.choices.map((choice) => ({
+      id: choice.id,
+      name: choice.name,
+      extraPrice: centsToInput(choice.extraPriceCents),
+      ingredientId: choice.ingredientId ?? '',
+    })) ?? [],
 });
 
 const toWrite = (model: GroupModel): OptionGroupWrite => ({
@@ -81,7 +82,17 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
  */
 @Component({
   selector: 'app-option-group-edit-page',
-  imports: [RouterLink, Icon, TextField, NumberField, SelectField, ImageField, ArchiveButton],
+  imports: [
+    RouterLink,
+    Icon,
+    TextField,
+    NumberField,
+    SelectField,
+    ImageField,
+    ArchiveButton,
+    ChoiceAddDialog,
+  ],
+  host: { class: 'page--full' },
   templateUrl: './option-group-edit-page.html',
 })
 export class OptionGroupEditPage {
@@ -117,6 +128,14 @@ export class OptionGroupEditPage {
       .map((ingredient) => ({ value: ingredient.id, label: ingredient.name })),
   );
 
+  /** Prix de référence de chaque ingrédient, repris par un choix ajouté encore à 0 €. */
+  protected readonly ingredientPrices = computed(
+    () =>
+      new Map(
+        this.store.ingredients.value().map((ingredient) => [ingredient.id, ingredient.priceCents]),
+      ),
+  );
+
   /** Photo de chaque ingrédient, reprise sur la carte par un choix lié qui n'a pas la sienne. */
   protected readonly ingredientImages = computed(
     () =>
@@ -149,6 +168,7 @@ export class OptionGroupEditPage {
   protected readonly error = signal('');
   protected readonly notice = signal('');
   protected readonly archiving = signal(false);
+  private readonly choiceDialog = viewChild(ChoiceAddDialog);
 
   protected readonly uploadImage = (file: File) =>
     this.groups
@@ -228,8 +248,15 @@ export class OptionGroupEditPage {
     });
   }
 
-  protected addChoice(): void {
-    this.model.update((model) => ({ ...model, choices: [...model.choices, newChoice()] }));
+  protected openChoiceDialog(): void {
+    this.choiceDialog()?.open();
+  }
+
+  protected addChoice(choice: NewChoice): void {
+    this.model.update((model) => ({
+      ...model,
+      choices: [...model.choices, { id: null, ...choice }],
+    }));
   }
 
   protected moveChoice(index: number, offset: -1 | 1): void {

@@ -274,6 +274,17 @@
   }
 }
 
+// En-tête collé sous la barre du haut (`--admin-bar-height`, mesurée par la coquille) : le
+// titre et les actions de la fiche restent à portée pendant le défilement.
+.page-head--sticky {
+  position: sticky;
+  top: var(--admin-bar-height, 0);
+  z-index: 5;
+  padding-block: var(--space-3);
+  border-bottom: var(--border-width) solid var(--brand-shade-mid);
+  background: var(--brand-bg);
+}
+
 .page-head__back {
   display: inline-flex;
   align-items: center;
@@ -449,6 +460,16 @@
   display: grid;
   gap: var(--space-7);
   max-width: 48rem;
+}
+
+// Fiche sur toute la largeur disponible (posée sur l'hôte de la page, qui lève aussi la
+// limite de `.admin__content`).
+.page--full .sheet {
+  max-width: none;
+}
+
+.admin__content:has(> .page--full) {
+  max-width: none;
 }
 
 .sheet__section {
