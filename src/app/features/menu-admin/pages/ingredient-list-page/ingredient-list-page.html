@@ -75,11 +75,10 @@
               @if (ingredient.imageUrl) {
                 <img
                   class="data-table__thumb"
-                  [src]="ingredient.imageUrl"
+                  [ngSrc]="ingredient.imageUrl"
                   width="40"
                   height="40"
                   alt=""
-                  loading="lazy"
                 />
               }
               {{ ingredient.name }}

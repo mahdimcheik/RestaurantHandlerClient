@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import {
   Component,
   computed,
@@ -83,6 +84,7 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
 @Component({
   selector: 'app-option-group-edit-page',
   imports: [
+    NgOptimizedImage,
     RouterLink,
     Icon,
     TextField,

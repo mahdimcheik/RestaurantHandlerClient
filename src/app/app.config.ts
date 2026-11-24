@@ -18,6 +18,8 @@ import { authInterceptor } from './core/auth/auth.interceptor';
 import { idempotencyInterceptor } from './core/http/idempotency.interceptor';
 import { SessionService } from './core/auth/session.service';
 import { provideServiceWorker } from '@angular/service-worker';
+import { IMAGE_CONFIG, IMAGE_LOADER } from '@angular/common';
+import { CATALOG_IMAGE_WIDTHS, catalogImageLoader } from './core/images/catalog-image-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,6 +36,8 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
     provideAppInitializer(() => inject(SessionService).restore()),
+    { provide: IMAGE_LOADER, useValue: catalogImageLoader },
+    { provide: IMAGE_CONFIG, useValue: { breakpoints: CATALOG_IMAGE_WIDTHS } },
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
