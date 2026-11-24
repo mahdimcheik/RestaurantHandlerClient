@@ -137,10 +137,6 @@ export class HeroCarousel {
 
   private readonly flavourFrame = computed(() => flavourAt(this.position()));
 
-  /** Couleurs du moment : mélange en CSS des jetons du parfum courant et du suivant. */
-  protected readonly background = computed(() => mix('bg', this.flavourFrame()));
-  protected readonly ink = computed(() => mix('ink', this.flavourFrame()));
-
   protected readonly flavour = computed(() => {
     const frame = this.flavourFrame();
     return {
@@ -273,10 +269,4 @@ export class HeroCarousel {
 
 function prefersReducedMotion(): boolean {
   return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-}
-
-function mix(kind: 'bg' | 'ink', frame: { current: number; next: number; t: number }): string {
-  const from = `var(--flavour-${frame.current + 1}-${kind})`;
-  const to = `var(--flavour-${frame.next + 1}-${kind})`;
-  return frame.t === 0 ? from : `color-mix(in srgb, ${from}, ${to} ${(frame.t * 100).toFixed(2)}%)`;
 }

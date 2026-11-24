@@ -254,7 +254,7 @@ export function easeInOut(t: number): number {
   return 3 * (1 - u) * u * u + u * u * u;
 }
 
-/** Parfum affiché pour la position `p` : couleurs à mélanger et libellé en fondu. */
+/** Parfum affiché pour la position `p` : libellé en fondu. */
 export interface FlavourFrame {
   /** Parfum courant et suivant (indices 0 à 4). */
   current: number;

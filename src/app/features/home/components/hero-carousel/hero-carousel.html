@@ -1,9 +1,7 @@
 <section
   #section
-  class="showcase brand"
+  class="showcase brand brand--2"
   [class.showcase--portrait]="layout().portrait"
-  [style.--brand-bg]="background()"
-  [style.--brand-ink]="ink()"
   [style.--u]="u() + 'px'"
   aria-labelledby="hero-title"
 >
@@ -104,7 +102,7 @@
     >
   </div>
 
-  <div class="showcase__vignette" aria-hidden="true"></div>
+  <!-- <div class="showcase__vignette" aria-hidden="true"></div> -->
 
   <ng-content />
 

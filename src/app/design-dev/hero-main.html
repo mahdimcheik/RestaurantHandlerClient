@@ -1,779 +1,767 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Gelato Lab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --u: 1px;
-      --hs: 760;
-      --bg: #9C8FD0;
-      --ink: #34284A;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Gelato Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Archivo:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --u: 1px;
+        --hs: 760;
+        --bg: #9c8fd0;
+        --ink: #34284a;
+      }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        -webkit-user-select: none;
+      }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg);
-      font-family: "Archivo", system-ui, -apple-system, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg);
+        font-family:
+          'Archivo',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-    .hero {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity 0.6s ease;
-      background-color: var(--bg);
-    }
-
-    .hero.ready {
-      opacity: 1;
-    }
-
-    /* Background wavy lines */
-    .waves {
-      position: absolute;
-      inset: 0;
-      opacity: 0.5;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 C 15 4, 30 4, 45 14 S 75 24, 90 14 S 112 6, 120 14' fill='none' stroke='rgba(30,20,50,0.16)' stroke-width='1.1'/%3E%3C/svg%3E");
-      background-size: calc(120 * var(--u)) calc(28 * var(--u));
-      background-repeat: repeat;
-      z-index: 1;
-    }
-
-    /* Vignette */
-    .vignette {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 75% 70% at 50% 45%, transparent 55%, rgba(20,10,40,0.22) 100%);
-      pointer-events: none;
-      z-index: 15;
-    }
-
-    /* Stage */
-    .stage {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: calc(1440 * var(--u));
-      height: calc(900 * var(--u));
-      transform: translate(-50%, -50%);
-      pointer-events: auto;
-      z-index: 2;
-    }
-
-    body.portrait .stage {
-      width: calc(390 * var(--u));
-      height: calc(var(--hs) * var(--u));
-    }
-
-    /* Ring & Ring Shadow */
-    .ring-shadow {
-      position: absolute;
-      left: 0;
-      top: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 2;
-      will-change: transform;
-    }
-
-    .ring {
-      position: absolute;
-      left: 0;
-      top: 0;
-      border-radius: 50%;
-      background-repeat: no-repeat;
-      pointer-events: none;
-      z-index: 2;
-      will-change: transform;
-    }
-
-    /* Title */
-    .title {
-      position: absolute;
-      font-family: "Dela Gothic One", cursive, sans-serif;
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-      color: var(--ink);
-      z-index: 3;
-      margin: 0;
-      padding: 0;
-      pointer-events: none;
-    }
-
-    /* Bowls & shadows */
-    .coupe-shadow {
-      position: absolute;
-      left: 0;
-      top: 0;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(25,12,45,0.30) 0%, rgba(25,12,45,0.14) 48%, transparent 70%);
-      pointer-events: none;
-      transform-origin: center center;
-      will-change: transform;
-    }
-
-    .coupe {
-      position: absolute;
-      left: 0;
-      top: 0;
-      pointer-events: none;
-      transform-origin: center center;
-      will-change: transform;
-    }
-
-    /* Props */
-    .prop {
-      position: absolute;
-      left: 0;
-      top: 0;
-      pointer-events: none;
-      filter: drop-shadow(0 calc(6 * var(--u)) calc(8 * var(--u)) rgba(25,12,45,0.22));
-      z-index: 5;
-      background-repeat: no-repeat;
-    }
-
-    /* Eyebrow, Flavour, Buy */
-    .eyebrow {
-      position: absolute;
-      z-index: 6;
-      font-family: "Archivo", sans-serif;
-      font-weight: 600;
-      font-size: max(9px, calc(15 * var(--u)));
-      letter-spacing: 0.42em;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: calc(18 * var(--u));
-      white-space: nowrap;
-    }
-
-    .eyebrow::before,
-    .eyebrow::after {
-      content: "";
-      display: block;
-      width: calc(64 * var(--u));
-      height: calc(1.5 * var(--u));
-      background-color: currentColor;
-    }
-
-    .eyebrow::after {
-      margin-left: calc(-6 * var(--u));
-    }
-
-    body.portrait .eyebrow {
-      font-size: max(9px, calc(12 * var(--u)));
-      gap: calc(12 * var(--u));
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    body.portrait .eyebrow::before,
-    body.portrait .eyebrow::after {
-      width: calc(40 * var(--u));
-    }
-
-    .flavour {
-      position: absolute;
-      z-index: 6;
-      font-family: "Archivo", sans-serif;
-      font-weight: 700;
-      font-size: max(11px, calc(21 * var(--u)));
-      line-height: 1.28;
-      letter-spacing: 0.2em;
-      color: var(--ink);
-      white-space: pre-line;
-      will-change: transform, opacity;
-    }
-
-    body.portrait .flavour {
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: max(11px, calc(17 * var(--u)));
-    }
-
-    .buy {
-      position: absolute;
-      z-index: 6;
-      width: calc(156 * var(--u));
-      height: calc(50 * var(--u));
-      border: calc(2 * var(--u)) solid var(--ink);
-      border-radius: calc(8 * var(--u));
-      background: transparent;
-      font-family: "Archivo", sans-serif;
-      font-weight: 600;
-      font-size: max(9px, calc(14 * var(--u)));
-      letter-spacing: 0.2em;
-      color: var(--ink);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.25s ease, color 0.25s ease;
-      outline: none;
-    }
-
-    .buy:hover {
-      background-color: var(--ink);
-      color: var(--bg);
-    }
-
-    body.portrait .buy {
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(140 * var(--u));
-      height: calc(46 * var(--u));
-      font-size: max(9px, calc(13 * var(--u)));
-    }
-
-    /* Nav buttons */
-    .nav-btn {
-      position: absolute;
-      top: calc(26 * var(--u));
-      width: calc(60 * var(--u));
-      height: calc(60 * var(--u));
-      border: calc(1.5 * var(--u)) solid color-mix(in srgb, #fff 55%, transparent);
-      border-radius: calc(14 * var(--u));
-      background: transparent;
-      color: #fff;
-      z-index: 20;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      padding: 0;
-      outline: none;
-      transition: background-color 0.25s ease;
-    }
-
-    .nav-btn:hover {
-      background: rgba(255,255,255,0.14);
-    }
-
-    .nav-menu {
-      left: calc(40 * var(--u));
-    }
-
-    .nav-cart {
-      right: calc(40 * var(--u));
-    }
-
-    .nav-btn svg {
-      width: calc(24 * var(--u));
-      height: calc(24 * var(--u));
-      display: block;
-    }
-
-    body.portrait .nav-btn {
-      top: calc(18 * var(--u));
-      width: calc(48 * var(--u));
-      height: calc(48 * var(--u));
-      border-radius: calc(12 * var(--u));
-    }
-
-    body.portrait .nav-menu {
-      left: calc(18 * var(--u));
-    }
-
-    body.portrait .nav-cart {
-      right: calc(18 * var(--u));
-    }
-
-    body.portrait .nav-btn svg {
-      width: calc(21 * var(--u));
-      height: calc(21 * var(--u));
-    }
-
-    @media (prefers-reduced-motion: reduce) {
       .hero {
-        transition: none !important;
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        background-color: var(--bg);
       }
-    }
-  </style>
-</head>
-<body>
-  <main class="hero" id="hero" aria-label="Gelato Lab">
-    <div class="waves"></div>
-    <div class="stage" id="stage">
-      <div class="ring-shadow" id="ringShadow"></div>
-      <div class="ring" id="ring"></div>
-      <h1 class="title" id="title">GELATO LAB</h1>
-      <!-- Script appends: 5 × (div.coupe-shadow + img.coupe), then 5 × div.prop -->
-      <div class="eyebrow" id="eyebrow">ARTISAN</div>
-      <p class="flavour" id="flavour">BERRY /<br>ROSE</p>
-      <button class="buy" id="buyBtn" type="button">BUY NOW</button>
-    </div>
-    <div class="vignette"></div>
-    <button class="nav-btn nav-menu" type="button" aria-label="Open menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <path d="M4 7h16M4 12h16M4 17h16"/>
-      </svg>
-    </button>
-    <button class="nav-btn nav-cart" type="button" aria-label="Cart">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 4h2.2l2.1 10.2a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.2L20 8H6.2"/>
-        <circle cx="9.5" cy="19.5" r="1.3" fill="currentColor"/>
-        <circle cx="17" cy="19.5" r="1.3" fill="currentColor"/>
-      </svg>
-    </button>
-  </main>
 
-  <script>
-    (function() {
-      // 1. DATA & CONSTANTS
-      const FLAVOURS = [
-        { name: 'BERRY /<br>ROSE',         bg: '#9C8FD0', ink: '#34284A' },
-        { name: 'PISTACHIO /<br>CREAM',    bg: '#E8A0B4', ink: '#4A1F33' },
-        { name: 'MANGO /<br>PASSION',      bg: '#F5D4BA', ink: '#5A3216' },
-        { name: 'DARK CHOC /<br>HAZELNUT', bg: '#C49A9A', ink: '#3B2222' },
-        { name: 'BLUEBERRY /<br>LAVENDER', bg: '#EBD98A', ink: '#2D2F63' }
-      ];
+      .hero.ready {
+        opacity: 1;
+      }
 
-      const BOWL_URLS = [
-        "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062631_ec34a231-9141-457a-afd9-637effe7ec03.png&w=1400&q=90",
-        "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062744_ac87ceec-2040-4078-80fd-6b6bf016f675.png&w=1400&q=90",
-        "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062753_b99d867d-9f15-4cde-a4b0-08e68fe96931.png&w=1400&q=90",
-        "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062803_7758f16c-7b82-4eb3-9c3e-aca45f2feda3.png&w=1400&q=90",
-        "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062812_b00d1221-9fcc-425e-9c6e-a51ed94ea059.png&w=1400&q=90"
-      ];
+      /* Background wavy lines */
+      .waves {
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28' viewBox='0 0 120 28'%3E%3Cpath d='M0 14 C 15 4, 30 4, 45 14 S 75 24, 90 14 S 112 6, 120 14' fill='none' stroke='rgba(30,20,50,0.16)' stroke-width='1.1'/%3E%3C/svg%3E");
+        background-size: calc(120 * var(--u)) calc(28 * var(--u));
+        background-repeat: repeat;
+        z-index: 1;
+      }
 
-      const RING_URL = "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061250_28696685-24a2-408e-8365-47c9b892d5cc.png&w=1024&q=90";
-      const PROPS_URL = "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061331_a11a52ac-d35b-4489-afdc-0e3d97464d02.png&w=1024&q=90";
+      /* Vignette */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 75% 70% at 50% 45%,
+          transparent 55%,
+          rgba(20, 10, 40, 0.22) 100%
+        );
+        pointer-events: none;
+        z-index: 15;
+      }
 
-      const PROP_BOXES = {
-        cone:   [100, 63, 249, 276],
-        rasp:   [405, 214, 137, 132],
-        blue:   [691, 130, 186, 160],
-        spoonL: [127, 381, 234, 211],
-        spoonR: [658, 380, 233, 218]
-      };
+      /* Stage */
+      .stage {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: calc(1440 * var(--u));
+        height: calc(900 * var(--u));
+        transform: translate(-50%, -50%);
+        pointer-events: auto;
+        z-index: 2;
+      }
 
-      const COUPE_FILL = 0.985;
-      const BAND = (462.5 + 354) / 2 / 462.5; // ~0.8827027
+      body.portrait .stage {
+        width: calc(390 * var(--u));
+        height: calc(var(--hs) * var(--u));
+      }
 
-      // Hex to RGB parser
-      function parseHex(h) {
-        h = h.replace('#', '');
-        return [
-          parseInt(h.substring(0, 2), 16),
-          parseInt(h.substring(2, 4), 16),
-          parseInt(h.substring(4, 6), 16)
+      /* Ring & Ring Shadow */
+      .ring-shadow {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2;
+        will-change: transform;
+      }
+
+      .ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        z-index: 2;
+        will-change: transform;
+      }
+
+      /* Title */
+      .title {
+        position: absolute;
+        font-family: 'Dela Gothic One', cursive, sans-serif;
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        color: var(--ink);
+        z-index: 3;
+        margin: 0;
+        padding: 0;
+        pointer-events: none;
+      }
+
+      /* Bowls & shadows */
+      .coupe-shadow {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(25, 12, 45, 0.3) 0%,
+          rgba(25, 12, 45, 0.14) 48%,
+          transparent 70%
+        );
+        pointer-events: none;
+        transform-origin: center center;
+        will-change: transform;
+      }
+
+      .coupe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        transform-origin: center center;
+        will-change: transform;
+      }
+
+      /* Props */
+      .prop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 calc(6 * var(--u)) calc(8 * var(--u)) rgba(25, 12, 45, 0.22));
+        z-index: 5;
+        background-repeat: no-repeat;
+      }
+
+      /* Eyebrow, Flavour, Buy */
+      .eyebrow {
+        position: absolute;
+        z-index: 6;
+        font-family: 'Archivo', sans-serif;
+        font-weight: 600;
+        font-size: max(9px, calc(15 * var(--u)));
+        letter-spacing: 0.42em;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: calc(18 * var(--u));
+        white-space: nowrap;
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        content: '';
+        display: block;
+        width: calc(64 * var(--u));
+        height: calc(1.5 * var(--u));
+        background-color: currentColor;
+      }
+
+      .eyebrow::after {
+        margin-left: calc(-6 * var(--u));
+      }
+
+      body.portrait .eyebrow {
+        font-size: max(9px, calc(12 * var(--u)));
+        gap: calc(12 * var(--u));
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      body.portrait .eyebrow::before,
+      body.portrait .eyebrow::after {
+        width: calc(40 * var(--u));
+      }
+
+      .flavour {
+        position: absolute;
+        z-index: 6;
+        font-family: 'Archivo', sans-serif;
+        font-weight: 700;
+        font-size: max(11px, calc(21 * var(--u)));
+        line-height: 1.28;
+        letter-spacing: 0.2em;
+        color: var(--ink);
+        white-space: pre-line;
+        will-change: transform, opacity;
+      }
+
+      body.portrait .flavour {
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: max(11px, calc(17 * var(--u)));
+      }
+
+      .buy {
+        position: absolute;
+        z-index: 6;
+        width: calc(156 * var(--u));
+        height: calc(50 * var(--u));
+        border: calc(2 * var(--u)) solid var(--ink);
+        border-radius: calc(8 * var(--u));
+        background: transparent;
+        font-family: 'Archivo', sans-serif;
+        font-weight: 600;
+        font-size: max(9px, calc(14 * var(--u)));
+        letter-spacing: 0.2em;
+        color: var(--ink);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background-color 0.25s ease,
+          color 0.25s ease;
+        outline: none;
+      }
+
+      .buy:hover {
+        background-color: var(--ink);
+        color: var(--bg);
+      }
+
+      body.portrait .buy {
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(140 * var(--u));
+        height: calc(46 * var(--u));
+        font-size: max(9px, calc(13 * var(--u)));
+      }
+
+      /* Nav buttons */
+      .nav-btn {
+        position: absolute;
+        top: calc(26 * var(--u));
+        width: calc(60 * var(--u));
+        height: calc(60 * var(--u));
+        border: calc(1.5 * var(--u)) solid color-mix(in srgb, #fff 55%, transparent);
+        border-radius: calc(14 * var(--u));
+        background: transparent;
+        color: #fff;
+        z-index: 20;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        padding: 0;
+        outline: none;
+        transition: background-color 0.25s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .nav-menu {
+        left: calc(40 * var(--u));
+      }
+
+      .nav-cart {
+        right: calc(40 * var(--u));
+      }
+
+      .nav-btn svg {
+        width: calc(24 * var(--u));
+        height: calc(24 * var(--u));
+        display: block;
+      }
+
+      body.portrait .nav-btn {
+        top: calc(18 * var(--u));
+        width: calc(48 * var(--u));
+        height: calc(48 * var(--u));
+        border-radius: calc(12 * var(--u));
+      }
+
+      body.portrait .nav-menu {
+        left: calc(18 * var(--u));
+      }
+
+      body.portrait .nav-cart {
+        right: calc(18 * var(--u));
+      }
+
+      body.portrait .nav-btn svg {
+        width: calc(21 * var(--u));
+        height: calc(21 * var(--u));
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hero" id="hero" aria-label="Gelato Lab">
+      <div class="waves"></div>
+      <div class="stage" id="stage">
+        <div class="ring-shadow" id="ringShadow"></div>
+        <div class="ring" id="ring"></div>
+        <h1 class="title" id="title">GELATO LAB</h1>
+        <!-- Script appends: 5 × (div.coupe-shadow + img.coupe), then 5 × div.prop -->
+        <div class="eyebrow" id="eyebrow">ARTISAN</div>
+        <p class="flavour" id="flavour">BERRY /<br />ROSE</p>
+        <button class="buy" id="buyBtn" type="button">BUY NOW</button>
+      </div>
+      <div class="vignette"></div>
+      <button class="nav-btn nav-menu" type="button" aria-label="Open menu">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+      <button class="nav-btn nav-cart" type="button" aria-label="Cart">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 4h2.2l2.1 10.2a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.2L20 8H6.2" />
+          <circle cx="9.5" cy="19.5" r="1.3" fill="currentColor" />
+          <circle cx="17" cy="19.5" r="1.3" fill="currentColor" />
+        </svg>
+      </button>
+    </main>
+
+    <script>
+      (function () {
+        // 1. DATA & CONSTANTS
+        const BOWL_URLS = [
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062631_ec34a231-9141-457a-afd9-637effe7ec03.png&w=1400&q=90',
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062744_ac87ceec-2040-4078-80fd-6b6bf016f675.png&w=1400&q=90',
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062753_b99d867d-9f15-4cde-a4b0-08e68fe96931.png&w=1400&q=90',
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062803_7758f16c-7b82-4eb3-9c3e-aca45f2feda3.png&w=1400&q=90',
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_062812_b00d1221-9fcc-425e-9c6e-a51ed94ea059.png&w=1400&q=90',
         ];
-      }
 
-      function lerpColor(c1, c2, t) {
-        const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
-        const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
-        const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
-        return `rgb(${r}, ${g}, ${b})`;
-      }
+        const RING_URL =
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061250_28696685-24a2-408e-8365-47c9b892d5cc.png&w=1024&q=90';
+        const PROPS_URL =
+          'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061331_a11a52ac-d35b-4489-afdc-0e3d97464d02.png&w=1024&q=90';
 
-      // Cubic-bezier(0.42, 0, 0.58, 1) solver
-      function solveBezier(t) {
-        const x1 = 0.42, y1 = 0, x2 = 0.58, y2 = 1;
-        // Newton solver for x(u) = t
-        let u = t;
-        for (let i = 0; i < 5; i++) {
-          const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u;
-          const dx = 3 * (1 - u) * (1 - u) * x1 + 6 * (1 - u) * u * (x2 - x1) + 3 * u * u * (1 - x2);
-          if (Math.abs(dx) < 1e-6) break;
-          u = u - (x - t) / dx;
-          u = Math.max(0, Math.min(1, u));
-        }
-        return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
-      }
+        const PROP_BOXES = {
+          cone: [100, 63, 249, 276],
+          rasp: [405, 214, 137, 132],
+          blue: [691, 130, 186, 160],
+          spoonL: [127, 381, 234, 211],
+          spoonR: [658, 380, 233, 218],
+        };
 
-      // DOM Elements
-      const hero = document.getElementById('hero');
-      const stage = document.getElementById('stage');
-      const ringEl = document.getElementById('ring');
-      const ringShadowEl = document.getElementById('ringShadow');
-      const titleEl = document.getElementById('title');
-      const flavourEl = document.getElementById('flavour');
-      const eyebrowEl = document.getElementById('eyebrow');
-      const buyBtnEl = document.getElementById('buyBtn');
+        const COUPE_FILL = 0.985;
+        const BAND = (462.5 + 354) / 2 / 462.5; // ~0.8827027
 
-      let coupeEls = [];
-      let coupeShadowEls = [];
-      let propEls = {};
-
-      // Dynamic layout variables
-      let isPortrait = false;
-      let u = 1;
-      let stageW = 1440;
-      let stageH = 900;
-      let sh = 760;
-      let R = 430;
-      let big = 470;
-      let small = 292;
-      let bowlY = 418;
-      let cx = 720;
-      let cy = -12;
-      let D = 974;
-      let copyTop = 455;
-      let titleTop = 632;
-      let measuredTitleWidthAt100 = 1062;
-
-      // Create bowls, shadows & props
-      function buildDOM() {
-        for (let i = 0; i < 5; i++) {
-          const shadow = document.createElement('div');
-          shadow.className = 'coupe-shadow';
-          stage.appendChild(shadow);
-          coupeShadowEls.push(shadow);
-
-          const img = document.createElement('img');
-          img.className = 'coupe';
-          img.src = BOWL_URLS[i];
-          img.alt = "";
-          img.crossOrigin = "anonymous";
-          stage.appendChild(img);
-          coupeEls.push(img);
-        }
-
-        const propKeys = ['cone', 'rasp', 'blue', 'spoonL', 'spoonR'];
-        propKeys.forEach(k => {
-          const el = document.createElement('div');
-          el.className = 'prop prop-' + k;
-          el.style.backgroundImage = `url("${PROPS_URL}")`;
-          stage.appendChild(el);
-          propEls[k] = el;
-        });
-      }
-
-      function updateLayoutGeometry() {
-        const W = window.innerWidth;
-        const H = window.innerHeight;
-        const aspect = W / H;
-        isPortrait = aspect < 0.9;
-
-        if (isPortrait) {
-          document.body.classList.add('portrait');
-          u = Math.min(W / 390, H / 760);
-          stageW = 390;
-          sh = H / u;
-          stageH = sh;
-          document.documentElement.style.setProperty('--hs', sh);
-
-          R = 222;
-          big = 262;
-          small = 158;
-
-          const stackH = big + 22 + 138 + 20 + 50;
-          const top = 82;
-          const avail = sh - 70 - top;
-          bowlY = top + Math.max(0, (avail - stackH) * 0.45) + big / 2;
-          copyTop = bowlY + big / 2 + 22;
-          titleTop = copyTop + 158;
-
-          cx = stageW / 2;
-          cy = bowlY - R;
-          D = (2 * R) / BAND;
-        } else {
-          document.body.classList.remove('portrait');
-          if (H < 560) {
-            u = Math.min(W / 1440, H / 770);
-          } else {
-            u = Math.min(W / 1440, H / 900);
+        // Cubic-bezier(0.42, 0, 0.58, 1) solver
+        function solveBezier(t) {
+          const x1 = 0.42,
+            y1 = 0,
+            x2 = 0.58,
+            y2 = 1;
+          // Newton solver for x(u) = t
+          let u = t;
+          for (let i = 0; i < 5; i++) {
+            const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u;
+            const dx =
+              3 * (1 - u) * (1 - u) * x1 + 6 * (1 - u) * u * (x2 - x1) + 3 * u * u * (1 - x2);
+            if (Math.abs(dx) < 1e-6) break;
+            u = u - (x - t) / dx;
+            u = Math.max(0, Math.min(1, u));
           }
-          stageW = 1440;
-          stageH = 900;
-
-          R = 430;
-          big = 470;
-          small = 292;
-          bowlY = 418;
-          cx = stageW / 2;
-          cy = bowlY - R;
-          D = (2 * R) / BAND;
+          return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
         }
 
-        document.documentElement.style.setProperty('--u', u + 'px');
+        // DOM Elements
+        const hero = document.getElementById('hero');
+        const stage = document.getElementById('stage');
+        const ringEl = document.getElementById('ring');
+        const ringShadowEl = document.getElementById('ringShadow');
+        const titleEl = document.getElementById('title');
+        const flavourEl = document.getElementById('flavour');
+        const eyebrowEl = document.getElementById('eyebrow');
+        const buyBtnEl = document.getElementById('buyBtn');
 
-        // Ring dimensions and CSS background/mask
-        const k = D / (2 * 462.5);
-        const riPx = (D / 2) * (354 / 462.5) * u;
-        const roPx = (D / 2) * u;
+        let coupeEls = [];
+        let coupeShadowEls = [];
+        let propEls = {};
 
-        ringEl.style.width = `calc(${D} * var(--u))`;
-        ringEl.style.height = `calc(${D} * var(--u))`;
-        ringEl.style.backgroundImage = `url("${RING_URL}")`;
-        ringEl.style.backgroundSize = `calc(${1024 * k} * var(--u))`;
-        ringEl.style.backgroundPosition = `calc(${(D / 2 - 507.5 * k)} * var(--u)) calc(${(D / 2 - 502.5 * k)} * var(--u))`;
+        // Dynamic layout variables
+        let isPortrait = false;
+        let u = 1;
+        let stageW = 1440;
+        let stageH = 900;
+        let sh = 760;
+        let R = 430;
+        let big = 470;
+        let small = 292;
+        let bowlY = 418;
+        let cx = 720;
+        let cy = -12;
+        let D = 974;
+        let copyTop = 455;
+        let titleTop = 632;
+        let measuredTitleWidthAt100 = 1062;
 
-        const maskStyle = `radial-gradient(circle closest-side, transparent ${(riPx - 1).toFixed(2)}px, #000 ${(riPx + 0.5).toFixed(2)}px, #000 ${(roPx - 1.5).toFixed(2)}px, transparent ${roPx.toFixed(2)}px)`;
-        ringEl.style.webkitMaskImage = maskStyle;
-        ringEl.style.maskImage = maskStyle;
+        // Create bowls, shadows & props
+        function buildDOM() {
+          for (let i = 0; i < 5; i++) {
+            const shadow = document.createElement('div');
+            shadow.className = 'coupe-shadow';
+            stage.appendChild(shadow);
+            coupeShadowEls.push(shadow);
 
-        // Ring Shadow
-        ringShadowEl.style.width = `calc(${D} * var(--u))`;
-        ringShadowEl.style.height = `calc(${D} * var(--u))`;
-        const riU = (D / 2) * (354 / 462.5);
-        const roU = D / 2;
-        ringShadowEl.style.background = `radial-gradient(circle closest-side, transparent calc(${(riU - 10)} * var(--u)), rgba(25,12,45,0.16) calc(${(riU + 6)} * var(--u)), rgba(25,12,45,0.16) calc(${(roU - 4)} * var(--u)), transparent calc(${(roU + 14)} * var(--u)))`;
-        ringShadowEl.style.transform = `translate(calc(${(cx - D / 2)} * var(--u)), calc(${(cy - D / 2 + 10)} * var(--u)))`;
+            const img = document.createElement('img');
+            img.className = 'coupe';
+            img.src = BOWL_URLS[i];
+            img.alt = '';
+            img.crossOrigin = 'anonymous';
+            stage.appendChild(img);
+            coupeEls.push(img);
+          }
 
-        // Coupe sizing
-        const coupeImgSize = big / COUPE_FILL;
-        const shadowSize = 1.12 * big;
-        for (let i = 0; i < 5; i++) {
-          coupeEls[i].style.width = `calc(${coupeImgSize} * var(--u))`;
-          coupeEls[i].style.height = `calc(${coupeImgSize} * var(--u))`;
-          coupeShadowEls[i].style.width = `calc(${shadowSize} * var(--u))`;
-          coupeShadowEls[i].style.height = `calc(${shadowSize} * var(--u))`;
+          const propKeys = ['cone', 'rasp', 'blue', 'spoonL', 'spoonR'];
+          propKeys.forEach((k) => {
+            const el = document.createElement('div');
+            el.className = 'prop prop-' + k;
+            el.style.backgroundImage = `url("${PROPS_URL}")`;
+            stage.appendChild(el);
+            propEls[k] = el;
+          });
         }
 
-        // Copy positions
-        if (isPortrait) {
-          eyebrowEl.style.left = '50%';
-          eyebrowEl.style.top = `calc(${copyTop} * var(--u))`;
-          eyebrowEl.style.transform = 'translateX(-50%)';
+        function updateLayoutGeometry() {
+          const W = window.innerWidth;
+          const H = window.innerHeight;
+          const aspect = W / H;
+          isPortrait = aspect < 0.9;
 
-          flavourEl.style.left = '0';
-          flavourEl.style.right = '0';
-          flavourEl.style.top = `calc(${(copyTop + 30)} * var(--u))`;
+          if (isPortrait) {
+            document.body.classList.add('portrait');
+            u = Math.min(W / 390, H / 760);
+            stageW = 390;
+            sh = H / u;
+            stageH = sh;
+            document.documentElement.style.setProperty('--hs', sh);
 
-          buyBtnEl.style.left = '50%';
-          buyBtnEl.style.top = `calc(${(copyTop + 92)} * var(--u))`;
-          buyBtnEl.style.transform = 'translateX(-50%)';
+            R = 222;
+            big = 262;
+            small = 158;
 
-          titleEl.style.left = '50%';
-          titleEl.style.top = `calc(${titleTop} * var(--u))`;
-          titleEl.style.transform = 'translateX(-50%)';
-        } else {
-          eyebrowEl.style.left = `calc(158 * var(--u))`;
-          eyebrowEl.style.top = `calc(455 * var(--u))`;
-          eyebrowEl.style.transform = 'none';
+            const stackH = big + 22 + 138 + 20 + 50;
+            const top = 82;
+            const avail = sh - 70 - top;
+            bowlY = top + Math.max(0, (avail - stackH) * 0.45) + big / 2;
+            copyTop = bowlY + big / 2 + 22;
+            titleTop = copyTop + 158;
 
-          flavourEl.style.left = `calc(190 * var(--u))`;
-          flavourEl.style.right = 'auto';
-          flavourEl.style.top = `calc(497 * var(--u))`;
+            cx = stageW / 2;
+            cy = bowlY - R;
+            D = (2 * R) / BAND;
+          } else {
+            document.body.classList.remove('portrait');
+            if (H < 560) {
+              u = Math.min(W / 1440, H / 770);
+            } else {
+              u = Math.min(W / 1440, H / 900);
+            }
+            stageW = 1440;
+            stageH = 900;
 
-          buyBtnEl.style.left = `calc(190 * var(--u))`;
-          buyBtnEl.style.top = `calc(572 * var(--u))`;
-          buyBtnEl.style.transform = 'none';
+            R = 430;
+            big = 470;
+            small = 292;
+            bowlY = 418;
+            cx = stageW / 2;
+            cy = bowlY - R;
+            D = (2 * R) / BAND;
+          }
 
-          titleEl.style.left = `calc(190 * var(--u))`;
-          titleEl.style.top = `calc(632 * var(--u))`;
-          titleEl.style.transform = 'none';
+          document.documentElement.style.setProperty('--u', u + 'px');
+
+          // Ring dimensions and CSS background/mask
+          const k = D / (2 * 462.5);
+          const riPx = (D / 2) * (354 / 462.5) * u;
+          const roPx = (D / 2) * u;
+
+          ringEl.style.width = `calc(${D} * var(--u))`;
+          ringEl.style.height = `calc(${D} * var(--u))`;
+          ringEl.style.backgroundImage = `url("${RING_URL}")`;
+          ringEl.style.backgroundSize = `calc(${1024 * k} * var(--u))`;
+          ringEl.style.backgroundPosition = `calc(${D / 2 - 507.5 * k} * var(--u)) calc(${D / 2 - 502.5 * k} * var(--u))`;
+
+          const maskStyle = `radial-gradient(circle closest-side, transparent ${(riPx - 1).toFixed(2)}px, #000 ${(riPx + 0.5).toFixed(2)}px, #000 ${(roPx - 1.5).toFixed(2)}px, transparent ${roPx.toFixed(2)}px)`;
+          ringEl.style.webkitMaskImage = maskStyle;
+          ringEl.style.maskImage = maskStyle;
+
+          // Ring Shadow
+          ringShadowEl.style.width = `calc(${D} * var(--u))`;
+          ringShadowEl.style.height = `calc(${D} * var(--u))`;
+          const riU = (D / 2) * (354 / 462.5);
+          const roU = D / 2;
+          ringShadowEl.style.background = `radial-gradient(circle closest-side, transparent calc(${riU - 10} * var(--u)), rgba(25,12,45,0.16) calc(${riU + 6} * var(--u)), rgba(25,12,45,0.16) calc(${roU - 4} * var(--u)), transparent calc(${roU + 14} * var(--u)))`;
+          ringShadowEl.style.transform = `translate(calc(${cx - D / 2} * var(--u)), calc(${cy - D / 2 + 10} * var(--u)))`;
+
+          // Coupe sizing
+          const coupeImgSize = big / COUPE_FILL;
+          const shadowSize = 1.12 * big;
+          for (let i = 0; i < 5; i++) {
+            coupeEls[i].style.width = `calc(${coupeImgSize} * var(--u))`;
+            coupeEls[i].style.height = `calc(${coupeImgSize} * var(--u))`;
+            coupeShadowEls[i].style.width = `calc(${shadowSize} * var(--u))`;
+            coupeShadowEls[i].style.height = `calc(${shadowSize} * var(--u))`;
+          }
+
+          // Copy positions
+          if (isPortrait) {
+            eyebrowEl.style.left = '50%';
+            eyebrowEl.style.top = `calc(${copyTop} * var(--u))`;
+            eyebrowEl.style.transform = 'translateX(-50%)';
+
+            flavourEl.style.left = '0';
+            flavourEl.style.right = '0';
+            flavourEl.style.top = `calc(${copyTop + 30} * var(--u))`;
+
+            buyBtnEl.style.left = '50%';
+            buyBtnEl.style.top = `calc(${copyTop + 92} * var(--u))`;
+            buyBtnEl.style.transform = 'translateX(-50%)';
+
+            titleEl.style.left = '50%';
+            titleEl.style.top = `calc(${titleTop} * var(--u))`;
+            titleEl.style.transform = 'translateX(-50%)';
+          } else {
+            eyebrowEl.style.left = `calc(158 * var(--u))`;
+            eyebrowEl.style.top = `calc(455 * var(--u))`;
+            eyebrowEl.style.transform = 'none';
+
+            flavourEl.style.left = `calc(190 * var(--u))`;
+            flavourEl.style.right = 'auto';
+            flavourEl.style.top = `calc(497 * var(--u))`;
+
+            buyBtnEl.style.left = `calc(190 * var(--u))`;
+            buyBtnEl.style.top = `calc(572 * var(--u))`;
+            buyBtnEl.style.transform = 'none';
+
+            titleEl.style.left = `calc(190 * var(--u))`;
+            titleEl.style.top = `calc(632 * var(--u))`;
+            titleEl.style.transform = 'none';
+          }
+
+          // Fitted title calculation
+          const targetTitleWidthU = isPortrait ? 350 : 1062;
+          if (measuredTitleWidthAt100 > 0) {
+            const fontSizePx = (100 * (targetTitleWidthU * u)) / measuredTitleWidthAt100;
+            titleEl.style.fontSize = fontSizePx + 'px';
+          }
+
+          // Static Props placement
+          let propsConfig;
+          if (isPortrait) {
+            const c = bowlY;
+            const t = Math.max(titleTop, sh - 170);
+            propsConfig = {
+              cone: [-50, c + 150, 104, -14],
+              rasp: [-26, c + 250, 70, 0],
+              blue: [312, c + 170, 96, 0],
+              spoonL: [-44, t + 62, 150, 0],
+              spoonR: [284, t + 62, 150, 0],
+            };
+          } else {
+            propsConfig = {
+              cone: [-34, 168, 190, -14],
+              rasp: [34, 340, 118, 0],
+              blue: [1238, 360, 168, 0],
+              spoonL: [86, 760, 210, 0],
+              spoonR: [1146, 760, 210, 0],
+            };
+          }
+
+          for (const [key, cfg] of Object.entries(propsConfig)) {
+            const [px, py, pw, prot] = cfg;
+            const [bx, by, bw, bh] = PROP_BOXES[key];
+            const s = pw / bw;
+            const pel = propEls[key];
+            pel.style.width = `calc(${pw} * var(--u))`;
+            pel.style.height = `calc(${bh * s} * var(--u))`;
+            pel.style.backgroundSize = `calc(${1024 * s} * var(--u)) calc(${688 * s} * var(--u))`;
+            pel.style.backgroundPosition = `calc(${-bx * s} * var(--u)) calc(${-by * s} * var(--u))`;
+            pel.style.transform = `translate(calc(${px} * var(--u)), calc(${py} * var(--u))) rotate(${prot}deg)`;
+          }
         }
 
-        // Fitted title calculation
-        const targetTitleWidthU = isPortrait ? 350 : 1062;
-        if (measuredTitleWidthAt100 > 0) {
-          const fontSizePx = 100 * (targetTitleWidthU * u) / measuredTitleWidthAt100;
-          titleEl.style.fontSize = fontSizePx + 'px';
+        function measureTitle() {
+          titleEl.style.fontSize = '100px';
+          titleEl.style.visibility = 'hidden';
+          measuredTitleWidthAt100 = titleEl.getBoundingClientRect().width || 1062;
+          titleEl.style.visibility = 'visible';
         }
 
-        // Static Props placement
-        let propsConfig;
-        if (isPortrait) {
-          const c = bowlY;
-          const t = Math.max(titleTop, sh - 170);
-          propsConfig = {
-            cone:   [-50, c + 150, 104, -14],
-            rasp:   [-26, c + 250, 70, 0],
-            blue:   [312, c + 170, 96, 0],
-            spoonL: [-44, t + 62, 150, 0],
-            spoonR: [284, t + 62, 150, 0]
-          };
-        } else {
-          propsConfig = {
-            cone:   [-34, 168, 190, -14],
-            rasp:   [34, 340, 118, 0],
-            blue:   [1238, 360, 168, 0],
-            spoonL: [86, 760, 210, 0],
-            spoonR: [1146, 760, 210, 0]
-          };
+        // Render carousel frame at position p
+        function renderCarousel(p) {
+          // 1. Ring rotation
+          ringEl.style.transform = `translate(calc(${cx - D / 2} * var(--u)), calc(${cy - D / 2} * var(--u))) rotate(${p * 72}deg)`;
+
+          // 2. Bowls positions
+          const coupeImgSize = big / COUPE_FILL;
+          const shadowSize = 1.12 * big;
+
+          for (let i = 0; i < 5; i++) {
+            let diff = (((i - p) % 5) + 5) % 5;
+            if (diff >= 2.5) diff -= 5; // -2.5 ... 2.5
+
+            const angleDeg = 90 - diff * 72;
+            const angleRad = angleDeg * (Math.PI / 180);
+            const x = cx + R * Math.cos(angleRad);
+            const y = cy + R * Math.sin(angleRad);
+
+            const ad = Math.abs(diff);
+            const scale = ad <= 1 ? 1 + (small / big - 1) * ad : small / big - (ad - 1) * 0.08;
+
+            const rotation = (p - i) * 72;
+            const zIndex = 4 + Math.round(100 - ad * 20);
+
+            // Position bowl
+            coupeEls[i].style.zIndex = zIndex;
+            coupeEls[i].style.transform =
+              `translate(calc(${x - coupeImgSize / 2} * var(--u)), calc(${y - coupeImgSize / 2} * var(--u))) scale(${scale}) rotate(${rotation}deg)`;
+
+            // Position bowl shadow
+            coupeShadowEls[i].style.zIndex = zIndex - 1;
+            const shadowY = y + 0.05 * big * scale;
+            coupeShadowEls[i].style.transform =
+              `translate(calc(${x - shadowSize / 2} * var(--u)), calc(${shadowY - shadowSize / 2} * var(--u))) scale(${scale})`;
+          }
         }
 
-        for (const [key, cfg] of Object.entries(propsConfig)) {
-          const [px, py, pw, prot] = cfg;
-          const [bx, by, bw, bh] = PROP_BOXES[key];
-          const s = pw / bw;
-          const pel = propEls[key];
-          pel.style.width = `calc(${pw} * var(--u))`;
-          pel.style.height = `calc(${(bh * s)} * var(--u))`;
-          pel.style.backgroundSize = `calc(${1024 * s} * var(--u)) calc(${688 * s} * var(--u))`;
-          pel.style.backgroundPosition = `calc(${(-bx * s)} * var(--u)) calc(${(-by * s)} * var(--u))`;
-          pel.style.transform = `translate(calc(${px} * var(--u)), calc(${py} * var(--u))) rotate(${prot}deg)`;
-        }
-      }
+        // Timing Loop
+        let step = 0;
+        let phaseStart = performance.now();
+        let lastTime = performance.now();
+        let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      function measureTitle() {
-        titleEl.style.fontSize = '100px';
-        titleEl.style.visibility = 'hidden';
-        measuredTitleWidthAt100 = titleEl.getBoundingClientRect().width || 1062;
-        titleEl.style.visibility = 'visible';
-      }
-
-      // Render carousel frame at position p
-      function renderCarousel(p) {
-        // 1. Ring rotation
-        ringEl.style.transform = `translate(calc(${(cx - D / 2)} * var(--u)), calc(${(cy - D / 2)} * var(--u))) rotate(${p * 72}deg)`;
-
-        // 2. Bowls positions
-        const coupeImgSize = big / COUPE_FILL;
-        const shadowSize = 1.12 * big;
-
-        for (let i = 0; i < 5; i++) {
-          let diff = ((i - p) % 5 + 5) % 5;
-          if (diff >= 2.5) diff -= 5; // -2.5 ... 2.5
-
-          const angleDeg = 90 - diff * 72;
-          const angleRad = angleDeg * (Math.PI / 180);
-          const x = cx + R * Math.cos(angleRad);
-          const y = cy + R * Math.sin(angleRad);
-
-          const ad = Math.abs(diff);
-          const scale = ad <= 1
-            ? 1 + (small / big - 1) * ad
-            : (small / big) - (ad - 1) * 0.08;
-
-          const rotation = (p - i) * 72;
-          const zIndex = 4 + Math.round(100 - ad * 20);
-
-          // Position bowl
-          coupeEls[i].style.zIndex = zIndex;
-          coupeEls[i].style.transform = `translate(calc(${(x - coupeImgSize / 2)} * var(--u)), calc(${(y - coupeImgSize / 2)} * var(--u))) scale(${scale}) rotate(${rotation}deg)`;
-
-          // Position bowl shadow
-          coupeShadowEls[i].style.zIndex = zIndex - 1;
-          const shadowY = y + 0.05 * big * scale;
-          coupeShadowEls[i].style.transform = `translate(calc(${(x - shadowSize / 2)} * var(--u)), calc(${(shadowY - shadowSize / 2)} * var(--u))) scale(${scale})`;
-        }
-
-        // 3. Colours & copy transition
-        const idx = Math.floor(p) % 5;
-        const nextIdx = (idx + 1) % 5;
-        const t = p - Math.floor(p);
-
-        const currentFlavour = FLAVOURS[idx];
-        const nextFlavour = FLAVOURS[nextIdx];
-
-        const bgCol = lerpColor(parseHex(currentFlavour.bg), parseHex(nextFlavour.bg), t);
-        const inkCol = lerpColor(parseHex(currentFlavour.ink), parseHex(nextFlavour.ink), t);
-
-        document.documentElement.style.setProperty('--bg', bgCol);
-        document.documentElement.style.setProperty('--ink', inkCol);
-        document.body.style.backgroundColor = bgCol;
-        hero.style.backgroundColor = bgCol;
-
-        // Flavour label text & opacity swap
-        if (t < 0.5) {
-          flavourEl.innerHTML = currentFlavour.name;
-          flavourEl.style.opacity = (1 - 2 * t).toFixed(3);
-          flavourEl.style.transform = `translateY(calc(${(-2 * t * 8)} * var(--u)))`;
-        } else {
-          flavourEl.innerHTML = nextFlavour.name;
-          flavourEl.style.opacity = (1 - 2 * (1 - t)).toFixed(3);
-          flavourEl.style.transform = `translateY(calc(${(2 * (1 - t) * 8)} * var(--u)))`;
-        }
-      }
-
-      // Timing Loop
-      let step = 0;
-      let phaseStart = performance.now();
-      let lastTime = performance.now();
-      let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => {
-        prefersReducedMotion = e.matches;
-      });
-
-      function frame(now) {
-        const gap = now - lastTime;
-        lastTime = now;
-
-        const HOLD = prefersReducedMotion ? 3000 : 1400;
-        const TURN = prefersReducedMotion ? 1 : 500;
-
-        if (gap > 250) {
-          phaseStart += gap;
-        }
-
-        const elapsed = now - phaseStart;
-        let p;
-
-        if (elapsed < HOLD) {
-          p = step;
-        } else if (elapsed < HOLD + TURN) {
-          const progress = (elapsed - HOLD) / TURN;
-          const eased = prefersReducedMotion ? 0 : solveBezier(progress);
-          p = step + eased;
-        } else {
-          step = (step + 1) % 5;
-          phaseStart += HOLD + TURN;
-          p = step;
-        }
-
-        renderCarousel(p);
-        requestAnimationFrame(frame);
-      }
-
-      // Image preload helper
-      function preloadImage(url) {
-        return new Promise(resolve => {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.onload = () => resolve(img);
-          img.onerror = () => resolve(img);
-          img.src = url;
+        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
+          prefersReducedMotion = e.matches;
         });
-      }
 
-      // Init on load
-      buildDOM();
+        function frame(now) {
+          const gap = now - lastTime;
+          lastTime = now;
 
-      const imagePromises = [
-        ...BOWL_URLS.map(preloadImage),
-        preloadImage(RING_URL),
-        preloadImage(PROPS_URL)
-      ];
+          const HOLD = prefersReducedMotion ? 3000 : 1400;
+          const TURN = prefersReducedMotion ? 1 : 500;
 
-      Promise.all([
-        document.fonts ? document.fonts.ready : Promise.resolve(),
-        ...imagePromises
-      ]).then(() => {
-        measureTitle();
-        updateLayoutGeometry();
-        renderCarousel(0);
+          if (gap > 250) {
+            phaseStart += gap;
+          }
 
-        window.addEventListener('resize', () => {
+          const elapsed = now - phaseStart;
+          let p;
+
+          if (elapsed < HOLD) {
+            p = step;
+          } else if (elapsed < HOLD + TURN) {
+            const progress = (elapsed - HOLD) / TURN;
+            const eased = prefersReducedMotion ? 0 : solveBezier(progress);
+            p = step + eased;
+          } else {
+            step = (step + 1) % 5;
+            phaseStart += HOLD + TURN;
+            p = step;
+          }
+
+          renderCarousel(p);
+          requestAnimationFrame(frame);
+        }
+
+        // Image preload helper
+        function preloadImage(url) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(img);
+            img.src = url;
+          });
+        }
+
+        // Init on load
+        buildDOM();
+
+        const imagePromises = [
+          ...BOWL_URLS.map(preloadImage),
+          preloadImage(RING_URL),
+          preloadImage(PROPS_URL),
+        ];
+
+        Promise.all([
+          document.fonts ? document.fonts.ready : Promise.resolve(),
+          ...imagePromises,
+        ]).then(() => {
+          measureTitle();
           updateLayoutGeometry();
-          renderCarousel(step);
+          renderCarousel(0);
+
+          window.addEventListener('resize', () => {
+            updateLayoutGeometry();
+            renderCarousel(step);
+          });
+
+          // Show page and begin loop
+          hero.classList.add('ready');
+          phaseStart = performance.now();
+          lastTime = performance.now();
+          requestAnimationFrame(frame);
         });
-
-        // Show page and begin loop
-        hero.classList.add('ready');
-        phaseStart = performance.now();
-        lastTime = performance.now();
-        requestAnimationFrame(frame);
-      });
-
-    })();
-  </script>
-</body>
+      })();
+    </script>
+  </body>
 </html>

@@ -1,5 +1,4 @@
-// Contenu fixe du carrousel d'accueil. Les couleurs sont dans `_tokens.scss` (`--flavour-N-bg`,
-// `--flavour-N-ink`, N de 1 à 5, dans l'ordre de ce tableau).
+// Contenu fixe du carrousel d'accueil. Couleur unique : celle de `.brand` (parfum 1, `_tokens.scss`).
 
 export interface HeroFlavour {
   /** Libellé sur deux lignes. */
