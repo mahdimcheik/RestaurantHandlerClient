@@ -1,35 +1,46 @@
-<div class="page-head">
-  <h1>Tableau de bord</h1>
-  <div class="toolbar">
-    <a class="btn btn--icon" routerLink="/gestion/produits/nouveau">
+<header class="dashboard__intro">
+  <p class="eyebrow">Tableau de bord</p>
+  <h1 class="display-title display-title--md">
+    @if (firstName(); as name) {
+      Bonjour {{ name }}
+    } @else {
+      Bonjour
+    }
+  </h1>
+  <p class="lead">{{ todayLabel }}</p>
+  <div class="actions">
+    <a class="btn-brand btn-brand--solid btn--icon" routerLink="/gestion/produits/nouveau">
       <app-icon name="plus" />
       <span>Ajouter un produit</span>
     </a>
-    <a class="btn btn--outline btn--icon" routerLink="/gestion/categories/nouvelle">
+    <a class="btn-brand btn--icon" routerLink="/gestion/categories/nouvelle">
       <app-icon name="plus" />
       <span>Ajouter une catégorie</span>
     </a>
   </div>
-</div>
+</header>
 
 <section class="sheet__section" aria-labelledby="dashboard-today">
   <h2 id="dashboard-today">Aujourd'hui</h2>
   @if (todayError()) {
     <p class="alert alert--error" role="alert">{{ todayError() }}</p>
   } @else if (today.value(); as stats) {
-    <ul class="stats">
-      <li class="stat">
+    <ul class="stats stats--hero">
+      <li class="stat stat--hero">
         <span class="stat__label">Commandes</span>
         <span class="stat__value">{{ stats.orders }}</span>
       </li>
-      <li class="stat">
+      <li class="stat stat--hero">
         <span class="stat__label">Chiffre d'affaires</span>
         <span class="stat__value">{{ stats.revenueCents | euros }}</span>
       </li>
-      <li class="stat">
+      <li class="stat stat--hero">
         <span class="stat__label">Panier moyen</span>
         <span class="stat__value">{{ stats.averageBasketCents | euros }}</span>
       </li>
+    </ul>
+
+    <ul class="stats">
       <li class="stat">
         <span class="stat__label">Comptoir</span>
         <span class="stat__value">{{ stats.counter.revenueCents | euros }}</span>
@@ -66,12 +77,12 @@
       </li>
     </ul>
 
-    <h3>Commandes par étape</h3>
-    <dl class="summary">
+    <h3 id="dashboard-steps">Commandes par étape</h3>
+    <dl class="step-counts" aria-labelledby="dashboard-steps">
       @for (item of statusCounts(); track item.status) {
-        <div>
+        <div class="step-counts__item" [class.step-counts__item--active]="item.count > 0">
           <dt>{{ item.label }}</dt>
-          <dd class="summary__strong">{{ item.count }}</dd>
+          <dd>{{ item.count }}</dd>
         </div>
       }
     </dl>
@@ -106,8 +117,8 @@
       </table>
     }
 
-    <div class="toolbar">
-      <a class="btn btn--outline btn--icon" routerLink="/gestion/statistiques">
+    <div class="actions">
+      <a class="btn-brand btn--icon" routerLink="/gestion/statistiques">
         <app-icon name="chart" />
         <span>Voir les statistiques</span>
       </a>
@@ -117,68 +128,70 @@
   }
 </section>
 
-<section class="sheet__section" aria-labelledby="dashboard-service">
-  <h2 id="dashboard-service">Service</h2>
-  @if (openingLabel()) {
-    <p class="stat__value">{{ openingLabel() }}</p>
-    @if (openingReason()) {
-      <p class="sheet__lead">{{ openingReason() }}</p>
-    }
-  }
-  <div class="toolbar">
-    <a class="btn btn--outline btn--icon" routerLink="/gestion/ruptures">
-      <app-icon name="stock" />
-      <span>Ruptures</span>
-    </a>
-    <a class="btn btn--outline btn--icon" routerLink="/gestion/ouverture">
-      <app-icon name="clock" />
-      <span>Horaires et fermetures</span>
-    </a>
-    <a class="btn btn--outline btn--icon" routerLink="/gestion/restaurant">
-      <app-icon name="store" />
-      <span>Restaurant</span>
-    </a>
-  </div>
-</section>
+<div class="dashboard__grid">
+  <section class="sheet__section" aria-labelledby="dashboard-menu">
+    <h2 id="dashboard-menu">Carte</h2>
+    <ul class="stats">
+      <li>
+        <a class="stat" routerLink="/gestion/categories">
+          <span class="stat__label">Catégories</span>
+          <span class="stat__value">{{ categoryCount() }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="stat" routerLink="/gestion/produits">
+          <span class="stat__label">Produits actifs</span>
+          <span class="stat__value">{{ activeProductCount() }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="stat" routerLink="/gestion/ruptures">
+          <span class="stat__label">Produits en rupture</span>
+          <span class="stat__value">{{ outOfStockCount() }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="stat" routerLink="/gestion/menus">
+          <span class="stat__label">Menus actifs</span>
+          <span class="stat__value">{{ activeMenuCount() }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="stat" routerLink="/gestion/options">
+          <span class="stat__label">Groupes d'options</span>
+          <span class="stat__value">{{ optionGroupCount() }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="stat" routerLink="/gestion/ruptures">
+          <span class="stat__label">Ingrédients en rupture</span>
+          <span class="stat__value">{{ outOfStockIngredientCount() }}</span>
+        </a>
+      </li>
+    </ul>
+  </section>
 
-<section class="sheet__section" aria-labelledby="dashboard-menu">
-  <h2 id="dashboard-menu">Carte</h2>
-  <ul class="stats">
-    <li>
-      <a class="stat" routerLink="/gestion/categories">
-        <span class="stat__label">Catégories</span>
-        <span class="stat__value">{{ categoryCount() }}</span>
+  <section class="pillar dashboard__service" aria-labelledby="dashboard-service">
+    <p class="eyebrow">Service</p>
+    <h2 id="dashboard-service" class="display-title display-title--md">
+      {{ openingLabel() || 'Chargement…' }}
+    </h2>
+    @if (openingReason()) {
+      <p>{{ openingReason() }}</p>
+    }
+    <div class="actions">
+      <a class="btn-brand btn--icon" routerLink="/gestion/ruptures">
+        <app-icon name="stock" />
+        <span>Ruptures</span>
       </a>
-    </li>
-    <li>
-      <a class="stat" routerLink="/gestion/produits">
-        <span class="stat__label">Produits actifs</span>
-        <span class="stat__value">{{ activeProductCount() }}</span>
+      <a class="btn-brand btn--icon" routerLink="/gestion/ouverture">
+        <app-icon name="clock" />
+        <span>Horaires et fermetures</span>
       </a>
-    </li>
-    <li>
-      <a class="stat" routerLink="/gestion/ruptures">
-        <span class="stat__label">Produits en rupture</span>
-        <span class="stat__value">{{ outOfStockCount() }}</span>
+      <a class="btn-brand btn--icon" routerLink="/gestion/restaurant">
+        <app-icon name="store" />
+        <span>Restaurant</span>
       </a>
-    </li>
-    <li>
-      <a class="stat" routerLink="/gestion/menus">
-        <span class="stat__label">Menus actifs</span>
-        <span class="stat__value">{{ activeMenuCount() }}</span>
-      </a>
-    </li>
-    <li>
-      <a class="stat" routerLink="/gestion/options">
-        <span class="stat__label">Groupes d'options</span>
-        <span class="stat__value">{{ optionGroupCount() }}</span>
-      </a>
-    </li>
-    <li>
-      <a class="stat" routerLink="/gestion/ruptures">
-        <span class="stat__label"> Ingrédients en rupture </span>
-        <span class="stat__value">{{ outOfStockIngredientCount() }}</span>
-      </a>
-    </li>
-  </ul>
-</section>
+    </div>
+  </section>
+</div>

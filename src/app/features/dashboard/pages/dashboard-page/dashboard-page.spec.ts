@@ -80,6 +80,15 @@ describe('DashboardPage', () => {
     expect(page).toContain('5,5%2,37€0,13€2,50€');
   });
 
+  it('salue et marque les étapes qui ont des commandes', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('h1')?.textContent).toContain('Bonjour');
+    const active = [...el.querySelectorAll('.step-counts__item--active dt')].map((dt) =>
+      dt.textContent?.trim(),
+    );
+    expect(active).toHaveLength(3);
+  });
+
   it('relit les chiffres à chaque événement de commande', async () => {
     realtime.emit('OrderStatusChanged', {});
     await answerDashboard({ ...TODAY, orders: 4 });

@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal } from '@angular/core';
+import { Component, computed, inject, linkedSignal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
@@ -6,7 +6,7 @@ import { ApprovalAlertService } from '../../services/approval-alert.service';
 import { ConnectionBanner, ConnectionStatus } from '../connection-status/connection-status';
 import { Icon, IconName } from '../icon/icon';
 import { ServiceControl } from '../service-control/service-control';
-import { ThemeSwitcher } from '../theme-switcher/theme-switcher';
+import { PublicStore } from '../../services/public-store.service';
 
 interface NavLink {
   path: string;
@@ -15,10 +15,17 @@ interface NavLink {
   exact: boolean;
 }
 
+interface NavGroup {
+  id: string;
+  label: string;
+  links: readonly NavLink[];
+}
+
 /**
- * Coquille du back-office : menu à gauche (icône et texte, rail d'icônes sur petit écran)
- * et zone de contenu avec sa barre du haut. Rendue dans le <main> de l'application (route
- * `bare`), elle porte son propre lien d'évitement vers le contenu.
+ * Coquille du back-office, au nouveau design (parfum 1) : menu à gauche par rubriques (icône et
+ * texte, rail d'icônes sur petit écran) et zone de contenu avec sa barre du haut. `.brand-ui`
+ * fait prendre l'encre et le fond du parfum à toutes les pages de gestion. Rendue dans le <main>
+ * de l'application (route `bare`), elle porte son propre lien d'évitement vers le contenu.
  */
 @Component({
   selector: 'app-admin-layout',
@@ -27,42 +34,52 @@ interface NavLink {
     RouterLink,
     RouterLinkActive,
     Icon,
-    ThemeSwitcher,
     ServiceControl,
     ConnectionStatus,
     ConnectionBanner,
   ],
-  host: { class: 'admin' },
+  host: { class: 'admin brand brand--1 brand-ui' },
   template: `
     <a class="skip-link" href="#contenu-gestion">Aller au contenu</a>
+    <div class="waves" aria-hidden="true"></div>
     <nav class="admin__nav" aria-label="Back-office">
-      <a class="admin__brand" routerLink="/gestion" title="Gestion">
-        <app-icon name="dashboard" />
-        <span class="admin__label">Gestion</span>
+      <a class="admin__brand" routerLink="/gestion" [title]="name() + ' · Gestion'">
+        <app-icon class="admin__brand-icon" name="dashboard" />
+        <span class="admin__label admin__brand-text">
+          <span class="admin__brand-name">{{ name() }}</span>
+          <span class="admin__brand-sub">Gestion</span>
+        </span>
       </a>
-      <ul class="admin__links">
-        @for (link of links; track link.path) {
-          <li>
-            <a
-              class="admin__link"
-              [routerLink]="link.path"
-              routerLinkActive
-              ariaCurrentWhenActive="page"
-              [routerLinkActiveOptions]="{ exact: link.exact }"
-              [title]="link.label"
-            >
-              <app-icon [name]="link.icon" />
-              <span class="admin__label">{{ link.label }}</span>
-              @if (link.path === ordersPath && toApprove() > 0) {
-                {{ ' '
-                }}<span class="admin__count"
-                  >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
+      @for (group of groups; track group.id) {
+        <div class="admin__group">
+          <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
+            {{ group.label }}
+          </p>
+          <ul class="admin__links" [attr.aria-labelledby]="'admin-group-' + group.id">
+            @for (link of group.links; track link.path) {
+              <li>
+                <a
+                  class="admin__link"
+                  [routerLink]="link.path"
+                  routerLinkActive
+                  ariaCurrentWhenActive="page"
+                  [routerLinkActiveOptions]="{ exact: link.exact }"
+                  [title]="link.label"
                 >
-              }
-            </a>
-          </li>
-        }
-      </ul>
+                  <app-icon [name]="link.icon" />
+                  <span class="admin__label">{{ link.label }}</span>
+                  @if (link.path === ordersPath && toApprove() > 0) {
+                    {{ ' '
+                    }}<span class="admin__count"
+                      >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
+                    >
+                  }
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
       <ul class="admin__links admin__links--end">
         <li>
           <a class="admin__link" routerLink="/" title="Retour au site">
@@ -94,7 +111,6 @@ interface NavLink {
           </button>
           <app-connection-status />
           <span class="admin__user">{{ session.user()?.firstName }}</span>
-          <app-theme-switcher />
         </div>
       </div>
       <div id="contenu-gestion" class="admin__content gutter" tabindex="-1">
@@ -109,6 +125,9 @@ export class AdminLayout {
   protected readonly session = inject(SessionService);
   protected readonly approvals = inject(ApprovalAlertService);
   private readonly router = inject(Router);
+  private readonly store = inject(PublicStore);
+
+  protected readonly name = computed(() => this.store.info.value()?.tradeName || 'Greenadine');
 
   protected readonly ordersPath = '/gestion/commandes';
   protected readonly toApprove = this.approvals.count;
@@ -122,94 +141,48 @@ export class AdminLayout {
   });
 
   constructor() {
+    this.store.info.load();
     inject(RealtimeService).start();
     this.approvals.start();
   }
 
-  protected readonly links: readonly NavLink[] = [
+  protected readonly groups: readonly NavGroup[] = [
     {
-      path: '/gestion',
-      icon: 'dashboard',
-      label: 'Tableau de bord',
-      exact: true,
+      id: 'service',
+      label: 'Service',
+      links: [
+        { path: '/gestion', icon: 'dashboard', label: 'Tableau de bord', exact: true },
+        { path: '/gestion/comptoir', icon: 'counter', label: 'Comptoir', exact: false },
+        { path: '/gestion/commandes', icon: 'orders', label: 'Commandes', exact: false },
+        { path: '/cuisine', icon: 'flame', label: 'Cuisine', exact: false },
+        { path: '/gestion/statistiques', icon: 'chart', label: 'Statistiques', exact: false },
+      ],
     },
     {
-      path: '/gestion/comptoir',
-      icon: 'counter',
-      label: 'Comptoir',
-      exact: false,
+      id: 'carte',
+      label: 'Carte',
+      links: [
+        { path: '/gestion/categories', icon: 'categories', label: 'Catégories', exact: false },
+        { path: '/gestion/produits', icon: 'products', label: 'Produits', exact: false },
+        { path: '/gestion/menus', icon: 'menus', label: 'Menus', exact: false },
+        { path: '/gestion/ingredients', icon: 'ingredients', label: 'Ingrédients', exact: false },
+        { path: '/gestion/options', icon: 'options', label: `Groupes d'options`, exact: false },
+        { path: '/gestion/ruptures', icon: 'stock', label: 'Ruptures', exact: false },
+      ],
     },
     {
-      path: '/gestion/commandes',
-      icon: 'orders',
-      label: 'Commandes',
-      exact: false,
-    },
-    {
-      path: '/cuisine',
-      icon: 'flame',
-      label: 'Cuisine',
-      exact: false,
-    },
-    {
-      path: '/gestion/statistiques',
-      icon: 'chart',
-      label: 'Statistiques',
-      exact: false,
-    },
-    {
-      path: '/gestion/categories',
-      icon: 'categories',
-      label: 'Catégories',
-      exact: false,
-    },
-    {
-      path: '/gestion/produits',
-      icon: 'products',
-      label: 'Produits',
-      exact: false,
-    },
-    {
-      path: '/gestion/menus',
-      icon: 'menus',
-      label: 'Menus',
-      exact: false,
-    },
-    {
-      path: '/gestion/ingredients',
-      icon: 'ingredients',
-      label: 'Ingrédients',
-      exact: false,
-    },
-    {
-      path: '/gestion/options',
-      icon: 'options',
-      label: `Groupes d'options`,
-      exact: false,
-    },
-    {
-      path: '/gestion/ruptures',
-      icon: 'stock',
-      label: 'Ruptures',
-      exact: false,
-    },
-    {
-      path: '/gestion/ouverture',
-      icon: 'clock',
-      label: 'Horaires et fermetures',
-      exact: false,
-    },
-    {
-      path: '/gestion/restaurant',
-      icon: 'store',
-      label: 'Restaurant',
-      exact: false,
-    },
-    {
-      path: '/gestion/utilisateurs',
-      icon: 'users',
-      label: 'Utilisateurs',
-      exact: false,
+      id: 'reglages',
+      label: 'Réglages',
+      links: [
+        {
+          path: '/gestion/ouverture',
+          icon: 'clock',
+          label: 'Horaires et fermetures',
+          exact: false,
+        },
+        { path: '/gestion/restaurant', icon: 'store', label: 'Restaurant', exact: false },
+        { path: '/gestion/utilisateurs', icon: 'users', label: 'Utilisateurs', exact: false },
+      ],
     },
   ];
 

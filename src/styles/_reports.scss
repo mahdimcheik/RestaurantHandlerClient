@@ -10,7 +10,9 @@
 .bar__track {
   flex: 1;
   block-size: 0.75rem;
+  border-radius: var(--radius);
   background: var(--surface-sunken);
+  overflow: hidden;
 }
 
 .bar__fill {

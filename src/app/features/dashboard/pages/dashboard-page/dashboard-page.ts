@@ -3,6 +3,7 @@ import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { OrderStatus } from '../../../../core/api/generated';
+import { SessionService } from '../../../../core/auth/session.service';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { ORDER_EVENT_NAMES } from '../../../../core/realtime/realtime-events';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
@@ -29,6 +30,13 @@ const COUNTED_STATUSES: readonly OrderStatus[] = [
 ];
 
 const percent = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+const longDate = new Intl.DateTimeFormat('fr-FR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 @Component({
   selector: 'app-dashboard-page',
@@ -39,6 +47,12 @@ export class DashboardPage {
   private readonly store = inject(StoreService);
   private readonly stats = inject(StatsService);
   private readonly opening = inject(OpeningStateService);
+
+  private readonly session = inject(SessionService);
+
+  protected readonly firstName = computed(() => this.session.user()?.firstName ?? '');
+  /** Date du jour en toutes lettres, sur l'horloge de l'appareil (« Mardi 24 novembre 2026 »). */
+  protected readonly todayLabel = capitalize(longDate.format(new Date()));
 
   /** État d'ouverture en une phrase ; vide tant qu'il n'est pas connu. */
   protected readonly openingLabel = computed(() => {

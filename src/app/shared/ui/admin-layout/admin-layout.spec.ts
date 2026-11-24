@@ -66,6 +66,17 @@ describe('AdminLayout', () => {
     );
   });
 
+  it('pose le parfum du nouveau design et range les liens par rubrique', async () => {
+    const root = await render('/gestion');
+    const host = root.querySelector('app-admin-layout') ?? root;
+
+    expect(host.classList).toContain('brand-ui');
+    const groups = [...root.querySelectorAll('.admin__group ul')].map((list) =>
+      root.querySelector(`#${list.getAttribute('aria-labelledby')}`)?.textContent?.trim(),
+    );
+    expect(groups).toEqual(['Service', 'Carte', 'Réglages']);
+  });
+
   it('signale la page courante, et elle seule', async () => {
     const root = await render('/gestion/produits');
     const current = [...root.querySelectorAll('[aria-current=page]')];
