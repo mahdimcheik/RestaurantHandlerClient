@@ -64,7 +64,7 @@ interface NavGroup {
           <span class="admin__brand-sub">Gestion</span>
         </span>
       </a>
-      <div class="admin__menu">
+      <div class="admin__menu scrollbar-thin">
         @for (group of groups; track group.id) {
           <div class="admin__group">
             <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
