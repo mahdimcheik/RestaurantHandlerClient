@@ -1,0 +1,121 @@
+<section
+  #section
+  class="showcase brand"
+  [class.showcase--portrait]="layout().portrait"
+  [style.--brand-bg]="background()"
+  [style.--brand-ink]="ink()"
+  [style.--u]="u() + 'px'"
+  aria-labelledby="hero-title"
+>
+  <div class="waves" aria-hidden="true"></div>
+
+  <div class="showcase__stage" [style.width.px]="stage().width" [style.height.px]="stage().height">
+    <div
+      class="showcase__ring-shadow"
+      aria-hidden="true"
+      [style.width.px]="ring().size"
+      [style.height.px]="ring().size"
+      [style.background]="ring().shadow"
+      [style.transform]="ring().shadowTransform"
+    ></div>
+    <div
+      class="showcase__ring"
+      aria-hidden="true"
+      [style.width.px]="ring().size"
+      [style.height.px]="ring().size"
+      [style.background-image]="ringImage"
+      [style.background-size]="ring().backgroundSize"
+      [style.background-position]="ring().backgroundPosition"
+      [style.mask-image]="ring().mask"
+      [style.transform]="ringTransform()"
+    ></div>
+
+    <h1
+      #titleEl
+      id="hero-title"
+      class="showcase__title"
+      [style.left.px]="titleSlot().left"
+      [style.top.px]="titleSlot().top"
+      [style.font-size.px]="titleSize()"
+    >
+      {{ title() }}
+    </h1>
+
+    @for (coupe of coupes(); track $index) {
+      <div
+        class="showcase__coupe-shadow"
+        aria-hidden="true"
+        [style.width.px]="shadowSize()"
+        [style.height.px]="shadowSize()"
+        [style.z-index]="coupe.zIndex - 1"
+        [style.transform]="coupe.shadowTransform"
+      ></div>
+      <img
+        class="showcase__coupe"
+        [ngSrc]="coupe.image"
+        [width]="coupe.width"
+        [height]="coupe.height"
+        [priority]="$first"
+        alt=""
+        [style.width.px]="coupeSize()"
+        [style.height.px]="coupeSize()"
+        [style.z-index]="coupe.zIndex"
+        [style.transform]="coupe.transform"
+      />
+    }
+
+    @for (prop of props(); track prop.key) {
+      <div
+        class="showcase__prop"
+        aria-hidden="true"
+        [style.width.px]="prop.width"
+        [style.height.px]="prop.height"
+        [style.background-image]="propsImage"
+        [style.background-size]="prop.backgroundSize"
+        [style.background-position]="prop.backgroundPosition"
+        [style.transform]="prop.transform"
+      ></div>
+    }
+
+    <p
+      class="showcase__eyebrow eyebrow"
+      [style.left.px]="eyebrowSlot().left"
+      [style.top.px]="eyebrowSlot().top"
+      i18n="@@home.hero.eyebrow"
+    >
+      Fait maison
+    </p>
+    <p
+      class="showcase__flavour"
+      [style.left.px]="flavourSlot().left"
+      [style.top.px]="flavourSlot().top"
+      [style.opacity]="flavour().opacity"
+      [style.transform]="flavour().transform"
+    >
+      <span>{{ flavour().lines[0] }} /</span>
+      <span>{{ flavour().lines[1] }}</span>
+    </p>
+    <a
+      class="showcase__cta btn-brand"
+      routerLink="/commander"
+      [style.left.px]="ctaSlot().left"
+      [style.top.px]="ctaSlot().top"
+      i18n="@@home.cta"
+      >Commander</a
+    >
+  </div>
+
+  <div class="showcase__vignette" aria-hidden="true"></div>
+
+  <ng-content />
+
+  <button type="button" class="showcase__pause" (click)="togglePlaying()">
+    @if (playing()) {
+      <app-icon name="pause" />
+      <span class="visually-hidden" i18n="@@home.hero.pause">Mettre l’animation en pause</span>
+    } @else {
+      <app-icon name="play" />
+      <span class="visually-hidden" i18n="@@home.hero.play">Relancer l’animation</span>
+    }
+  </button>
+</section>

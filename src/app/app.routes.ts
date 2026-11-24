@@ -20,6 +20,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/legal/legal.routes').then((m) => m.LEGAL_ROUTES),
   },
   {
+    path: '',
+    loadChildren: () => import('./features/about/about.routes').then((m) => m.ABOUT_ROUTES),
+  },
+  {
     path: 'auth',
     data: { bare: true },
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),

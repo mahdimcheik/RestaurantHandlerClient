@@ -10,7 +10,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { MenuChoice, MenuLine, toCartLines } from '../../../../shared/ordering/cart';
 import {
@@ -39,8 +39,7 @@ import { quoteOf } from '../../data-access/quote';
  */
 @Component({
   selector: 'app-menu-page',
-  host: { class: 'shop' },
-  imports: [RouterLink, NgOptimizedImage, EurosPipe, Icon, MenuSlots, ProductOptions],
+  imports: [NgOptimizedImage, EurosPipe, Icon, MenuSlots, ProductOptions],
   templateUrl: './menu-page.html',
 })
 export class MenuPage {
@@ -154,10 +153,15 @@ export class MenuPage {
     if (line) {
       this.cart.replaceMenuChoices(line.key, this.choices());
       this.cart.setQuantity(line.key, this.quantity());
-      await this.router.navigateByUrl('/panier');
+      await this.close();
       return;
     }
     this.cart.addMenu(menu, this.choices(), this.quantity());
-    await this.router.navigateByUrl('/commander');
+    await this.close();
+  }
+
+  /** Retour à la carte, qui referme le dialogue sans la faire défiler. */
+  private async close(): Promise<void> {
+    await this.router.navigate(['/commander'], { scroll: 'manual' });
   }
 }

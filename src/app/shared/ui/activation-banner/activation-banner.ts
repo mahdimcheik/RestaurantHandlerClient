@@ -8,7 +8,11 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-activation-banner',
   template: `
     @if (session.needsActivation()) {
-      <div class="banner gutter">
+      <section
+        class="banner gutter"
+        aria-label="Activation du compte"
+        i18n-aria-label="@@activation.region"
+      >
         <p class="banner__text" i18n="@@activation.banner">
           Votre compte n'est pas encore activé : ouvrez le lien reçu par e-mail.
         </p>
@@ -22,7 +26,7 @@ import { AuthService } from '../../services/auth.service';
           Renvoyer le lien
         </button>
         <p class="banner__status" role="status">{{ status() }}</p>
-      </div>
+      </section>
     }
   `,
 })

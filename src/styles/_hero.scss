@@ -1,0 +1,175 @@
+// Bloc d'accueil plein écran (carrousel). Éléments communs du design (fond ondulé, sur-titre,
+// bouton, barre du haut) : `_brand.scss`.
+// Positions et tailles des coupes, de l'anneau et des accessoires : calculées par le composant
+// (`features/home/hero-geometry.ts`). Ici : apparence, et tailles en unités de scène `--u`.
+
+.showcase {
+  --u: 1px;
+
+  position: relative;
+  height: 100svh;
+  min-height: 30rem;
+  overflow: hidden;
+}
+
+// Voile des bords, sous la scène : il ne doit jamais assombrir le texte (contraste AA).
+.showcase__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 45%,
+    transparent 55%,
+    var(--brand-vignette) 100%
+  );
+  pointer-events: none;
+}
+
+.showcase__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}
+
+.showcase__ring,
+.showcase__ring-shadow,
+.showcase__coupe,
+.showcase__coupe-shadow,
+.showcase__prop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.showcase__ring,
+.showcase__ring-shadow {
+  z-index: 2;
+  border-radius: var(--radius-round);
+}
+
+.showcase__ring {
+  background-repeat: no-repeat;
+}
+
+.showcase__coupe {
+  max-width: none;
+  object-fit: contain;
+  transform-origin: center;
+}
+
+.showcase__coupe-shadow {
+  border-radius: var(--radius-round);
+  background: radial-gradient(
+    circle,
+    var(--brand-shade-strong) 0%,
+    var(--brand-shade-light) 48%,
+    transparent 70%
+  );
+  transform-origin: center;
+}
+
+.showcase__prop {
+  z-index: 5;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 calc(6 * var(--u)) calc(8 * var(--u)) var(--brand-shade-mid));
+  will-change: auto;
+}
+
+.showcase__title {
+  position: absolute;
+  z-index: 3;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-wrap: nowrap;
+  pointer-events: none;
+}
+
+.showcase__eyebrow {
+  position: absolute;
+  z-index: 6;
+}
+
+.showcase__flavour {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  font-size: max(0.75rem, calc(21 * var(--u)));
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  will-change: transform, opacity;
+}
+
+.showcase__cta {
+  position: absolute;
+  z-index: 6;
+  width: calc(156 * var(--u));
+  height: calc(50 * var(--u));
+}
+
+// Mise en page portrait : textes centrés sous les coupes.
+.showcase--portrait {
+  .showcase__eyebrow,
+  .showcase__cta,
+  .showcase__title {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .showcase__eyebrow {
+    gap: calc(12 * var(--u));
+    font-size: max(0.75rem, calc(12 * var(--u)));
+
+    &::before,
+    &::after {
+      width: calc(40 * var(--u));
+    }
+  }
+
+  .showcase__flavour {
+    right: 0;
+    left: 0;
+    justify-items: center;
+    text-align: center;
+    font-size: max(0.75rem, calc(17 * var(--u)));
+  }
+
+  .showcase__cta {
+    width: calc(140 * var(--u));
+    height: calc(46 * var(--u));
+    font-size: max(0.75rem, calc(13 * var(--u)));
+  }
+}
+
+// Bouton pause / lecture de l'animation (WCAG 2.2.2).
+.showcase__pause {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: var(--border-width) solid currentColor;
+  border-radius: var(--brand-radius);
+  background: transparent;
+  color: inherit;
+
+  &:hover {
+    background: var(--brand-ink);
+    color: var(--brand-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+  }
+}

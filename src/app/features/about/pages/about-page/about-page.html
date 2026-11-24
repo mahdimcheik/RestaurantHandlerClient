@@ -1,0 +1,87 @@
+<div class="brand brand--3 brand-page">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar />
+
+  <section class="intro gutter" aria-labelledby="about-title">
+    <div class="intro__text">
+      <p class="eyebrow" i18n="@@about.eyebrow">À propos</p>
+      <h1 id="about-title" class="display-title" i18n="@@about.title">Un cuisinier, une passion</h1>
+      <p class="lead" i18n="@@about.lead">
+        Ici, pas de brigade ni de chaîne : un seul cuisinier, aux fourneaux comme au comptoir. Dix
+        ans d’expérience entre restauration rapide et cuisine italienne, et une même exigence pour
+        chaque assiette, qu’elle se mange sur place ou à emporter.
+      </p>
+      <div class="actions">
+        <a class="btn-brand btn-brand--solid" routerLink="/commander" i18n="@@about.seeCard"
+          >Voir la carte</a
+        >
+      </div>
+    </div>
+
+    <div class="plate">
+      <img
+        class="plate__image"
+        ngSrc="https://ik.imagekit.io/accompagnement/margaritta.png"
+        width="525"
+        height="526"
+        priority
+        alt=""
+      />
+      <p class="stat-badge">
+        <span class="stat-badge__value">10</span>
+        <span class="stat-badge__label" i18n="@@about.years">ans d’expérience</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="brand-section gutter" aria-labelledby="values-title">
+    <h2 id="values-title" class="eyebrow" i18n="@@about.values">Sa façon de travailler</h2>
+    <ul class="pillars">
+      <li class="pillar">
+        <span class="pillar__index" aria-hidden="true">01</span>
+        <h3 class="display-title display-title--md" i18n="@@about.experience.title">
+          Dix ans de métier
+        </h3>
+        <p i18n="@@about.experience.text">
+          Une décennie entre restauration rapide et cuisine italienne : le rythme du service quand
+          la file s’allonge, et le soin des recettes qui prennent leur temps.
+        </p>
+      </li>
+      <li class="pillar">
+        <span class="pillar__index" aria-hidden="true">02</span>
+        <h3 class="display-title display-title--md" i18n="@@about.homemade.title">Fait maison</h3>
+        <p i18n="@@about.homemade.text">
+          Il privilégie le fait maison : le plus possible est préparé sur place, à partir de
+          produits simples et bien choisis, plutôt que réchauffé.
+        </p>
+      </li>
+      <li class="pillar">
+        <span class="pillar__index" aria-hidden="true">03</span>
+        <h3 class="display-title display-title--md" i18n="@@about.contact.title">
+          Le contact client
+        </h3>
+        <p i18n="@@about.contact.text">
+          Celui qui cuisine est aussi celui qui vous accueille. Une envie, une question, une
+          allergie : vous en parlez directement à la personne qui prépare votre plat.
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="brand-section brand-section--center gutter" aria-labelledby="visit-title">
+    <h2 id="visit-title" class="display-title display-title--md" i18n="@@about.visit.title">
+      On vous attend
+    </h2>
+    <p class="lead" i18n="@@about.visit.text">
+      Sur place, à emporter ou commandé en ligne : la même cuisine, faite par la même personne.
+    </p>
+    <div class="actions">
+      <a class="btn-brand btn-brand--solid" routerLink="/commander" i18n="@@header.order"
+        >Commander</a
+      >
+      <a class="btn-brand" routerLink="/" fragment="infos" i18n="@@about.visit.infos"
+        >Horaires et adresse</a
+      >
+    </div>
+  </section>
+</div>

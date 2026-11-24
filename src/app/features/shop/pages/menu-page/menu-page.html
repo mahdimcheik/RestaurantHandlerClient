@@ -1,8 +1,13 @@
-<div class="gutter shop__page shop__page--narrow">
+<div class="order-sheet">
   @if (menu(); as menu) {
     @if (editing(); as editing) {
-      <section class="sheet" aria-labelledby="edit-title">
-        <h1 id="edit-title" class="sheet__title" tabindex="-1" #editHeading>
+      <section class="sheet" aria-labelledby="sheet-title">
+        <h1
+          id="sheet-title"
+          class="sheet__title display-title display-title--md"
+          tabindex="-1"
+          #editHeading
+        >
           {{ editing.product.name }}
         </h1>
         <p class="shop__lead" i18n="@@shop.inMenu">Dans votre {{ menu.name }}</p>
@@ -32,15 +37,7 @@
         </div>
       </section>
     } @else {
-      <a class="link-button shop__back" [routerLink]="line() ? '/panier' : '/commander'">
-        <app-icon name="back" />
-        @if (line()) {
-          <ng-container i18n="@@shop.backToCart">Retour au panier</ng-container>
-        } @else {
-          <ng-container i18n="@@shop.backToCard">Retour à la carte</ng-container>
-        }
-      </a>
-      <article class="sheet" aria-labelledby="menu-title">
+      <article class="sheet" aria-labelledby="sheet-title">
         @if (menu.imageUrl) {
           <img
             class="sheet__image"
@@ -51,7 +48,9 @@
             priority
           />
         }
-        <h1 id="menu-title" class="sheet__title">{{ menu.name }}</h1>
+        <h1 id="sheet-title" class="sheet__title display-title display-title--md">
+          {{ menu.name }}
+        </h1>
         @if (menu.description) {
           <p class="sheet__description">{{ menu.description }}</p>
         }
@@ -90,7 +89,12 @@
                 <span class="visually-hidden" i18n="@@shop.more">Un de plus</span>
               </button>
             </span>
-            <button type="button" class="btn sheet__add" [disabled]="!complete()" (click)="add()">
+            <button
+              type="button"
+              class="btn-brand btn-brand--solid sheet__add"
+              [disabled]="!complete()"
+              (click)="add()"
+            >
               @if (line()) {
                 <ng-container i18n="@@shop.updateLine">Mettre à jour</ng-container>
               } @else {

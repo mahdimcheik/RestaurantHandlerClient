@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import {
   describeOpening,
@@ -7,13 +6,15 @@ import {
 } from '../../../../shared/services/opening-state.service';
 import { PublicStore } from '../../../../shared/services/public-store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { formatLocal } from '../../../../shared/utils/restaurant-time';
+import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { weeklyHours } from '../../home-format';
 
-/** Accueil : nom, état d'ouverture en direct, accès à la carte, infos pratiques de l'API. */
+/** Accueil : carrousel (nom, accès à la carte), état d'ouverture en direct, infos pratiques de l'API. */
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink, Icon],
+  imports: [HeroCarousel, SiteTopbar, Icon],
   templateUrl: './home-page.html',
 })
 export class HomePage {
@@ -21,6 +22,9 @@ export class HomePage {
   private readonly opening = inject(OpeningStateService);
 
   protected readonly info = this.store.info.value;
+  protected readonly title = computed(
+    () => this.info()?.tradeName || $localize`:@@home.title:Greenadine`,
+  );
   protected readonly hours = computed(() => weeklyHours(this.info()?.hours ?? []));
   protected readonly closures = computed(() =>
     (this.info()?.upcomingClosures ?? []).map((closure) => ({

@@ -7,7 +7,7 @@ import { SessionService } from '../../../core/auth/session.service';
   imports: [RouterLink],
   template: `
     <header class="site-header gutter">
-      <a class="site-header__brand" routerLink="/" i18n="@@brand">Le Restaurant</a>
+      <a class="site-header__brand" routerLink="/" i18n="@@brand">Greenadine</a>
       <nav class="inline-list" aria-label="Navigation principale" i18n-aria-label="@@nav.label">
         <a routerLink="/" fragment="infos" i18n="@@nav.info">Infos</a>
         @if (session.user(); as user) {

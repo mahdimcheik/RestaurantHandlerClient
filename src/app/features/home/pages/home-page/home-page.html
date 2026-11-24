@@ -1,12 +1,9 @@
-<section class="hero gutter" aria-labelledby="home-title">
-  <h1 id="home-title" class="hero__title">
-    @if (info(); as info) {
-      {{ info.tradeName }}
-    } @else {
-      <ng-container i18n="@@home.title">Le Restaurant</ng-container>
-    }
-  </h1>
-  <p class="hero__lead" i18n="@@home.tagline">Cuisine maison, à emporter ou sur place.</p>
+<app-hero-carousel [title]="title()">
+  <app-site-topbar />
+</app-hero-carousel>
+
+<section id="infos" class="section gutter" aria-labelledby="infos-title">
+  <h2 id="infos-title" class="visually-hidden" i18n="@@home.infos.title">Infos pratiques</h2>
   @if (openingText()) {
     <p class="shop__opening" role="status">
       <app-icon
@@ -15,11 +12,6 @@
       <span>{{ openingText() }}</span>
     </p>
   }
-  <a class="btn" routerLink="/commander" i18n="@@home.cta">Commander</a>
-</section>
-
-<section id="infos" class="section gutter" aria-labelledby="infos-title">
-  <h2 id="infos-title" class="visually-hidden" i18n="@@home.infos.title">Infos pratiques</h2>
   <dl class="facts">
     @if (info()?.address; as address) {
       <div>

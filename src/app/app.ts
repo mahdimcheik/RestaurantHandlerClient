@@ -8,14 +8,15 @@ import { UpdateBanner } from './shared/ui/update-banner/update-banner';
 import { SiteFooter } from './shared/ui/site-footer/site-footer';
 import { SiteHeader } from './shared/ui/site-header/site-header';
 
-/** Vrai si une route de la chaîne affichée demande une page sans en-tête ni pied de page (`data.bare`). */
-function isBare(route: ActivatedRouteSnapshot): boolean {
+/** Valeur de `data[key]` pour la route la plus profonde de la chaîne affichée qui la définit. */
+function routeFlag(route: ActivatedRouteSnapshot, key: string): unknown {
+  let value: unknown;
   for (let current: ActivatedRouteSnapshot | null = route; current; current = current.firstChild) {
-    if (current.data['bare'] === true) {
-      return true;
+    if (key in current.data) {
+      value = current.data[key];
     }
   }
-  return false;
+  return value;
 }
 
 @Component({
@@ -33,11 +34,20 @@ function isBare(route: ActivatedRouteSnapshot): boolean {
 export class App {
   private readonly router = inject(Router);
 
+  private readonly navigated = this.router.events.pipe(
+    filter((event) => event instanceof NavigationEnd),
+    map(() => this.router.routerState.snapshot.root),
+  );
+
+  /** Page sans en-tête ni pied de page (`data.bare`). */
   protected readonly bare = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => isBare(this.router.routerState.snapshot.root)),
-    ),
+    this.navigated.pipe(map((root) => routeFlag(root, 'bare') === true)),
+    { initialValue: false },
+  );
+
+  /** Page qui porte sa propre barre du haut (`data.header: false`). */
+  protected readonly noHeader = toSignal(
+    this.navigated.pipe(map((root) => routeFlag(root, 'header') === false)),
     { initialValue: false },
   );
 }

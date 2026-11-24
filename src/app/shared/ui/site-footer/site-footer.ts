@@ -22,7 +22,7 @@ import { ThemeSwitcher } from '../theme-switcher/theme-switcher';
         <li><a routerLink="/allergenes" i18n="@@footer.allergens">Allergènes</a></li>
       </ul>
       <app-theme-switcher />
-      <p class="site-footer__copy" i18n="@@footer.copy">© {{ year }} Le Restaurant</p>
+      <p class="site-footer__copy" i18n="@@footer.copy">© {{ year }} Greenadine</p>
     </footer>
   `,
 })

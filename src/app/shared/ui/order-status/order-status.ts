@@ -47,13 +47,13 @@ export function statusLabel(status: OrderStatus): string {
 
 const CUSTOMER_STATUS: Record<OrderStatus, string> = {
   PendingPayment: $localize`:@@order.customerStatus.pendingPayment:Paiement en attente`,
-  AwaitingApproval: $localize`:@@order.customerStatus.awaitingApproval:En attente de validation par le restaurant`,
+  AwaitingApproval: $localize`:@@order.customerStatus.awaitingApproval:En attente de validation par Greenadine`,
   Confirmed: $localize`:@@order.customerStatus.confirmed:Confirmée`,
   InPreparation: $localize`:@@order.customerStatus.inPreparation:En préparation`,
   Ready: $localize`:@@order.customerStatus.ready:Prête — venez la chercher`,
   Completed: $localize`:@@order.customerStatus.completed:Retirée`,
   NoShow: $localize`:@@order.customerStatus.noShow:Non retirée`,
-  Refused: $localize`:@@order.customerStatus.refused:Refusée par le restaurant`,
+  Refused: $localize`:@@order.customerStatus.refused:Refusée par Greenadine`,
   Cancelled: $localize`:@@order.customerStatus.cancelled:Annulée`,
 };
 
@@ -100,7 +100,7 @@ export function paymentStatusLabel(status: PaymentStatus): string {
 })
 export class OrderStatusBadge {
   readonly status = input.required<OrderStatus>();
-  /** Libellé côté client (« En attente de validation par le restaurant »…). */
+  /** Libellé côté client (« En attente de validation par Greenadine »…). */
   readonly customer = input(false);
   protected readonly info = computed(() => STATUS[this.status()]);
   protected readonly label = computed(() =>

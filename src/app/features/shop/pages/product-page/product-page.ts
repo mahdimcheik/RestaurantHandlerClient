@@ -24,7 +24,6 @@ import { quoteOf } from '../../data-access/quote';
  */
 @Component({
   selector: 'app-product-page',
-  host: { class: 'shop' },
   imports: [RouterLink, NgOptimizedImage, EurosPipe, Icon, ProductOptions],
   templateUrl: './product-page.html',
 })
@@ -109,10 +108,15 @@ export class ProductPage {
     if (line) {
       this.cart.customize(line.key, this.customization());
       this.cart.setQuantity(line.key, this.quantity());
-      await this.router.navigateByUrl('/panier');
+      await this.close();
       return;
     }
     this.cart.addProduct(product, this.customization(), this.quantity());
-    await this.router.navigateByUrl('/commander');
+    await this.close();
+  }
+
+  /** Retour à la carte, qui referme le dialogue sans la faire défiler. */
+  private async close(): Promise<void> {
+    await this.router.navigate(['/commander'], { scroll: 'manual' });
   }
 }

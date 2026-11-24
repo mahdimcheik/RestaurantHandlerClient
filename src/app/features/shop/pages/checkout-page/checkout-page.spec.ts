@@ -94,7 +94,7 @@ describe('CheckoutPage', () => {
     expect(TestBed.inject(Router).url).toBe('/commandes/o42');
   });
 
-  it('propose seulement les créneaux quand le restaurant est fermé, et montre le blocage du paiement au retrait', async () => {
+  it('propose seulement les créneaux quand Greenadine est fermé, et montre le blocage du paiement au retrait', async () => {
     await open('Closed', [SLOT], {
       onlinePaymentEnabled: true,
       canPayOnSite: false,
