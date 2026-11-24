@@ -558,6 +558,14 @@
   min-width: 0;
 }
 
+// Supplément d'un produit de menu, aligné à droite comme le libellé de rupture.
+.ingredient-list__extra {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .ingredient-list__status {
   font-size: var(--text-sm);
   font-style: italic;

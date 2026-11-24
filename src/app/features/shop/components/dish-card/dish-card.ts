@@ -7,8 +7,8 @@ import { Dish } from '../../data-access/card-sections';
 
 /**
  * Article de la carte (produit ou menu) dans la grille d'une rubrique : visuel, nom, description et
- * prix, ou « Rupture » / « Indisponible ». Ouvre la fiche sans faire défiler la carte. Un produit
- * qui a des ingrédients ou une description porte en plus un bouton « info », posé sur le visuel à côté du lien (un
+ * prix, ou « Rupture » / « Indisponible ». Ouvre la fiche sans faire défiler la carte. Un article
+ * qui a des ingrédients, des produits (menu) ou une description porte en plus un bouton « info », posé sur le visuel à côté du lien (un
  * bouton ne peut pas être imbriqué dans un lien). Sur la carte de commande (`count` fourni), un
  * compteur à côté du prix : « + » ajoute, « − » retire, le nombre est la quantité au panier.
  */
@@ -65,7 +65,7 @@ import { Dish } from '../../data-access/card-sections';
         </button>
       </span>
     }
-    @if (item.ingredients.length > 0 || item.description) {
+    @if (item.ingredients.length > 0 || item.slots?.length || item.description) {
       <button type="button" class="dish-tile__info" aria-haspopup="dialog" (click)="info.emit()">
         <app-icon name="info" />
         <span class="visually-hidden">Informations : {{ item.name }}</span>
@@ -81,6 +81,6 @@ export class DishCard {
   readonly decrement = output<void>();
 
   protected readonly showCounter = computed(() => this.count() !== null && this.dish().isAvailable);
-  /** Le client demande les ingrédients (ou, à défaut, la description) du produit. */
+  /** Le client demande les ingrédients d'un produit, les produits d'un menu, ou sa description. */
   readonly info = output<void>();
 }
