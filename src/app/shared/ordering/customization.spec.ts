@@ -34,8 +34,6 @@ const group = (extra: Partial<OptionGroupDetails> = {}): OptionGroupDetails => (
   minChoices: 0,
   maxChoices: 1,
   maxPerChoice: 1,
-  freeChoices: 0,
-  extraChoicePriceCents: 0,
   isArchived: false,
   position: 0,
   productCount: 1,
@@ -54,7 +52,7 @@ const burger = manageProduct('p1', 'Burger', {
       { ingredientId: 'cheddar', name: 'Cheddar', isRemovable: true, isAvailable: true },
     ],
   },
-  optionGroups: [group({ productRules: { minChoices: 1, maxChoices: 1, freeChoices: 1 } })],
+  optionGroups: [group({ productRules: { minChoices: 1, maxChoices: 1 } })],
 });
 
 describe('customization', () => {

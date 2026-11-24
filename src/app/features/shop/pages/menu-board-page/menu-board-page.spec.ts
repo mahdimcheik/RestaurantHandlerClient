@@ -84,7 +84,9 @@ describe('MenuBoardPage', () => {
   });
 
   it('affiche les ingrédients sur place depuis le bouton info', async () => {
-    root().querySelector<HTMLButtonElement>('.dish-tile__info')!.click();
+    [...root().querySelectorAll<HTMLButtonElement>('.dish-tile__info')]
+      .find((button) => button.textContent?.includes('Informations : Burger'))!
+      .click();
     await settle();
 
     const info = root().querySelector<HTMLDialogElement>('[aria-labelledby="ingredients-title"]')!;

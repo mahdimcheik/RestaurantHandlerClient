@@ -7,6 +7,7 @@ import {
   linkedSignal,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { applyEach, form, submit, validate } from '@angular/forms/signals';
@@ -30,6 +31,7 @@ import { SelectField, SelectOption } from '../../../../shared/ui/select-field/se
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { centsToInput, parseEuros } from '../../../../shared/utils/money';
 import { ArchiveButton } from '../../components/archive-button';
+import { ChoiceAddDialog, NewChoice } from '../../components/choice-add-dialog';
 
 interface ChoiceModel {
   /** Null pour un choix pas encore enregistré. */
@@ -43,35 +45,28 @@ interface GroupModel {
   label: string;
   minChoices: number;
   maxChoices: number;
-  freeChoices: number;
-  extraChoicePrice: string;
   maxPerChoice: number;
   choices: ChoiceModel[];
 }
-
-const newChoice = (): ChoiceModel => ({ id: null, name: '', extraPrice: '0,00', ingredientId: '' });
 
 const toModel = (group: OptionGroupDetails | undefined): GroupModel => ({
   label: group?.label ?? '',
   minChoices: group?.minChoices ?? 1,
   maxChoices: group?.maxChoices ?? 1,
-  freeChoices: group?.freeChoices ?? 1,
-  extraChoicePrice: centsToInput(group?.extraChoicePriceCents ?? 0),
   maxPerChoice: group?.maxPerChoice ?? 1,
-  choices: group?.choices.map((choice) => ({
-    id: choice.id,
-    name: choice.name,
-    extraPrice: centsToInput(choice.extraPriceCents),
-    ingredientId: choice.ingredientId ?? '',
-  })) ?? [newChoice(), newChoice()],
+  choices:
+    group?.choices.map((choice) => ({
+      id: choice.id,
+      name: choice.name,
+      extraPrice: centsToInput(choice.extraPriceCents),
+      ingredientId: choice.ingredientId ?? '',
+    })) ?? [],
 });
 
 const toWrite = (model: GroupModel): OptionGroupWrite => ({
   label: model.label.trim(),
   minChoices: model.minChoices,
   maxChoices: model.maxChoices,
-  freeChoices: model.freeChoices,
-  extraChoicePriceCents: parseEuros(model.extraChoicePrice) ?? 0,
   maxPerChoice: model.maxPerChoice,
   choices: model.choices.map((choice) => ({
     id: choice.id,
@@ -87,7 +82,16 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
  */
 @Component({
   selector: 'app-option-group-edit-page',
-  imports: [RouterLink, Icon, TextField, NumberField, SelectField, ImageField, ArchiveButton],
+  imports: [
+    RouterLink,
+    Icon,
+    TextField,
+    NumberField,
+    SelectField,
+    ImageField,
+    ArchiveButton,
+    ChoiceAddDialog,
+  ],
   templateUrl: './option-group-edit-page.html',
 })
 export class OptionGroupEditPage {
@@ -123,6 +127,14 @@ export class OptionGroupEditPage {
       .map((ingredient) => ({ value: ingredient.id, label: ingredient.name })),
   );
 
+  /** Prix de référence de chaque ingrédient, repris par un choix ajouté encore à 0 €. */
+  protected readonly ingredientPrices = computed(
+    () =>
+      new Map(
+        this.store.ingredients.value().map((ingredient) => [ingredient.id, ingredient.priceCents]),
+      ),
+  );
+
   /** Photo de chaque ingrédient, reprise sur la carte par un choix lié qui n'a pas la sienne. */
   protected readonly ingredientImages = computed(
     () =>
@@ -136,9 +148,7 @@ export class OptionGroupEditPage {
     nameRules(path.label);
     integerRange(path.minChoices, 0, 20);
     integerRange(path.maxChoices, 1, 20);
-    integerRange(path.freeChoices, 0, 20);
     maxAtLeastMin(path.maxChoices, path.minChoices);
-    eurosRule(path.extraChoicePrice, { required: true });
     integerRange(path.maxPerChoice, 1, 10);
     validate(path.choices, ({ value, valueOf }) =>
       value().length === 0 || value().length * valueOf(path.maxPerChoice) < valueOf(path.minChoices)
@@ -157,6 +167,7 @@ export class OptionGroupEditPage {
   protected readonly error = signal('');
   protected readonly notice = signal('');
   protected readonly archiving = signal(false);
+  private readonly choiceDialog = viewChild(ChoiceAddDialog);
 
   protected readonly uploadImage = (file: File) =>
     this.groups
@@ -236,8 +247,15 @@ export class OptionGroupEditPage {
     });
   }
 
-  protected addChoice(): void {
-    this.model.update((model) => ({ ...model, choices: [...model.choices, newChoice()] }));
+  protected openChoiceDialog(): void {
+    this.choiceDialog()?.open();
+  }
+
+  protected addChoice(choice: NewChoice): void {
+    this.model.update((model) => ({
+      ...model,
+      choices: [...model.choices, { id: null, ...choice }],
+    }));
   }
 
   protected moveChoice(index: number, offset: -1 | 1): void {

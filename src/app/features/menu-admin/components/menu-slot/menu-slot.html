@@ -31,7 +31,7 @@
   <p class="alert alert--error" role="alert">{{ error() }}</p>
 }
 
-<form class="form" novalidate (submit)="saveRules($event)">
+<div class="form">
   <div class="form__row form__row--3">
     <app-text-field [field]="rulesForm.label" label="Libellé" />
     <app-number-field
@@ -41,12 +41,7 @@
     />
     <app-number-field [field]="rulesForm.maxChoices" label="Maximum de choix" />
   </div>
-  <div class="form__actions">
-    <button type="submit" class="btn btn--outline" [disabled]="busy() || rulesForm().submitting()">
-      Enregistrer l'emplacement
-    </button>
-  </div>
-</form>
+</div>
 
 <h4 class="stack-list__title">Produits proposés</h4>
 @if (options().options.length === 0) {
@@ -89,44 +84,58 @@
 }
 
 <div class="toolbar">
-  @if (productGroups().length > 0) {
-    <div class="field">
-      <label class="field__label" [for]="id + '-add'"> Ajouter un produit </label>
-      <select #productBox [id]="id + '-add'" (change)="productToAdd.set(productBox.value)">
-        <option value="" [selected]="productToAdd() === ''">Choisir…</option>
-        @for (group of productGroups(); track group.label) {
-          <optgroup [label]="group.label">
-            @for (product of group.products; track product.id) {
-              <option [value]="product.id">
-                {{ product.name }} · {{ product.priceCents | euros }}
-              </option>
-            }
-          </optgroup>
-        }
-      </select>
-    </div>
+  @if (products().length === 0) {
+    <p class="sheet__lead">Aucun produit actif sur la carte : créez d'abord des produits.</p>
+  } @else {
     <button
       type="button"
       class="btn btn--outline btn--icon"
-      [disabled]="productToAdd() === ''"
-      (click)="addProduct()"
+      [disabled]="busy()"
+      (click)="openAdd()"
+      title="Ajouter un produit à « {{ current.label }} »"
     >
       <app-icon name="plus" />
-      <span>Ajouter</span>
+      <span>Ajouter un produit</span>
     </button>
-  } @else if (products().length === 0) {
-    <p class="sheet__lead">Aucun produit actif sur la carte : créez d'abord des produits.</p>
   }
 </div>
 
-<div class="form__actions">
-  <button type="button" [disabled]="busy() || optionsForm().submitting()" (click)="saveOptions()">
-    Enregistrer les produits
-  </button>
-</div>
-<p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
-  {{ notice() }}
-</p>
+<app-modal-dialog title="Ajouter un produit à « {{ current.label }} »">
+  @if (productGroups().length > 0) {
+    <form class="form" novalidate (submit)="addProduct($event)">
+      <div class="field">
+        <label class="field__label" [for]="id + '-add'"> Produit </label>
+        <select #productBox [id]="id + '-add'" (change)="productToAdd.set(productBox.value)">
+          <option value="" [selected]="productToAdd() === ''">Choisir…</option>
+          @for (group of productGroups(); track group.label) {
+            <optgroup [label]="group.label">
+              @for (product of group.products; track product.id) {
+                <option [value]="product.id" [selected]="productToAdd() === product.id">
+                  {{ product.name }} · {{ product.priceCents | euros }}
+                </option>
+              }
+            </optgroup>
+          }
+        </select>
+      </div>
+      <app-text-field
+        [field]="addForm.extraPrice"
+        inputmode="decimal"
+        label="Surcoût (€)"
+        hint="Ajouté au prix du menu quand ce produit est choisi"
+      />
+      <div class="form__actions">
+        <button type="submit" class="btn" [disabled]="productToAdd() === ''">Ajouter</button>
+        <button type="button" class="btn btn--outline" (click)="closeAdd()">Annuler</button>
+      </div>
+    </form>
+  } @else {
+    <p class="sheet__lead">Tous les produits actifs sont déjà dans cet emplacement.</p>
+    <div class="form__actions">
+      <button type="button" class="btn btn--outline" (click)="closeAdd()">Fermer</button>
+    </div>
+  }
+</app-modal-dialog>
 
 <app-confirm-dialog
   title="Retirer « {{ current.label }} » du menu ?"

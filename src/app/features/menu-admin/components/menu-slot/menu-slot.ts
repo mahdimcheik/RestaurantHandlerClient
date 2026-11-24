@@ -23,10 +23,12 @@ import {
   integerRange,
   maxAtLeastMin,
   nameRules,
+  validateForm,
 } from '../../../../shared/forms/validation';
 import { MenusService } from '../../../../shared/services/menus.service';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { NumberField } from '../../../../shared/ui/number-field/number-field';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { centsToInput, EurosPipe, parseEuros } from '../../../../shared/utils/money';
@@ -58,11 +60,21 @@ const toOptions = (slot: MenuSlotDetails) => ({
 
 /**
  * Un emplacement d'un menu (Plat, Accompagnement, Boisson…) : libellé, nombre de choix et
- * produits proposés avec leur surcoût. Chaque enregistrement renvoie le menu complet (`changed`).
+ * produits proposés avec leur surcoût. Les modifications sont envoyées par la fiche (`save`) ;
+ * le retrait de l'emplacement est immédiat et renvoie le menu complet (`changed`).
  */
 @Component({
   selector: 'app-menu-slot',
-  imports: [TextField, NumberField, Icon, MoveButtons, StatusBadges, ConfirmDialog, EurosPipe],
+  imports: [
+    TextField,
+    NumberField,
+    Icon,
+    MoveButtons,
+    StatusBadges,
+    ConfirmDialog,
+    ModalDialog,
+    EurosPipe,
+  ],
   templateUrl: './menu-slot.html',
 })
 export class MenuSlot {
@@ -81,6 +93,7 @@ export class MenuSlot {
 
   private readonly menus = inject(MenusService);
   private readonly removeDialog = viewChild.required(ConfirmDialog);
+  private readonly addDialog = viewChild.required(ModalDialog);
 
   protected readonly rules = linkedSignal(() => toRules(this.slot()));
   protected readonly rulesForm = form(this.rules, (path) => {
@@ -111,45 +124,47 @@ export class MenuSlot {
       .filter((group) => group.products.length > 0);
   });
   protected readonly productToAdd = signal('');
+  private readonly addModel = signal({ extraPrice: '0,00' });
+  protected readonly addForm = form(this.addModel, (path) =>
+    eurosRule(path.extraPrice, { required: true }),
+  );
   protected readonly id = `menu-slot-${nextId++}`;
 
   protected readonly busy = signal(false);
   protected readonly error = signal('');
-  protected readonly notice = signal('');
 
   /** Un produit devenu inactif ou archivé est refusé par l'API : il est signalé pour être retiré. */
   protected isActive(productId: string): boolean {
     return this.activeIds().has(productId);
   }
 
-  protected async saveRules(event: Event): Promise<void> {
+  protected openAdd(): void {
+    this.productToAdd.set('');
+    this.addForm().reset({ extraPrice: '0,00' });
+    this.addDialog().open();
+  }
+
+  protected closeAdd(): void {
+    this.addDialog().close();
+  }
+
+  protected async addProduct(event: Event): Promise<void> {
     event.preventDefault();
-    await submit(this.rulesForm, {
+    const product = this.products().find((candidate) => candidate.id === this.productToAdd());
+    if (!product) {
+      return;
+    }
+    await submit(this.addForm, {
       action: async () => {
-        const rules = this.rules();
-        await this.run(
-          this.menus.updateSlot(this.menuId(), this.slot().id, {
-            label: rules.label.trim(),
-            minChoices: rules.minChoices,
-            maxChoices: rules.maxChoices,
-          }),
-          'Emplacement enregistré.',
-        );
+        this.updateOptions((options) => [
+          ...options,
+          { productId: product.id, name: product.name, extraPrice: this.addModel().extraPrice },
+        ]);
+        this.closeAdd();
         return undefined;
       },
       onInvalid: (tree) => focusFirstInvalid(tree),
     });
-  }
-
-  protected addProduct(): void {
-    const product = this.products().find((candidate) => candidate.id === this.productToAdd());
-    if (product) {
-      this.updateOptions((options) => [
-        ...options,
-        { productId: product.id, name: product.name, extraPrice: '0,00' },
-      ]);
-      this.productToAdd.set('');
-    }
   }
 
   protected moveProduct(index: number, offset: -1 | 1): void {
@@ -160,47 +175,80 @@ export class MenuSlot {
     this.updateOptions((options) => options.filter((_, i) => i !== index));
   }
 
-  protected async saveOptions(): Promise<void> {
-    await submit(this.optionsForm, {
-      action: async () => {
-        await this.run(
-          this.menus.setSlotOptions(this.menuId(), this.slot().id, {
-            options: this.options().options.map((option) => ({
-              productId: option.productId,
-              extraPriceCents: parseEuros(option.extraPrice) ?? 0,
-            })),
-          }),
-          `Produits de l'emplacement enregistrés.`,
-        );
-        return undefined;
-      },
-      onInvalid: (tree) => focusFirstInvalid(tree),
-    });
+  /**
+   * Envoie le libellé, les nombres de choix et les produits s'ils ont changé. Renvoie le menu à
+   * jour, `undefined` si rien n'a changé, `false` si la saisie est invalide ou refusée. La page
+   * n'applique le menu qu'à la fin, pour ne pas écraser la saisie des autres emplacements.
+   */
+  async save(): Promise<MenuDetails | undefined | false> {
+    this.error.set('');
+    let menu: MenuDetails | undefined;
+    const slot = this.slot();
+    if (JSON.stringify(this.rules()) !== JSON.stringify(toRules(slot))) {
+      if (!(await validateForm(this.rulesForm))) {
+        return false;
+      }
+      const rules = this.rules();
+      const updated = await this.run(
+        this.menus.updateSlot(this.menuId(), slot.id, {
+          label: rules.label.trim(),
+          minChoices: rules.minChoices,
+          maxChoices: rules.maxChoices,
+        }),
+      );
+      if (!updated) {
+        return false;
+      }
+      menu = updated;
+    }
+    if (JSON.stringify(this.options()) !== JSON.stringify(toOptions(slot))) {
+      if (!(await validateForm(this.optionsForm))) {
+        return false;
+      }
+      const updated = await this.run(
+        this.menus.setSlotOptions(this.menuId(), slot.id, {
+          options: this.options().options.map((option) => ({
+            productId: option.productId,
+            extraPriceCents: parseEuros(option.extraPrice) ?? 0,
+          })),
+        }),
+      );
+      if (!updated) {
+        return false;
+      }
+      menu = updated;
+    }
+    return menu;
+  }
+
+  /** Vérifie la saisie de l'emplacement avant tout envoi de la fiche. */
+  async validate(): Promise<boolean> {
+    return (await validateForm(this.rulesForm)) && (await validateForm(this.optionsForm));
   }
 
   protected askRemove(): void {
     this.removeDialog().open();
   }
 
-  protected remove(): Promise<void> {
-    return this.run(this.menus.removeSlot(this.menuId(), this.slot().id), '');
+  protected async remove(): Promise<void> {
+    const menu = await this.run(this.menus.removeSlot(this.menuId(), this.slot().id));
+    if (menu) {
+      this.changed.emit(menu);
+    }
   }
 
   private updateOptions(change: (options: OptionModel[]) => OptionModel[]): void {
     this.options.update((model) => ({ options: change(model.options) }));
-    this.notice.set('');
   }
 
-  private async run(action: Observable<MenuDetails>, success: string): Promise<void> {
+  private async run(action: Observable<MenuDetails>): Promise<MenuDetails | undefined> {
     this.error.set('');
-    this.notice.set('');
     this.busy.set(true);
     try {
-      const menu = await firstValueFrom(action);
-      this.notice.set(success);
-      this.changed.emit(menu);
+      return await firstValueFrom(action);
     } catch (error) {
       this.error.set(apiErrorMessage(error));
+      return undefined;
     } finally {
       this.busy.set(false);
     }

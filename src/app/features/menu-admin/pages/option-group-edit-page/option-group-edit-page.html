@@ -5,7 +5,7 @@
 } @else if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else {
-  <div class="page-head">
+  <div class="page-head page-head--sticky">
     <h1>
       @if (id()) {
         {{ group.value()?.label }}
@@ -13,12 +13,23 @@
         Nouveau groupe d'options
       }
     </h1>
-    @if (id() && !archived()) {
-      <app-archive-button
-        [name]="group.value()?.label ?? ''"
-        [busy]="archiving()"
-        (confirmed)="archive()"
-      />
+    @if (!archived()) {
+      <div class="toolbar">
+        @if (id()) {
+          <app-archive-button
+            [name]="group.value()?.label ?? ''"
+            [busy]="archiving()"
+            (confirmed)="archive()"
+          />
+        }
+        <button type="submit" form="option-group-form" class="btn" [disabled]="form().submitting()">
+          @if (id()) {
+            Enregistrer
+          } @else {
+            Créer le groupe
+          }
+        </button>
+      </div>
     }
   </div>
 
@@ -34,7 +45,7 @@
       Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
     </p>
   } @else {
-    <form class="sheet" novalidate (submit)="onSubmit($event)">
+    <form id="option-group-form" class="sheet" novalidate (submit)="onSubmit($event)">
       <section class="sheet__section" aria-labelledby="group-info">
         <h2 id="group-info">Informations</h2>
         @if (id()) {
@@ -73,18 +84,6 @@
               hint="Un produit peut redéfinir ces nombres"
             />
             <app-number-field
-              [field]="form.freeChoices"
-              label="Choix offerts"
-              hint="Les suivants sont facturés"
-            />
-          </div>
-          <div class="form__row">
-            <app-text-field
-              [field]="form.extraChoicePrice"
-              inputmode="decimal"
-              label="Prix d'un choix au-delà des offerts (€)"
-            />
-            <app-number-field
               [field]="form.maxPerChoice"
               label="Fois max par choix"
               hint="2 = un ingrédient peut être doublé ; chaque fois compte comme un choix"
@@ -97,8 +96,12 @@
         <h2 id="group-choices">Choix</h2>
         <p class="sheet__lead">
           Dans l'ordre d'affichage. Lier un ingrédient grise le choix quand il est en rupture. Un
-          choix retiré est archivé à l'enregistrement.
+          choix ajouté ou retiré ne compte qu'une fois le groupe enregistré ; un choix retiré est
+          alors archivé.
         </p>
+        @if (model().choices.length === 0) {
+          <p>Aucun choix pour l'instant.</p>
+        }
         <ol class="stack-list">
           @for (
             choice of form.choices;
@@ -189,7 +192,7 @@
           </ul>
         }
         <div class="toolbar">
-          <button type="button" class="btn btn--outline btn--icon" (click)="addChoice()">
+          <button type="button" class="btn btn--outline btn--icon" (click)="openChoiceDialog()">
             <app-icon name="plus" />
             <span>Ajouter un choix</span>
           </button>
@@ -212,16 +215,12 @@
           Les photos du groupe et des choix s'ajoutent une fois le groupe créé.
         </p>
       }
-
-      <div class="form__actions">
-        <button type="submit" [disabled]="form().submitting()">
-          @if (id()) {
-            Enregistrer
-          } @else {
-            Créer le groupe
-          }
-        </button>
-      </div>
     </form>
+
+    <app-choice-add-dialog
+      [ingredientOptions]="ingredientOptions()"
+      [ingredientPrices]="ingredientPrices()"
+      (added)="addChoice($event)"
+    />
   }
 }

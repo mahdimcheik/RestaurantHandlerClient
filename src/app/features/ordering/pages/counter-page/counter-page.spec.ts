@@ -28,8 +28,6 @@ const drinks: OptionGroupDetails = {
   minChoices: 1,
   maxChoices: 1,
   maxPerChoice: 1,
-  freeChoices: 1,
-  extraChoicePriceCents: 0,
   isArchived: false,
   position: 0,
   productCount: 1,

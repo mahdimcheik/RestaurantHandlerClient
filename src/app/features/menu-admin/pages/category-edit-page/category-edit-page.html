@@ -7,7 +7,7 @@
 } @else if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else {
-  <div class="page-head">
+  <div class="page-head page-head--sticky">
     <h1>
       @if (id()) {
         {{ category.value()?.name }}
@@ -15,12 +15,23 @@
         Nouvelle catégorie
       }
     </h1>
-    @if (id() && !archived()) {
-      <app-archive-button
-        [name]="category.value()?.name ?? ''"
-        [busy]="archiving()"
-        (confirmed)="archive()"
-      />
+    @if (!archived()) {
+      <div class="toolbar">
+        @if (id()) {
+          <app-archive-button
+            [name]="category.value()?.name ?? ''"
+            [busy]="archiving()"
+            (confirmed)="archive()"
+          />
+        }
+        <button type="submit" form="category-form" class="btn" [disabled]="form().submitting()">
+          @if (id()) {
+            Enregistrer
+          } @else {
+            Créer la catégorie
+          }
+        </button>
+      </div>
     }
   </div>
 
@@ -39,19 +50,10 @@
     <div class="sheet">
       <section class="sheet__section" aria-labelledby="category-info">
         <h2 id="category-info">Informations</h2>
-        <form class="form" novalidate (submit)="onSubmit($event)">
+        <form id="category-form" class="form" novalidate (submit)="onSubmit($event)">
           <app-text-field [field]="form.name" label="Nom" />
           <app-textarea-field [field]="form.description" label="Description (facultative)" />
           <app-checkbox-field [field]="form.isActive"> Visible sur la carte </app-checkbox-field>
-          <div class="form__actions">
-            <button type="submit" [disabled]="form().submitting()">
-              @if (id()) {
-                Enregistrer
-              } @else {
-                Créer la catégorie
-              }
-            </button>
-          </div>
         </form>
       </section>
 

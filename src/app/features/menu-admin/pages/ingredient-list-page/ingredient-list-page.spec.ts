@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IngredientDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, text } from '../../../../shared/testing';
+import { clickButton, envelope, fill, polyfillDialog, text } from '../../../../shared/testing';
 import { IngredientListPage } from './ingredient-list-page';
 
 const ingredient = (id: string, name: string, isAvailable = true): IngredientDetails => ({
@@ -25,6 +25,7 @@ describe('IngredientListPage', () => {
   let http: HttpTestingController;
 
   beforeEach(async () => {
+    polyfillDialog();
     TestBed.configureTestingModule({
       imports: [IngredientListPage],
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -78,10 +79,14 @@ describe('IngredientListPage', () => {
   });
 
   it('modifie le nom, le prix de référence et la proposition en remplacement', async () => {
-    clickButton(fixture, 'Modifier');
+    clickButton(fixture, 'Modifier « Cheddar »');
     await fixture.whenStable();
-    fill(fixture, 'Nom', 'Cheddar affiné');
-    // Le premier champ de ce nom est celui de l'ajout, en haut de page.
+    const dialog = fixture.nativeElement.querySelectorAll(
+      'app-modal-dialog dialog',
+    )[1] as HTMLDialogElement;
+    expect(dialog.open).toBe(true);
+    // Les premiers champs de ces noms sont ceux du dialogue d'ajout.
+    fill(fixture, 'Nom', 'Cheddar affiné', 1);
     fill(fixture, 'Prix de référence (€)', '0,80', 1);
     const offered = fixture.nativeElement.querySelector(
       'form input[type=checkbox]',
@@ -101,16 +106,13 @@ describe('IngredientListPage', () => {
     await settle();
 
     expect(text(fixture)).toContain('« Cheddar affiné » enregistré.');
+    expect(dialog.open).toBe(false);
   });
 
-  it('affiche la vignette et retire la photo depuis la ligne d’édition', async () => {
+  it('affiche la vignette et retire la photo depuis le dialogue de modification', async () => {
     expect(fixture.nativeElement.querySelectorAll('.data-table__thumb').length).toBe(1);
 
-    // Tomate est la troisième ligne : le troisième bouton « Modifier ».
-    const edit = [...fixture.nativeElement.querySelectorAll('button')].filter(
-      (b: HTMLButtonElement) => b.textContent?.trim() === 'Modifier',
-    )[2] as HTMLButtonElement;
-    edit.click();
+    clickButton(fixture, 'Modifier « Tomate »');
     await fixture.whenStable();
 
     expect(text(fixture)).toContain("Photo de l'ingrédient");
@@ -123,5 +125,27 @@ describe('IngredientListPage', () => {
     await settle();
 
     expect(text(fixture)).toContain('Photo retirée.');
+  });
+
+  it('ajoute un ingrédient depuis le dialogue d’ajout', async () => {
+    clickButton(fixture, 'Ajouter un ingrédient');
+    const dialog = fixture.nativeElement.querySelector(
+      'app-modal-dialog dialog',
+    ) as HTMLDialogElement;
+    expect(dialog.open).toBe(true);
+    fill(fixture, 'Nom', 'Saumon');
+    fill(fixture, 'Prix de référence (€)', '3,30');
+    clickButton(fixture, 'Ajouter');
+    await Promise.resolve();
+
+    const request = http.expectOne(
+      (candidate) => candidate.method === 'POST' && candidate.url === '/manage/ingredients',
+    );
+    expect(request.request.body).toEqual({ name: 'Saumon', priceCents: 330 });
+    request.flush(envelope(ingredient('i4', 'Saumon')));
+    await settle();
+
+    expect(dialog.open).toBe(false);
+    expect(text(fixture)).toContain('« Saumon » ajouté.');
   });
 });

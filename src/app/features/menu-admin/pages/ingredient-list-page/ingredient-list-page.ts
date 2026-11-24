@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, submit } from '@angular/forms/signals';
 import { firstValueFrom, Observable, tap } from 'rxjs';
@@ -8,7 +8,9 @@ import { eurosRule, focusFirstInvalid, nameRules } from '../../../../shared/form
 import { IngredientsService } from '../../../../shared/services/ingredients.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { ImageField } from '../../../../shared/ui/image-field/image-field';
+import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { centsToInput, EurosPipe, parseEuros } from '../../../../shared/utils/money';
 import { ArchiveButton } from '../../components/archive-button';
@@ -16,8 +18,8 @@ import { IngredientQuickAdd } from '../../components/ingredient-quick-add';
 import { StatusBadges } from '../../components/status-badges';
 
 /**
- * Ingrédients de la carte : ajout, modification (nom, prix de référence, proposé en
- * remplacement, photo), rupture de stock et archivage, sur une seule page. Sert aussi en service pour
+ * Ingrédients de la carte : ajout et modification (nom, prix de référence, proposé en
+ * remplacement, photo) dans des dialogues, rupture de stock et archivage depuis la liste. Sert aussi en service pour
  * signaler une rupture : elle grise les choix liés et peut rendre des produits indisponibles.
  */
 @Component({
@@ -30,6 +32,8 @@ import { StatusBadges } from '../../components/status-badges';
     ArchiveButton,
     IngredientQuickAdd,
     StatusBadges,
+    Icon,
+    ModalDialog,
   ],
   templateUrl: './ingredient-list-page.html',
 })
@@ -68,8 +72,15 @@ export class IngredientListPage {
   /** Ingrédient en cours d'action (rupture, archivage), pour désactiver ses boutons. */
   protected readonly busyId = signal<string | null>(null);
 
-  /** Ingrédient en cours de modification. */
+  private readonly addDialog = viewChild.required<ModalDialog>('addDialog');
+  private readonly editDialog = viewChild.required<ModalDialog>('editDialog');
+
+  /** Ingrédient en cours de modification (dialogue ouvert). */
   protected readonly editingId = signal<string | null>(null);
+  protected readonly editing = computed(() =>
+    this.all().find((ingredient) => ingredient.id === this.editingId()),
+  );
+  protected readonly editError = signal('');
   private readonly editModel = signal({ name: '', price: '0,00', isOfferedAsReplacement: true });
   protected readonly editForm = form(this.editModel, (path) => {
     nameRules(path.name);
@@ -81,6 +92,7 @@ export class IngredientListPage {
   }
 
   protected created(ingredient: IngredientDetails): void {
+    this.addDialog().close();
     this.error.set('');
     this.notice.set(`« ${ingredient.name} » ajouté.`);
   }
@@ -127,31 +139,36 @@ export class IngredientListPage {
     });
     this.editForm().reset();
     this.editImageUrl.set(ingredient.imageUrl);
+    this.editError.set('');
     this.editingId.set(ingredient.id);
     this.notice.set('');
-  }
-
-  protected cancelEdit(): void {
-    this.editingId.set(null);
+    this.editDialog().open();
   }
 
   protected async save(event: Event, ingredient: IngredientDetails): Promise<void> {
     event.preventDefault();
-    this.error.set('');
+    this.editError.set('');
     await submit(this.editForm, {
       action: async () => {
         const model = this.editModel();
-        await this.run(
-          ingredient,
-          this.ingredients.update(ingredient.id, {
-            name: model.name.trim(),
-            priceCents: parseEuros(model.price) ?? 0,
-            isOfferedAsReplacement: model.isOfferedAsReplacement,
-          }),
-          `« ${model.name.trim()} » enregistré.`,
-        );
-        if (!this.error()) {
-          this.editingId.set(null);
+        this.busyId.set(ingredient.id);
+        try {
+          await firstValueFrom(
+            this.ingredients.update(ingredient.id, {
+              name: model.name.trim(),
+              priceCents: parseEuros(model.price) ?? 0,
+              isOfferedAsReplacement: model.isOfferedAsReplacement,
+            }),
+          );
+          if (this.showArchived()) {
+            this.withArchived.reload();
+          }
+          this.editDialog().close();
+          this.notice.set(`« ${model.name.trim()} » enregistré.`);
+        } catch (error) {
+          this.editError.set(apiErrorMessage(error));
+        } finally {
+          this.busyId.set(null);
         }
         return undefined;
       },

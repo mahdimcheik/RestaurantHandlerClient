@@ -1,4 +1,14 @@
-import { Component, computed, inject, linkedSignal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  linkedSignal,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
@@ -23,7 +33,8 @@ interface NavGroup {
 
 /**
  * Coquille du back-office, au nouveau design (parfum 1) : menu à gauche par rubriques (icône et
- * texte, rail d'icônes sur petit écran) et zone de contenu avec sa barre du haut. `.brand-ui`
+ * texte, rail d'icônes sur petit écran ; seules les rubriques défilent, « Retour au site » et
+ * « Déconnexion » restent en bas) et zone de contenu avec sa barre du haut. `.brand-ui`
  * fait prendre l'encre et le fond du parfum à toutes les pages de gestion. Rendue dans le <main>
  * de l'application (route `bare`), elle porte son propre lien d'évitement vers le contenu.
  */
@@ -38,7 +49,10 @@ interface NavGroup {
     ConnectionStatus,
     ConnectionBanner,
   ],
-  host: { class: 'admin brand brand--1 brand-ui' },
+  host: {
+    class: 'admin brand brand--1 brand-ui',
+    '[style.--admin-bar-height.px]': 'barHeight()',
+  },
   template: `
     <a class="skip-link" href="#contenu-gestion">Aller au contenu</a>
     <div class="waves" aria-hidden="true"></div>
@@ -50,36 +64,38 @@ interface NavGroup {
           <span class="admin__brand-sub">Gestion</span>
         </span>
       </a>
-      @for (group of groups; track group.id) {
-        <div class="admin__group">
-          <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
-            {{ group.label }}
-          </p>
-          <ul class="admin__links" [attr.aria-labelledby]="'admin-group-' + group.id">
-            @for (link of group.links; track link.path) {
-              <li>
-                <a
-                  class="admin__link"
-                  [routerLink]="link.path"
-                  routerLinkActive
-                  ariaCurrentWhenActive="page"
-                  [routerLinkActiveOptions]="{ exact: link.exact }"
-                  [title]="link.label"
-                >
-                  <app-icon [name]="link.icon" />
-                  <span class="admin__label">{{ link.label }}</span>
-                  @if (link.path === ordersPath && toApprove() > 0) {
-                    {{ ' '
-                    }}<span class="admin__count"
-                      >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
-                    >
-                  }
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-      }
+      <div class="admin__menu">
+        @for (group of groups; track group.id) {
+          <div class="admin__group">
+            <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
+              {{ group.label }}
+            </p>
+            <ul class="admin__links" [attr.aria-labelledby]="'admin-group-' + group.id">
+              @for (link of group.links; track link.path) {
+                <li>
+                  <a
+                    class="admin__link"
+                    [routerLink]="link.path"
+                    routerLinkActive
+                    ariaCurrentWhenActive="page"
+                    [routerLinkActiveOptions]="{ exact: link.exact }"
+                    [title]="link.label"
+                  >
+                    <app-icon [name]="link.icon" />
+                    <span class="admin__label">{{ link.label }}</span>
+                    @if (link.path === ordersPath && toApprove() > 0) {
+                      {{ ' '
+                      }}<span class="admin__count"
+                        >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
+                      >
+                    }
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
       <ul class="admin__links admin__links--end">
         <li>
           <a class="admin__link" routerLink="/" title="Retour au site">
@@ -96,7 +112,7 @@ interface NavGroup {
       </ul>
     </nav>
     <div class="admin__main">
-      <div class="admin__bar gutter">
+      <div #bar class="admin__bar gutter">
         <app-service-control />
         <div class="admin__tools">
           <button
@@ -140,7 +156,12 @@ export class AdminLayout {
         : (previous?.value ?? ''),
   });
 
+  /** Hauteur de la barre du haut, sous laquelle se collent les en-têtes de fiche. */
+  protected readonly barHeight = signal(0);
+  private readonly bar = viewChild.required<ElementRef<HTMLElement>>('bar');
+
   constructor() {
+    this.watchBarHeight();
     this.store.info.load();
     inject(RealtimeService).start();
     this.approvals.start();
@@ -185,6 +206,20 @@ export class AdminLayout {
       ],
     },
   ];
+
+  /** La barre passe sur plusieurs lignes en écran étroit : sa hauteur est suivie. */
+  private watchBarHeight(): void {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      if (typeof ResizeObserver === 'undefined') {
+        return;
+      }
+      const element = this.bar().nativeElement;
+      const observer = new ResizeObserver(() => this.barHeight.set(element.offsetHeight));
+      observer.observe(element);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   protected logout(): void {
     this.session.logout().subscribe(() => void this.router.navigateByUrl('/'));

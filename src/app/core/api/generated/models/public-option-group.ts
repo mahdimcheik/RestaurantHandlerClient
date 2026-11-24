@@ -4,8 +4,6 @@
 import { PublicOptionChoice } from '../models/public-option-choice';
 export interface PublicOptionGroup {
   choices: Array<PublicOptionChoice>;
-  extraChoicePriceCents: number;
-  freeChoices: number;
   id: string;
   imageUrl?: string | null;
   label: string;

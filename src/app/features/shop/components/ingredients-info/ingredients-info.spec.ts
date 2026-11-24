@@ -56,4 +56,46 @@ describe('IngredientsInfo', () => {
     ).toBe('Pain brioché, steak haché.');
     expect(element.querySelector('.ingredients-info__description')).toBeNull();
   });
+  it('pour un menu, liste ses produits par rubrique à la place des ingrédients', () => {
+    const element = render(
+      dish({
+        isMenu: true,
+        description: 'Un burger et une boisson.',
+        slots: [
+          {
+            id: 'plat',
+            label: 'Plat',
+            minChoices: 1,
+            maxChoices: 1,
+            options: [
+              { productId: 'burger', name: 'Burger', isAvailable: true, extraPriceCents: 0 },
+              { productId: 'wrap', name: 'Wrap', isAvailable: true, extraPriceCents: 150 },
+            ],
+          },
+          {
+            id: 'boisson',
+            label: 'Boisson',
+            minChoices: 1,
+            maxChoices: 1,
+            options: [{ productId: 'coca', name: 'Coca', isAvailable: false, extraPriceCents: 0 }],
+          },
+        ],
+      }),
+    );
+
+    expect([...element.querySelectorAll('.eyebrow')].map((title) => title.textContent)).toEqual([
+      'Plat',
+      'Boisson',
+    ]);
+    expect(
+      [...element.querySelectorAll('.ingredient-list__name')].map((name) => name.textContent),
+    ).toEqual(['Burger', 'Wrap', 'Coca']);
+    expect(element.querySelector('.ingredient-list__extra')?.textContent?.trim()).toMatch(
+      /^\+ 1,50\s€$/,
+    );
+    expect(element.querySelector('.ingredient-list__status')?.textContent).toBe('Indisponible');
+    expect(element.querySelector('.ingredients-info__description')?.textContent).toBe(
+      'Un burger et une boisson.',
+    );
+  });
 });
