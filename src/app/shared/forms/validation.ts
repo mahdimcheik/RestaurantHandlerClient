@@ -11,7 +11,7 @@ import {
 } from '@angular/forms/signals';
 import { parseEuros } from '../utils/money';
 
-export const requiredMessage = $localize`:@@validation.required:Ce champ est obligatoire.`;
+export const requiredMessage = 'Ce champ est obligatoire.';
 
 export function requiredRule(path: SchemaPath<string>): void {
   required(path, { message: requiredMessage });
@@ -21,14 +21,14 @@ export function requiredRule(path: SchemaPath<string>): void {
 export function nameRules(path: SchemaPath<string>, limit = 64): void {
   required(path, { message: requiredMessage });
   maxLength(path, limit, {
-    message: $localize`:@@validation.maxLength:${limit}:limit: caractères au maximum.`,
+    message: `${limit} caractères au maximum.`,
   });
 }
 
 /** Texte facultatif borné (descriptions : 1 000 caractères pour l'API). */
 export function lengthRule(path: SchemaPath<string>, limit: number): void {
   maxLength(path, limit, {
-    message: $localize`:@@validation.maxLength:${limit}:limit: caractères au maximum.`,
+    message: `${limit} caractères au maximum.`,
   });
 }
 
@@ -42,19 +42,19 @@ export function eurosRule(path: SchemaPath<string>, options: { required: boolean
       ? undefined
       : {
           kind: 'euros',
-          message: $localize`:@@validation.euros:Saisissez un montant positif, par exemple 12,50.`,
+          message: 'Saisissez un montant positif, par exemple 12,50.',
         },
   );
 }
 
 /** Entier borné (nombre de choix d'un groupe). */
 export function integerRange(path: SchemaPath<number>, low: number, high: number): void {
-  min(path, low, { message: $localize`:@@validation.min:${low}:low: au minimum.` });
-  max(path, high, { message: $localize`:@@validation.max:${high}:high: au maximum.` });
+  min(path, low, { message: `${low} au minimum.` });
+  max(path, high, { message: `${high} au maximum.` });
   validate(path, ({ value }) =>
     Number.isInteger(value())
       ? undefined
-      : { kind: 'integer', message: $localize`:@@validation.integer:Saisissez un nombre entier.` },
+      : { kind: 'integer', message: 'Saisissez un nombre entier.' },
   );
 }
 
@@ -64,7 +64,7 @@ export function maxAtLeastMin(max: SchemaPath<number>, min: SchemaPath<number>):
     value() < valueOf(min)
       ? {
           kind: 'belowMin',
-          message: $localize`:@@optionGroup.maxBelowMin:Le maximum doit être au moins égal au minimum.`,
+          message: 'Le maximum doit être au moins égal au minimum.',
         }
       : undefined,
   );
@@ -81,13 +81,13 @@ export const PASSWORD_MIN_LENGTH = 8;
 export function emailRules(path: SchemaPath<string>): void {
   required(path, { message: requiredMessage });
   email(path, {
-    message: $localize`:@@validation.email:Saisissez une adresse e-mail valide, par exemple nom@exemple.fr.`,
+    message: 'Saisissez une adresse e-mail valide, par exemple nom@exemple.fr.',
   });
   validate(path, ({ value }) =>
     value().includes('+')
       ? {
           kind: 'noPlus',
-          message: $localize`:@@validation.noPlus:L'adresse e-mail ne doit pas contenir de « + ».`,
+          message: `L'adresse e-mail ne doit pas contenir de « + ».`,
         }
       : undefined,
   );
@@ -97,7 +97,7 @@ export function emailRules(path: SchemaPath<string>): void {
 export function newPasswordRules(path: SchemaPath<string>): void {
   required(path, { message: requiredMessage });
   minLength(path, PASSWORD_MIN_LENGTH, {
-    message: $localize`:@@validation.passwordLength:Au moins ${PASSWORD_MIN_LENGTH}:min: caractères.`,
+    message: `Au moins ${PASSWORD_MIN_LENGTH} caractères.`,
   });
 }
 

@@ -12,31 +12,31 @@ export interface HeroFlavour {
 
 export const HERO_FLAVOURS: readonly HeroFlavour[] = [
   {
-    lines: [$localize`:@@home.hero.dish1a:Pizza`, $localize`:@@home.hero.dish1b:Margherita`],
+    lines: ['Pizza', 'Margherita'],
     image: 'https://ik.imagekit.io/accompagnement/margaritta.png',
     width: 525,
     height: 526,
   },
   {
-    lines: [$localize`:@@home.hero.dish2a:Tiramisu`, $localize`:@@home.hero.dish2b:Café`],
+    lines: ['Tiramisu', 'Café'],
     image: 'https://ik.imagekit.io/accompagnement/tiramisu.png',
     width: 640,
     height: 640,
   },
   {
-    lines: [$localize`:@@home.hero.dish3a:Salade`, $localize`:@@home.hero.dish3b:Composée`],
+    lines: ['Salade', 'Composée'],
     image: 'https://ik.imagekit.io/accompagnement/salade.png',
     width: 550,
     height: 541,
   },
   {
-    lines: [$localize`:@@home.hero.dish4a:Kebab`, $localize`:@@home.hero.dish4b:Maison`],
+    lines: ['Kebab', 'Maison'],
     image: 'https://ik.imagekit.io/accompagnement/kebab.png',
     width: 602,
     height: 541,
   },
   {
-    lines: [$localize`:@@home.hero.dish5a:Pâtes`, $localize`:@@home.hero.dish5b:Fraîches`],
+    lines: ['Pâtes', 'Fraîches'],
     image: 'https://ik.imagekit.io/accompagnement/pasta.png',
     width: 515,
     height: 518,

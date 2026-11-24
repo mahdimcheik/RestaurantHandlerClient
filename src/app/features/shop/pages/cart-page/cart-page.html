@@ -3,11 +3,11 @@
   <app-site-topbar />
 
   <section class="order-page order-page--narrow gutter" aria-labelledby="cart-title">
-    <p class="eyebrow" i18n="@@shop.order.eyebrow">Commander</p>
-    <h1 id="cart-title" class="display-title display-title--md" i18n="@@shop.cartTitle">Panier</h1>
+    <p class="eyebrow">Commander</p>
+    <h1 id="cart-title" class="display-title display-title--md">Panier</h1>
 
     @if (cart.removed().length > 0) {
-      <p class="alert alert--error" role="alert" i18n="@@shop.removedFromCart">
+      <p class="alert alert--error" role="alert">
         Retiré de votre panier, plus à la carte : {{ cart.removed().join(', ') }}.
       </p>
     }
@@ -15,6 +15,6 @@
     <div class="order-panel">
       <app-cart-summary />
     </div>
-    <a class="btn-brand" routerLink="/commander" i18n="@@shop.continue">Continuer mes achats</a>
+    <a class="btn-brand" routerLink="/commander">Continuer mes achats</a>
   </section>
 </div>

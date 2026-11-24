@@ -87,9 +87,7 @@ export class ProductComposition {
   /** Un ingrédient créé depuis la fiche s'ajoute directement à la composition. */
   protected created(ingredient: IngredientDetails): void {
     this.add(ingredient.id);
-    this.notice.set(
-      $localize`:@@composition.created:« ${ingredient.name}:name: » créé et ajouté à la composition.`,
-    );
+    this.notice.set(`« ${ingredient.name} » créé et ajouté à la composition.`);
   }
 
   protected async save(): Promise<void> {
@@ -106,7 +104,7 @@ export class ProductComposition {
         }),
       );
       this.model.set(toModel(updated.composition));
-      this.notice.set($localize`:@@composition.saved:Composition enregistrée.`);
+      this.notice.set('Composition enregistrée.');
     } catch (error) {
       this.error.set(apiErrorMessage(error));
     } finally {

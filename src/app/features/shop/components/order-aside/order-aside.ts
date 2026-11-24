@@ -11,7 +11,7 @@ import { CartSummary } from '../cart-summary/cart-summary';
     'aria-labelledby': 'order-aside-title',
   },
   template: `
-    <h2 id="order-aside-title" class="eyebrow" i18n="@@shop.yourOrder">Votre commande</h2>
+    <h2 id="order-aside-title" class="eyebrow">Votre commande</h2>
     <app-cart-summary />
   `,
 })

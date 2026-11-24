@@ -76,12 +76,12 @@ export class OrdersPage {
   );
 
   protected readonly filters: readonly { id: OrderFilter; label: string }[] = [
-    { id: 'all', label: $localize`:@@orders.filter.all:Toutes` },
-    { id: 'toApprove', label: $localize`:@@order.status.awaitingApproval:À valider` },
-    { id: 'active', label: $localize`:@@orders.filter.active:En cours` },
-    { id: 'ready', label: $localize`:@@orders.filter.ready:Prêtes` },
-    { id: 'toCollect', label: $localize`:@@orders.filter.toCollect:À encaisser` },
-    { id: 'closed', label: $localize`:@@orders.filter.closed:Closes` },
+    { id: 'all', label: 'Toutes' },
+    { id: 'toApprove', label: 'À valider' },
+    { id: 'active', label: 'En cours' },
+    { id: 'ready', label: 'Prêtes' },
+    { id: 'toCollect', label: 'À encaisser' },
+    { id: 'closed', label: 'Closes' },
   ];
   protected readonly counts = computed(() => {
     const all = this.all();

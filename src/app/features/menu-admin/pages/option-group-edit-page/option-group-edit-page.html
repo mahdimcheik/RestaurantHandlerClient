@@ -1,9 +1,7 @@
-<a class="page-head__back" routerLink="/gestion/options" i18n="@@optionGroup.back">
-  ← Tous les groupes d'options
-</a>
+<a class="page-head__back" routerLink="/gestion/options"> ← Tous les groupes d'options </a>
 
 @if (id() && group.hasValue() === false && group.isLoading()) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else {
@@ -12,7 +10,7 @@
       @if (id()) {
         {{ group.value()?.label }}
       } @else {
-        <ng-container i18n="@@optionGroup.new">Nouveau groupe d'options</ng-container>
+        Nouveau groupe d'options
       }
     </h1>
     @if (id() && !archived()) {
@@ -32,24 +30,19 @@
   </p>
 
   @if (archived()) {
-    <p class="alert" i18n="@@sheet.archived">
+    <p class="alert">
       Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
     </p>
   } @else {
     <form class="sheet" novalidate (submit)="onSubmit($event)">
       <section class="sheet__section" aria-labelledby="group-info">
-        <h2 id="group-info" i18n="@@sheet.info">Informations</h2>
+        <h2 id="group-info">Informations</h2>
         @if (id()) {
           <p class="sheet__lead">
             @if (usedBy().length === 0) {
-              <ng-container i18n="@@optionGroup.unused">
-                Proposé sur aucun produit pour l'instant.
-              </ng-container>
+              Proposé sur aucun produit pour l'instant.
             } @else {
-              <ng-container i18n="@@optionGroup.usedBy">
-                Proposé sur {{ usedBy().length }} produit(s) : chaque modification les concerne
-                tous.
-              </ng-container>
+              Proposé sur {{ usedBy().length }} produit(s) : chaque modification les concerne tous.
             }
           </p>
           @if (usedBy().length > 0) {
@@ -66,31 +59,23 @@
           <app-text-field
             [field]="form.label"
             label="Libellé"
-            i18n-label="@@optionGroup.label"
             hint="Par exemple « Sauces », « Taille » ou « Suppléments pizza »"
-            i18n-hint="@@optionGroup.labelHint"
           />
           <div class="form__row form__row--3">
             <app-number-field
               [field]="form.minChoices"
               label="Minimum de choix"
-              i18n-label="@@optionGroup.min"
               hint="0 = facultatif"
-              i18n-hint="@@optionGroup.minHint"
             />
             <app-number-field
               [field]="form.maxChoices"
               label="Maximum de choix"
-              i18n-label="@@optionGroup.max"
               hint="Un produit peut redéfinir ces nombres"
-              i18n-hint="@@optionGroup.maxHint"
             />
             <app-number-field
               [field]="form.freeChoices"
               label="Choix offerts"
-              i18n-label="@@optionGroup.free"
               hint="Les suivants sont facturés"
-              i18n-hint="@@optionGroup.freeHint"
             />
           </div>
           <div class="form__row">
@@ -98,22 +83,19 @@
               [field]="form.extraChoicePrice"
               inputmode="decimal"
               label="Prix d'un choix au-delà des offerts (€)"
-              i18n-label="@@optionGroup.extraPrice"
             />
             <app-number-field
               [field]="form.maxPerChoice"
               label="Fois max par choix"
-              i18n-label="@@optionGroup.maxPerChoice"
               hint="2 = un ingrédient peut être doublé ; chaque fois compte comme un choix"
-              i18n-hint="@@optionGroup.maxPerChoiceHint"
             />
           </div>
         </div>
       </section>
 
       <section class="sheet__section" aria-labelledby="group-choices">
-        <h2 id="group-choices" i18n="@@optionGroup.choices">Choix</h2>
-        <p class="sheet__lead" i18n="@@optionGroup.choicesLead">
+        <h2 id="group-choices">Choix</h2>
+        <p class="sheet__lead">
           Dans l'ordre d'affichage. Lier un ingrédient grise le choix quand il est en rupture. Un
           choix retiré est archivé à l'enregistrement.
         </p>
@@ -125,9 +107,7 @@
           ) {
             <li class="stack-list__item">
               <div class="stack-list__head">
-                <span class="stack-list__title" i18n="@@optionGroup.choiceNumber">
-                  Choix {{ i + 1 }}
-                </span>
+                <span class="stack-list__title"> Choix {{ i + 1 }} </span>
                 <div class="stack-list__tools">
                   <button
                     type="button"
@@ -135,7 +115,6 @@
                     [disabled]="first"
                     (click)="moveChoice(i, -1)"
                     title="Monter le choix {{ i + 1 }}"
-                    i18n-title="@@optionGroup.choiceUp"
                   >
                     <app-icon name="up" />
                   </button>
@@ -145,7 +124,6 @@
                     [disabled]="last"
                     (click)="moveChoice(i, 1)"
                     title="Descendre le choix {{ i + 1 }}"
-                    i18n-title="@@optionGroup.choiceDown"
                   >
                     <app-icon name="down" />
                   </button>
@@ -154,34 +132,29 @@
                     class="icon-button"
                     (click)="removeChoice(i)"
                     title="Retirer le choix {{ i + 1 }}"
-                    i18n-title="@@optionGroup.choiceRemove"
                   >
                     <app-icon name="remove" />
                   </button>
                 </div>
               </div>
               <div class="form__row form__row--3">
-                <app-text-field [field]="choice.name" label="Nom" i18n-label="@@field.name" />
+                <app-text-field [field]="choice.name" label="Nom" />
                 <app-text-field
                   [field]="choice.extraPrice"
                   inputmode="decimal"
                   label="Surcoût (€)"
-                  i18n-label="@@optionGroup.choicePrice"
                 />
                 <app-select-field
                   [field]="choice.ingredientId"
                   [options]="ingredientOptions()"
                   label="Ingrédient lié"
-                  i18n-label="@@optionGroup.ingredient"
                   placeholder="Aucun"
-                  i18n-placeholder="@@optionGroup.noIngredient"
                 />
               </div>
               @if (model().choices[i].id; as choiceId) {
                 @if (choiceUploaders().get(choiceId); as photo) {
                   <app-image-field
                     label="Photo du choix"
-                    i18n-label="@@optionGroup.choicePhoto"
                     [imageUrl]="choiceImages().get(choiceId)"
                     [alt]="model().choices[i].name"
                     [upload]="photo.upload"
@@ -190,7 +163,8 @@
                 }
               }
               @let ingredientImage = ingredientImages().get(model().choices[i].ingredientId);
-              @let ownImage = model().choices[i].id ? choiceImages().get(model().choices[i].id!) : null;
+              @let ownImage =
+                model().choices[i].id ? choiceImages().get(model().choices[i].id!) : null;
               @if (ingredientImage && !ownImage) {
                 <p class="field__hint data-table__named">
                   <img
@@ -201,9 +175,7 @@
                     alt=""
                     loading="lazy"
                   />
-                  <span i18n="@@optionGroup.ingredientPhotoFallback">
-                    Sans photo propre, la carte affiche celle de l'ingrédient lié.
-                  </span>
+                  <span> Sans photo propre, la carte affiche celle de l'ingrédient lié. </span>
                 </p>
               }
             </li>
@@ -219,17 +191,16 @@
         <div class="toolbar">
           <button type="button" class="btn btn--outline btn--icon" (click)="addChoice()">
             <app-icon name="plus" />
-            <span i18n="@@optionGroup.addChoice">Ajouter un choix</span>
+            <span>Ajouter un choix</span>
           </button>
         </div>
       </section>
 
       @if (id()) {
         <section class="sheet__section" aria-labelledby="group-photo">
-          <h2 id="group-photo" i18n="@@sheet.photo">Photo</h2>
+          <h2 id="group-photo">Photo</h2>
           <app-image-field
             label="Choisir une photo"
-            i18n-label="@@image.choose"
             [imageUrl]="imageUrl()"
             [alt]="group.value()?.label ?? ''"
             [upload]="uploadImage"
@@ -237,7 +208,7 @@
           />
         </section>
       } @else {
-        <p class="sheet__lead" i18n="@@optionGroup.photosAfterCreate">
+        <p class="sheet__lead">
           Les photos du groupe et des choix s'ajoutent une fois le groupe créé.
         </p>
       }
@@ -245,9 +216,9 @@
       <div class="form__actions">
         <button type="submit" [disabled]="form().submitting()">
           @if (id()) {
-            <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+            Enregistrer
           } @else {
-            <ng-container i18n="@@optionGroup.create">Créer le groupe</ng-container>
+            Créer le groupe
           }
         </button>
       </div>

@@ -82,7 +82,7 @@ export class IngredientListPage {
 
   protected created(ingredient: IngredientDetails): void {
     this.error.set('');
-    this.notice.set($localize`:@@ingredient.created:« ${ingredient.name}:name: » ajouté.`);
+    this.notice.set(`« ${ingredient.name} » ajouté.`);
   }
 
   protected toggleAvailability(ingredient: IngredientDetails): Promise<void> {
@@ -90,8 +90,8 @@ export class IngredientListPage {
       ingredient,
       this.ingredients.setAvailability(ingredient.id, { isAvailable: !ingredient.isAvailable }),
       ingredient.isAvailable
-        ? $localize`:@@ingredient.markedOut:« ${ingredient.name}:name: » est en rupture.`
-        : $localize`:@@ingredient.markedIn:« ${ingredient.name}:name: » est de nouveau disponible.`,
+        ? `« ${ingredient.name} » est en rupture.`
+        : `« ${ingredient.name} » est de nouveau disponible.`,
     );
   }
 
@@ -99,7 +99,7 @@ export class IngredientListPage {
     return this.run(
       ingredient,
       this.ingredients.remove(ingredient.id),
-      $localize`:@@ingredient.archived:« ${ingredient.name}:name: » archivé.`,
+      `« ${ingredient.name} » archivé.`,
     );
   }
 
@@ -148,7 +148,7 @@ export class IngredientListPage {
             priceCents: parseEuros(model.price) ?? 0,
             isOfferedAsReplacement: model.isOfferedAsReplacement,
           }),
-          $localize`:@@ingredient.saved:« ${model.name.trim()}:name: » enregistré.`,
+          `« ${model.name.trim()} » enregistré.`,
         );
         if (!this.error()) {
           this.editingId.set(null);

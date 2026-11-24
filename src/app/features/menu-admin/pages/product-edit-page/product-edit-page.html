@@ -1,9 +1,7 @@
-<a class="page-head__back" routerLink="/gestion/produits" i18n="@@product.back">
-  ← Tous les produits
-</a>
+<a class="page-head__back" routerLink="/gestion/produits"> ← Tous les produits </a>
 
 @if (id() && product.hasValue() === false && product.isLoading()) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else {
@@ -12,13 +10,13 @@
       @if (id()) {
         {{ name() }}
       } @else {
-        <ng-container i18n="@@product.new">Nouveau produit</ng-container>
+        Nouveau produit
       }
     </h1>
     @if (id() && !archived()) {
       <div class="toolbar">
         @if (!available()) {
-          <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+          <span class="badge badge--danger">Rupture</span>
         }
         <button
           type="button"
@@ -27,9 +25,9 @@
           (click)="toggleAvailability()"
         >
           @if (available()) {
-            <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+            Marquer en rupture
           } @else {
-            <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+            Remettre en vente
           }
         </button>
         <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
@@ -45,61 +43,41 @@
   </p>
 
   @if (archived()) {
-    <p class="alert" i18n="@@sheet.archived">
+    <p class="alert">
       Cet élément est archivé : il n'apparaît plus sur la carte et ne peut plus être modifié.
     </p>
   } @else {
     <div class="sheet">
       <section class="sheet__section" aria-labelledby="product-info">
-        <h2 id="product-info" i18n="@@sheet.info">Informations</h2>
+        <h2 id="product-info">Informations</h2>
         <form class="form" novalidate (submit)="onSubmit($event)">
-          <app-text-field [field]="form.name" label="Nom" i18n-label="@@field.name" />
-          <app-textarea-field
-            [field]="form.description"
-            label="Description (facultative)"
-            i18n-label="@@field.description"
-          />
+          <app-text-field [field]="form.name" label="Nom" />
+          <app-textarea-field [field]="form.description" label="Description (facultative)" />
           <div class="form__row">
             <app-select-field
               [field]="form.categoryId"
               [options]="categoryOptions()"
               label="Catégorie"
-              i18n-label="@@product.category"
               placeholder="Choisir…"
-              i18n-placeholder="@@field.choose"
             />
-            <app-select-field
-              [field]="form.kind"
-              [options]="kinds"
-              label="Nature"
-              i18n-label="@@product.kind"
-            />
+            <app-select-field [field]="form.kind" [options]="kinds" label="Nature" />
           </div>
           <div class="form__row">
             <app-text-field
               [field]="form.price"
               inputmode="decimal"
               label="Prix TTC (€)"
-              i18n-label="@@product.priceField"
               hint="Par exemple 12,50"
-              i18n-hint="@@field.priceHint"
             />
-            <app-select-field
-              [field]="form.vatRate"
-              [options]="vatRates"
-              label="Taux de TVA"
-              i18n-label="@@product.vat"
-            />
+            <app-select-field [field]="form.vatRate" [options]="vatRates" label="Taux de TVA" />
           </div>
-          <app-checkbox-field [field]="form.isActive">
-            <ng-container i18n="@@product.activeLabel">Visible sur la carte</ng-container>
-          </app-checkbox-field>
+          <app-checkbox-field [field]="form.isActive"> Visible sur la carte </app-checkbox-field>
           <div class="form__actions">
             <button type="submit" [disabled]="form().submitting()">
               @if (id()) {
-                <ng-container i18n="@@sheet.save">Enregistrer</ng-container>
+                Enregistrer
               } @else {
-                <ng-container i18n="@@product.create">Créer le produit</ng-container>
+                Créer le produit
               }
             </button>
           </div>
@@ -107,45 +85,38 @@
       </section>
 
       <section class="sheet__section" aria-labelledby="product-photo">
-        <h2 id="product-photo" i18n="@@sheet.photo">Photo</h2>
+        <h2 id="product-photo">Photo</h2>
         @if (id()) {
           <app-image-field
             label="Choisir une photo"
-            i18n-label="@@image.choose"
             [imageUrl]="imageUrl()"
             [alt]="name()"
             [upload]="uploadImage"
             [remove]="removeImage"
           />
         } @else {
-          <p class="sheet__lead" i18n="@@sheet.photoAfterCreate">
-            La photo s'ajoute une fois l'élément créé.
-          </p>
+          <p class="sheet__lead">La photo s'ajoute une fois l'élément créé.</p>
         }
       </section>
 
       <section class="sheet__section" aria-labelledby="product-composition">
-        <h2 id="product-composition" i18n="@@composition.title">Composition</h2>
+        <h2 id="product-composition">Composition</h2>
         @if (id(); as productId) {
           <app-product-composition
             [productId]="productId"
             [composition]="product.value()?.composition"
           />
         } @else {
-          <p class="sheet__lead" i18n="@@composition.afterCreate">
-            La composition se renseigne une fois le produit créé.
-          </p>
+          <p class="sheet__lead">La composition se renseigne une fois le produit créé.</p>
         }
       </section>
 
       <section class="sheet__section" aria-labelledby="product-groups">
-        <h2 id="product-groups" i18n="@@admin.options">Groupes d'options</h2>
+        <h2 id="product-groups">Groupes d'options</h2>
         @if (!id()) {
-          <p class="sheet__lead" i18n="@@product.groupsAfterCreate">
-            Les groupes d'options se choisissent une fois le produit créé.
-          </p>
+          <p class="sheet__lead">Les groupes d'options se choisissent une fois le produit créé.</p>
         } @else {
-          <p class="sheet__lead" i18n="@@product.groupsLead">
+          <p class="sheet__lead">
             Choix proposés au client (pain, sauces, taille, suppléments…), dans l'ordre d'affichage.
             Un groupe se modifie une seule fois pour tous les produits qui le proposent.
           </p>
@@ -153,7 +124,7 @@
             <p class="alert alert--error" role="alert">{{ groupsError() }}</p>
           }
           @if (groupLinks().links.length === 0) {
-            <p class="empty" i18n="@@product.noGroups">Aucun groupe d'options sur ce produit.</p>
+            <p class="empty">Aucun groupe d'options sur ce produit.</p>
           } @else {
             <ol class="stack-list">
               @for (
@@ -171,7 +142,7 @@
                         {{ label }}
                       </a>
                       @if (group) {
-                        <p class="stack-list__meta" i18n="@@group.bounds">
+                        <p class="stack-list__meta">
                           Groupe : {{ group.minChoices }} à {{ group.maxChoices }} choix ·
                           {{ group.choices.length }} proposés
                         </p>
@@ -189,34 +160,19 @@
                         class="icon-button"
                         (click)="removeGroup(i)"
                         title="Retirer « {{ label }} »"
-                        i18n-title="@@list.remove"
                       >
                         <app-icon name="remove" />
                       </button>
                     </div>
                   </div>
                   <app-checkbox-field [field]="link.custom">
-                    <ng-container i18n="@@product.customBounds">
-                      Nombre de choix propre à ce produit
-                    </ng-container>
+                    Nombre de choix propre à ce produit
                   </app-checkbox-field>
                   @if (model.custom) {
                     <div class="form__row form__row--3">
-                      <app-number-field
-                        [field]="link.minChoices"
-                        label="Minimum de choix"
-                        i18n-label="@@optionGroup.min"
-                      />
-                      <app-number-field
-                        [field]="link.maxChoices"
-                        label="Maximum de choix"
-                        i18n-label="@@optionGroup.max"
-                      />
-                      <app-number-field
-                        [field]="link.freeChoices"
-                        label="Choix offerts"
-                        i18n-label="@@optionGroup.free"
-                      />
+                      <app-number-field [field]="link.minChoices" label="Minimum de choix" />
+                      <app-number-field [field]="link.maxChoices" label="Maximum de choix" />
+                      <app-number-field [field]="link.freeChoices" label="Choix offerts" />
                     </div>
                   }
                 </li>
@@ -227,13 +183,9 @@
           <div class="toolbar">
             @if (availableGroups().length > 0) {
               <div class="field">
-                <label class="field__label" for="group-to-add" i18n="@@product.addGroupLabel">
-                  Ajouter un groupe
-                </label>
+                <label class="field__label" for="group-to-add"> Ajouter un groupe </label>
                 <select #groupBox id="group-to-add" (change)="groupToAdd.set(groupBox.value)">
-                  <option value="" [selected]="groupToAdd() === ''" i18n="@@field.choose">
-                    Choisir…
-                  </option>
+                  <option value="" [selected]="groupToAdd() === ''">Choisir…</option>
                   @for (group of availableGroups(); track group.id) {
                     <option [value]="group.id">{{ group.label }}</option>
                   }
@@ -246,12 +198,10 @@
                 (click)="addGroup()"
               >
                 <app-icon name="plus" />
-                <span i18n="@@product.addGroup">Ajouter</span>
+                <span>Ajouter</span>
               </button>
             }
-            <a routerLink="/gestion/options/nouveau" i18n="@@product.createGroup">
-              Créer un nouveau groupe
-            </a>
+            <a routerLink="/gestion/options/nouveau"> Créer un nouveau groupe </a>
           </div>
 
           <div class="form__actions">
@@ -260,7 +210,7 @@
               [disabled]="savingGroups() || groupsForm().submitting()"
               (click)="saveGroups()"
             >
-              <ng-container i18n="@@product.saveGroups">Enregistrer les groupes</ng-container>
+              Enregistrer les groupes
             </button>
           </div>
           <p

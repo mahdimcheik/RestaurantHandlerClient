@@ -1,5 +1,5 @@
 @if (cart.isEmpty()) {
-  <p class="empty" i18n="@@shop.emptyCart">Votre panier est vide.</p>
+  <p class="empty">Votre panier est vide.</p>
 } @else {
   <div class="ticket">
     <div class="ticket__scroll">
@@ -30,9 +30,7 @@
                   (click)="cart.setQuantity(line.key, line.quantity - 1)"
                 >
                   <app-icon name="minus" />
-                  <span class="visually-hidden" i18n="@@counter.lessLine"
-                    >Un de moins : {{ line.name }}</span
-                  >
+                  <span class="visually-hidden">Un de moins : {{ line.name }}</span>
                 </button>
                 <span class="stepper__value stepper__value--small">{{ line.quantity }}</span>
                 <button
@@ -42,9 +40,7 @@
                   (click)="cart.setQuantity(line.key, line.quantity + 1)"
                 >
                   <app-icon name="plus" />
-                  <span class="visually-hidden" i18n="@@counter.moreLine"
-                    >Un de plus : {{ line.name }}</span
-                  >
+                  <span class="visually-hidden">Un de plus : {{ line.name }}</span>
                 </button>
               </span>
               <a
@@ -54,11 +50,11 @@
                 scroll="manual"
                 (click)="navigated.emit()"
               >
-                <ng-container i18n="@@shop.editLine">Modifier</ng-container>
+                Modifier
                 <span class="visually-hidden">{{ line.name }}</span>
               </a>
               <button type="button" class="link-button" (click)="cart.remove(line.key)">
-                <ng-container i18n="@@counter.removeLine">Retirer</ng-container>
+                Retirer
                 <span class="visually-hidden">{{ line.name }}</span>
               </button>
             </div>
@@ -72,7 +68,7 @@
         <p class="alert alert--error" role="alert">{{ message }}</p>
       }
       @if (blocked()) {
-        <p class="alert alert--error" role="alert" i18n="@@shop.fixCart">
+        <p class="alert alert--error" role="alert">
           Modifiez ou retirez les articles signalés pour continuer.
         </p>
       }
@@ -83,28 +79,23 @@
       <dl class="ticket__vat">
         @for (vat of quote.vat(); track vat.rate) {
           <div>
-            <dt i18n="@@order.vatRate">TVA {{ vat.rate | rate }} %</dt>
+            <dt>TVA {{ vat.rate | rate }} %</dt>
             <dd>{{ vat.vatCents | euros }}</dd>
           </div>
         }
       </dl>
       <p class="ticket__total" aria-live="polite">
-        <span i18n="@@shop.totalTtc">Total TTC</span>
+        <span>Total TTC</span>
         <span class="ticket__total-value">
           @if (quote.total() === null && !quoteError() && !blocked()) {
-            <ng-container i18n="@@counter.computing">Calcul…</ng-container>
+            Calcul…
           } @else {
             {{ quote.total() | euros }}
           }
         </span>
       </p>
       @if (blocked()) {
-        <button
-          type="button"
-          class="btn-brand btn-brand--solid ticket__send"
-          disabled
-          i18n="@@shop.checkoutBlocked"
-        >
+        <button type="button" class="btn-brand btn-brand--solid ticket__send" disabled>
           Valider ma commande
         </button>
       } @else {
@@ -112,7 +103,6 @@
           class="btn-brand btn-brand--solid ticket__send"
           routerLink="/commander/valider"
           (click)="navigated.emit()"
-          i18n="@@shop.checkout"
           >Valider ma commande</a
         >
       }

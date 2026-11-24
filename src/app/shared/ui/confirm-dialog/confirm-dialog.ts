@@ -22,9 +22,7 @@ let nextId = 0;
           <button type="button" class="btn btn--danger" (click)="confirm()">
             {{ confirmLabel() }}
           </button>
-          <button type="button" class="btn btn--outline" (click)="close()" i18n="@@dialog.cancel">
-            Annuler
-          </button>
+          <button type="button" class="btn btn--outline" (click)="close()">Annuler</button>
         </div>
       </div>
     </dialog>

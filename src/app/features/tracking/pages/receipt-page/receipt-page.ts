@@ -40,7 +40,7 @@ export class ReceiptPage {
       return '';
     }
     return error instanceof HttpErrorResponse && error.status === 404
-      ? $localize`:@@tracking.notFound:Commande introuvable sur ce compte.`
+      ? 'Commande introuvable sur ce compte.'
       : apiErrorMessage(error);
   });
   protected readonly netCents = computed(

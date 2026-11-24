@@ -1,42 +1,35 @@
 <div class="page-head">
-  <h1 i18n="@@admin.orders">Commandes</h1>
+  <h1>Commandes</h1>
   <div class="day-stepper">
     <button type="button" class="icon-button" (click)="previous()">
       <app-icon name="back" />
-      <span class="visually-hidden" i18n="@@orders.previousDay">Jour précédent</span>
+      <span class="visually-hidden">Jour précédent</span>
     </button>
     <span class="day-stepper__value" aria-live="polite">
       @if (day() === today) {
-        <ng-container i18n="@@orders.today">Aujourd'hui</ng-container>
+        Aujourd'hui
       } @else {
         {{ dayLabel() }}
       }
     </span>
     <button type="button" class="icon-button" [disabled]="day() === today" (click)="next()">
       <app-icon name="forward" />
-      <span class="visually-hidden" i18n="@@orders.nextDay">Jour suivant</span>
+      <span class="visually-hidden">Jour suivant</span>
     </button>
   </div>
 </div>
 
 @for (anomaly of anomalies(); track anomaly.orderId) {
   <div class="alert alert--error banner-line" role="alert">
-    <p i18n="@@orders.anomaly">
+    <p>
       Anomalie de paiement sur la commande
       <a [routerLink]="anomaly.orderId">n° {{ anomaly.dailyNumber }}</a> : {{ anomaly.issue }}
     </p>
-    <button
-      type="button"
-      class="link-button"
-      (click)="dismiss(anomaly.orderId)"
-      i18n="@@orders.dismiss"
-    >
-      Masquer
-    </button>
+    <button type="button" class="link-button" (click)="dismiss(anomaly.orderId)">Masquer</button>
   </div>
 }
 
-<div class="filters" role="group" aria-label="Étape" i18n-aria-label="@@orders.filterStep">
+<div class="filters" role="group" aria-label="Étape">
   @for (option of filters; track option.id) {
     <button
       type="button"
@@ -52,9 +45,7 @@
 
 <div class="toolbar">
   <div class="field">
-    <label class="field__label" for="orders-number" i18n="@@orders.searchNumber"
-      >N° de commande</label
-    >
+    <label class="field__label" for="orders-number">N° de commande</label>
     <input
       #numberBox
       id="orders-number"
@@ -66,11 +57,11 @@
     />
   </div>
   <div class="field">
-    <label class="field__label" for="orders-channel" i18n="@@orders.channel">Canal</label>
+    <label class="field__label" for="orders-channel">Canal</label>
     <select #channelBox id="orders-channel" (change)="setChannel(channelBox.value)">
-      <option value="" i18n="@@orders.allChannels">Tous</option>
-      <option value="Counter" i18n="@@order.channel.counter">Comptoir</option>
-      <option value="Online" i18n="@@order.channel.online">En ligne</option>
+      <option value="">Tous</option>
+      <option value="Counter">Comptoir</option>
+      <option value="Online">En ligne</option>
     </select>
   </div>
 </div>
@@ -78,55 +69,53 @@
 @if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else if (list.isLoading() && rows().length === 0) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (rows().length === 0) {
-  <p class="empty" i18n="@@orders.none">Aucune commande ici.</p>
+  <p class="empty">Aucune commande ici.</p>
 } @else {
   <table class="data-table">
-    <caption class="visually-hidden" i18n="@@admin.orders">
+    <caption class="visually-hidden">
       Commandes
     </caption>
     <thead>
       <tr>
-        <th scope="col" i18n="@@orders.number">N°</th>
-        <th scope="col" i18n="@@orders.pickup">Retrait</th>
-        <th scope="col" i18n="@@orders.customer">Client</th>
-        <th scope="col" i18n="@@orders.channel">Canal</th>
-        <th scope="col" i18n="@@list.status">Statut</th>
-        <th scope="col" i18n="@@orders.payment">Paiement</th>
-        <th scope="col" i18n="@@payment.total">Total</th>
+        <th scope="col">N°</th>
+        <th scope="col">Retrait</th>
+        <th scope="col">Client</th>
+        <th scope="col">Canal</th>
+        <th scope="col">Statut</th>
+        <th scope="col">Paiement</th>
+        <th scope="col">Total</th>
       </tr>
     </thead>
     <tbody>
       @for (order of rows(); track order.id) {
         <tr [class.data-table__row--alert]="order.status === 'AwaitingApproval'">
           <td class="data-table__main data-table__num">
-            <a [routerLink]="order.id" i18n="@@order.dailyNumber">N° {{ order.dailyNumber }}</a>
+            <a [routerLink]="order.id">N° {{ order.dailyNumber }}</a>
           </td>
-          <td class="data-table__num" data-label="Retrait" i18n-data-label="@@orders.pickup">
+          <td class="data-table__num" data-label="Retrait">
             {{ order.pickupAt | restaurantTime }}
           </td>
-          <td data-label="Client" i18n-data-label="@@orders.customer">
+          <td data-label="Client">
             {{ order.customerLabel || '—' }}
           </td>
-          <td data-label="Canal" i18n-data-label="@@orders.channel">
+          <td data-label="Canal">
             {{ channelLabel(order.channel) }}
           </td>
-          <td data-label="Statut" i18n-data-label="@@list.status">
+          <td data-label="Statut">
             <app-order-status [status]="order.status" />
           </td>
-          <td data-label="Paiement" i18n-data-label="@@orders.payment">
+          <td data-label="Paiement">
             @if (order.isPaid) {
-              <span class="badge badge--muted" i18n="@@orders.paid">Payée</span>
+              <span class="badge badge--muted">Payée</span>
             } @else if (order.paymentChoice === 'OnSite') {
-              <span class="badge" i18n="@@orders.filter.toCollect">À encaisser</span>
+              <span class="badge">À encaisser</span>
             } @else {
-              <span class="badge badge--muted" i18n="@@orders.onlinePending"
-                >En ligne, non payée</span
-              >
+              <span class="badge badge--muted">En ligne, non payée</span>
             }
           </td>
-          <td class="data-table__num" data-label="Total" i18n-data-label="@@payment.total">
+          <td class="data-table__num" data-label="Total">
             {{ order.totalCents | euros }}
           </td>
         </tr>

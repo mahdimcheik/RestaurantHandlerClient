@@ -1,18 +1,24 @@
 <div class="page-head">
-  <h1 i18n="@@admin.stock">Ruptures</h1>
-  <p class="stat__value" i18n="@@stock.count">
-    {outCount(), plural, =0 {Aucune rupture} =1 {1 rupture} other {{{ outCount() }} ruptures}}
+  <h1>Ruptures</h1>
+  <p class="stat__value">
+    @if (outCount() === 0) {
+      Aucune rupture
+    } @else if (outCount() === 1) {
+      1 rupture
+    } @else {
+      {{ outCount() }} ruptures
+    }
   </p>
 </div>
 
-<p class="sheet__lead" i18n="@@stock.lead">
+<p class="sheet__lead">
   Un ingrédient en rupture rend indisponibles les produits où il ne peut pas être retiré ; ailleurs,
   il est retiré d'office. Les commandes déjà validées ne changent pas.
 </p>
 
 <div class="toolbar">
   <div class="field">
-    <label class="field__label" for="stock-search" i18n="@@stock.search">Rechercher</label>
+    <label class="field__label" for="stock-search">Rechercher</label>
     <input
       #searchBox
       id="stock-search"
@@ -29,7 +35,7 @@
       [checked]="onlyOut()"
       (change)="onlyOut.set(onlyOutBox.checked)"
     />
-    <span class="checkbox__label" i18n="@@stock.onlyOut">Seulement les ruptures</span>
+    <span class="checkbox__label">Seulement les ruptures</span>
   </label>
 </div>
 
@@ -43,12 +49,12 @@
 @if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else if (loading() && productRows().length === 0 && ingredientRows().length === 0) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else {
   <section class="sheet__section" aria-labelledby="stock-products">
-    <h2 id="stock-products" i18n="@@admin.products">Produits</h2>
+    <h2 id="stock-products">Produits</h2>
     @if (productRows().length === 0) {
-      <p class="empty" i18n="@@stock.none">Aucun article ici.</p>
+      <p class="empty">Aucun article ici.</p>
     } @else {
       <ul class="stack-list">
         @for (product of productRows(); track product.id) {
@@ -62,9 +68,9 @@
   </section>
 
   <section class="sheet__section" aria-labelledby="stock-ingredients">
-    <h2 id="stock-ingredients" i18n="@@admin.ingredients">Ingrédients</h2>
+    <h2 id="stock-ingredients">Ingrédients</h2>
     @if (ingredientRows().length === 0) {
-      <p class="empty" i18n="@@stock.none">Aucun article ici.</p>
+      <p class="empty">Aucun article ici.</p>
     } @else {
       <ul class="stack-list">
         @for (ingredient of ingredientRows(); track ingredient.id) {
@@ -85,9 +91,9 @@
   >
     <span class="stack-list__title">{{ item.name }}</span>
     @if (item.isAvailable) {
-      <span class="badge" i18n="@@stock.available">Disponible</span>
+      <span class="badge">Disponible</span>
     } @else {
-      <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+      <span class="badge badge--danger">Rupture</span>
     }
     <button
       type="button"
@@ -97,9 +103,9 @@
       (click)="kind === 'product' ? toggleProduct(item) : toggleIngredient(item)"
     >
       @if (item.isAvailable) {
-        <ng-container i18n="@@product.markOut">Marquer en rupture</ng-container>
+        Marquer en rupture
       } @else {
-        <ng-container i18n="@@product.markIn">Remettre en vente</ng-container>
+        Remettre en vente
       }
     </button>
   </li>

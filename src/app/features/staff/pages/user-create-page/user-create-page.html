@@ -1,12 +1,10 @@
-<a class="page-head__back" routerLink="/gestion/utilisateurs" i18n="@@users.back">
-  ← Tous les utilisateurs
-</a>
+<a class="page-head__back" routerLink="/gestion/utilisateurs"> ← Tous les utilisateurs </a>
 
 <div class="page-head">
-  <h1 i18n="@@user.newManager">Nouveau compte Manager</h1>
+  <h1>Nouveau compte Manager</h1>
 </div>
 
-<p class="sheet__lead" i18n="@@user.newManagerLead">
+<p class="sheet__lead">
   Le compte est créé « en attente » : activez-le depuis sa fiche pour qu'il compte parmi les
   Managers actifs.
 </p>
@@ -19,41 +17,22 @@
   <section class="sheet__section">
     <form class="form" novalidate (submit)="onSubmit($event)">
       <div class="form__row">
-        <app-text-field
-          [field]="form.firstName"
-          autocomplete="off"
-          label="Prénom"
-          i18n-label="@@field.firstName"
-        />
-        <app-text-field
-          [field]="form.lastName"
-          autocomplete="off"
-          label="Nom"
-          i18n-label="@@field.lastName"
-        />
+        <app-text-field [field]="form.firstName" autocomplete="off" label="Prénom" />
+        <app-text-field [field]="form.lastName" autocomplete="off" label="Nom" />
       </div>
-      <app-text-field
-        [field]="form.email"
-        type="email"
-        autocomplete="off"
-        label="E-mail"
-        i18n-label="@@field.email"
-      />
+      <app-text-field [field]="form.email" type="email" autocomplete="off" label="E-mail" />
       <app-text-field
         [field]="form.password"
         type="password"
         autocomplete="new-password"
         label="Mot de passe"
-        i18n-label="@@field.password"
         [hint]="passwordHint"
       />
-      <app-checkbox-field [field]="form.consents" i18n="@@user.consents">
+      <app-checkbox-field [field]="form.consents">
         La personne a accepté la politique de confidentialité et le traitement de ses données.
       </app-checkbox-field>
       <div class="form__actions">
-        <button type="submit" class="btn" [disabled]="form().submitting()" i18n="@@user.create">
-          Créer le compte
-        </button>
+        <button type="submit" class="btn" [disabled]="form().submitting()">Créer le compte</button>
       </div>
     </form>
   </section>

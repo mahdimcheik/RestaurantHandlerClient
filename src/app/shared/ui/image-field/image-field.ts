@@ -21,7 +21,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
       @if (imageUrl(); as url) {
         <img class="image-field__preview" [ngSrc]="url" width="160" height="120" [alt]="alt()" />
       } @else {
-        <span class="image-field__empty" i18n="@@image.none">Pas de photo</span>
+        <span class="image-field__empty">Pas de photo</span>
       }
       <label class="field__label" [for]="id">{{ label() }}</label>
       <input
@@ -39,7 +39,6 @@ const MAX_BYTES = 5 * 1024 * 1024;
           class="btn btn--outline image-field__remove"
           [disabled]="busy()"
           (click)="onRemove()"
-          i18n="@@image.remove"
         >
           Retirer la photo
         </button>
@@ -67,15 +66,15 @@ export class ImageField {
       return;
     }
     if (file.size > MAX_BYTES) {
-      this.status.set($localize`:@@image.tooBig:Photo trop lourde : 5 Mo au maximum.`);
+      this.status.set('Photo trop lourde : 5 Mo au maximum.');
       control.value = '';
       return;
     }
     this.busy.set(true);
-    this.status.set($localize`:@@image.sending:Envoi de la photo…`);
+    this.status.set('Envoi de la photo…');
     try {
       await firstValueFrom(this.upload()(file));
-      this.status.set($localize`:@@image.sent:Photo enregistrée.`);
+      this.status.set('Photo enregistrée.');
     } catch (error) {
       this.status.set(apiErrorMessage(error));
     } finally {
@@ -90,10 +89,10 @@ export class ImageField {
       return;
     }
     this.busy.set(true);
-    this.status.set($localize`:@@image.removing:Retrait de la photo…`);
+    this.status.set('Retrait de la photo…');
     try {
       await firstValueFrom(remove());
-      this.status.set($localize`:@@image.removed:Photo retirée.`);
+      this.status.set('Photo retirée.');
     } catch (error) {
       this.status.set(apiErrorMessage(error));
     } finally {

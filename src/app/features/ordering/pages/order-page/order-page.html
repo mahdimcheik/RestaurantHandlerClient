@@ -1,66 +1,65 @@
-<a class="page-head__back" routerLink="/gestion/commandes" i18n="@@order.back"
-  >← Commandes du jour</a
->
+<a class="page-head__back" routerLink="/gestion/commandes">← Commandes du jour</a>
 
 @if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else if (!order() && loading()) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else if (order(); as order) {
   <div class="page-head">
-    <h1 i18n="@@order.title">Commande n° {{ order.dailyNumber }}</h1>
+    <h1>Commande n° {{ order.dailyNumber }}</h1>
     <app-order-status [status]="order.status" />
   </div>
 
   <dl class="summary">
     <div>
-      <dt i18n="@@orders.channel">Canal</dt>
+      <dt>Canal</dt>
       <dd>{{ channelLabel(order.channel) }}</dd>
     </div>
     <div>
-      <dt i18n="@@orders.pickup">Retrait</dt>
+      <dt>Retrait</dt>
       <dd>
         {{ order.pickupAt | restaurantTime }}
         @if (order.pickupMode === 'Asap') {
-          <ng-container i18n="@@order.asap">(dès que possible)</ng-container>
+          (dès que possible)
         }
       </dd>
     </div>
     <div>
-      <dt i18n="@@orders.customer">Client</dt>
+      <dt>Client</dt>
       <dd>
         {{ order.customerLabel || '—' }}
         @if (order.customerNoShowCount) {
-          <span class="badge badge--danger" i18n="@@order.noShowCount">
-            {order.customerNoShowCount, plural,
-              =1 {1 non-venue}
-              other {{{ order.customerNoShowCount }} non-venues}
+          <span class="badge badge--danger">
+            @if (order.customerNoShowCount === 1) {
+              1 non-venue
+            } @else {
+              {{ order.customerNoShowCount }} non-venues
             }
           </span>
         }
       </dd>
     </div>
     <div>
-      <dt i18n="@@orders.payment">Paiement</dt>
+      <dt>Paiement</dt>
       <dd>
         @if (order.isPaid) {
-          <ng-container i18n="@@orders.paid">Payée</ng-container>
+          Payée
         } @else if (order.paymentChoice === 'OnSite') {
-          <ng-container i18n="@@order.onSiteDue">Au retrait, à encaisser</ng-container>
+          Au retrait, à encaisser
         } @else {
-          <ng-container i18n="@@orders.onlinePending">En ligne, non payée</ng-container>
+          En ligne, non payée
         }
       </dd>
     </div>
     <div>
-      <dt i18n="@@payment.total">Total</dt>
+      <dt>Total</dt>
       <dd class="summary__strong">{{ order.totalCents | euros }}</dd>
     </div>
   </dl>
 
   @if (order.paymentIssue) {
     <p class="alert alert--error" role="alert">
-      <ng-container i18n="@@order.paymentIssue">Anomalie de paiement :</ng-container>
+      Anomalie de paiement :
       {{ order.paymentIssue }}
     </p>
   }
@@ -74,15 +73,7 @@
   @if (actions(); as actions) {
     <div class="action-bar">
       @if (actions.accept) {
-        <button
-          type="button"
-          class="btn"
-          [disabled]="busy()"
-          (click)="accept()"
-          i18n="@@order.accept"
-        >
-          Accepter
-        </button>
+        <button type="button" class="btn" [disabled]="busy()" (click)="accept()">Accepter</button>
       }
       @if (actions.refuse) {
         <button
@@ -90,19 +81,12 @@
           class="btn btn--danger"
           [disabled]="busy()"
           (click)="refuseDialog.open()"
-          i18n="@@order.refuse"
         >
           Refuser
         </button>
       }
       @if (actions.complete) {
-        <button
-          type="button"
-          class="btn"
-          [disabled]="busy()"
-          (click)="complete()"
-          i18n="@@order.complete"
-        >
+        <button type="button" class="btn" [disabled]="busy()" (click)="complete()">
           Remettre au client
         </button>
       }
@@ -112,7 +96,6 @@
           class="btn btn--outline"
           [disabled]="busy()"
           (click)="noShowDialog.open()"
-          i18n="@@order.noShow"
         >
           Client non venu
         </button>
@@ -123,7 +106,6 @@
           class="btn btn--outline"
           [disabled]="busy()"
           (click)="refundDialog.open()"
-          i18n="@@order.refund"
         >
           Rembourser
         </button>
@@ -134,7 +116,6 @@
           class="btn btn--danger"
           [disabled]="busy()"
           (click)="cancelDialog.open()"
-          i18n="@@order.cancel"
         >
           Annuler la commande
         </button>
@@ -142,7 +123,7 @@
     </div>
 
     @if (actions.collectBeforeHandover) {
-      <p class="alert" i18n="@@order.collectFirst">À encaisser avant la remise au client.</p>
+      <p class="alert">À encaisser avant la remise au client.</p>
     }
     @if (actions.collect) {
       <app-payment-panel [order]="order" (paid)="paid($event)" (conflict)="conflict()" />
@@ -150,7 +131,7 @@
   }
 
   <section class="sheet__section" aria-labelledby="order-lines">
-    <h2 id="order-lines" i18n="@@order.lines">Contenu</h2>
+    <h2 id="order-lines">Contenu</h2>
     <ul class="ticket__lines">
       @for (item of order.items; track item.id) {
         <li class="ticket__line">
@@ -177,13 +158,13 @@
       }
     </ul>
     @if (order.customerNote) {
-      <p class="note"><strong i18n="@@order.note">Note :</strong> {{ order.customerNote }}</p>
+      <p class="note"><strong>Note :</strong> {{ order.customerNote }}</p>
     }
     @if (order.vat.length > 0) {
       <dl class="summary summary--small">
         @for (line of order.vat; track line.rate) {
           <div>
-            <dt i18n="@@order.vatLine">TVA {{ line.rate | rate }} %</dt>
+            <dt>TVA {{ line.rate | rate }} %</dt>
             <dd>{{ line.vatCents | euros }}</dd>
           </div>
         }
@@ -193,7 +174,7 @@
 
   @if (order.payments.length > 0) {
     <section class="sheet__section" aria-labelledby="order-payments">
-      <h2 id="order-payments" i18n="@@order.payments">Paiements</h2>
+      <h2 id="order-payments">Paiements</h2>
       <ul class="inline-list">
         @for (payment of order.payments; track payment.id) {
           <li>
@@ -211,7 +192,7 @@
   }
 
   <section class="sheet__section" aria-labelledby="order-history">
-    <h2 id="order-history" i18n="@@order.history">Historique</h2>
+    <h2 id="order-history">Historique</h2>
     <ol class="history">
       @for (entry of order.history; track $index) {
         <li>
@@ -231,50 +212,34 @@
   <app-reason-dialog
     #refuseDialog
     title="Refuser la commande"
-    i18n-title="@@order.refuseTitle"
     confirmLabel="Refuser"
-    i18n-confirmLabel="@@order.refuse"
     (confirmed)="refuse($event)"
   >
-    <ng-container i18n="@@order.refuseText"
-      >Le client verra ce motif sur sa page de suivi.</ng-container
-    >
+    <ng-container>Le client verra ce motif sur sa page de suivi.</ng-container>
   </app-reason-dialog>
   <app-reason-dialog
     #cancelDialog
     title="Annuler la commande"
-    i18n-title="@@order.cancelTitle"
     confirmLabel="Annuler la commande"
-    i18n-confirmLabel="@@order.cancel"
     (confirmed)="cancel($event)"
   >
-    <ng-container i18n="@@order.cancelText">
-      Une commande payée en ligne est remboursée automatiquement. Le client est prévenu.
-    </ng-container>
+    Une commande payée en ligne est remboursée automatiquement. Le client est prévenu.
   </app-reason-dialog>
   <app-confirm-dialog
     #noShowDialog
     title="Client non venu"
-    i18n-title="@@order.noShow"
     confirmLabel="Déclarer non venu"
-    i18n-confirmLabel="@@order.noShowConfirm"
     (confirmed)="noShow()"
   >
-    <ng-container i18n="@@order.noShowText">
-      La commande est close et compte comme une non-venue du client. Un paiement en ligne n'est pas
-      remboursé automatiquement.
-    </ng-container>
+    La commande est close et compte comme une non-venue du client. Un paiement en ligne n'est pas
+    remboursé automatiquement.
   </app-confirm-dialog>
   <app-confirm-dialog
     #refundDialog
     title="Rembourser la commande"
-    i18n-title="@@order.refundTitle"
     confirmLabel="Rembourser"
-    i18n-confirmLabel="@@order.refund"
     (confirmed)="refund()"
   >
-    <ng-container i18n="@@order.refundText">
-      Le paiement en ligne est remboursé en totalité par SumUp.
-    </ng-container>
+    Le paiement en ligne est remboursé en totalité par SumUp.
   </app-confirm-dialog>
 }

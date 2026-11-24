@@ -22,9 +22,7 @@ export class HomePage {
   private readonly opening = inject(OpeningStateService);
 
   protected readonly info = this.store.info.value;
-  protected readonly title = computed(
-    () => this.info()?.tradeName || $localize`:@@home.title:Greenadine`,
-  );
+  protected readonly title = computed(() => this.info()?.tradeName || 'Greenadine');
   protected readonly hours = computed(() => weeklyHours(this.info()?.hours ?? []));
   protected readonly closures = computed(() =>
     (this.info()?.upcomingClosures ?? []).map((closure) => ({

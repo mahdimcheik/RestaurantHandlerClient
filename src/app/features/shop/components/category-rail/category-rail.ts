@@ -57,7 +57,7 @@ export class CategoryRail {
   /** Identifiant du panneau qui affiche la rubrique choisie. */
   readonly panelId = input.required<string>();
 
-  protected readonly label = $localize`:@@shop.sections:Rubriques de la carte`;
+  protected readonly label = 'Rubriques de la carte';
   protected readonly tabId = sectionTabId;
   private readonly tabs = viewChildren<ElementRef<HTMLButtonElement>>('tab');
 

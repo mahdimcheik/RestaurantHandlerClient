@@ -1,4 +1,4 @@
-<p class="sheet__lead" i18n="@@composition.lead">
+<p class="sheet__lead">
   Ce que contient le produit. Un ingrédient retirable peut être retiré, ou remplacé par un autre
   ingrédient : le surcoût éventuel vient de leurs prix de référence (page Ingrédients). Les
   suppléments se proposent par un groupe d'options, plus bas.
@@ -9,7 +9,7 @@
 }
 
 @if (model().ingredients.length === 0) {
-  <p class="empty" i18n="@@composition.noIngredients">Aucun ingrédient.</p>
+  <p class="empty">Aucun ingrédient.</p>
 } @else {
   <ul class="stack-list">
     @for (item of form.ingredients; track item; let i = $index) {
@@ -18,18 +18,15 @@
         <span class="stack-list__title">
           {{ ingredient?.name }}
           @if (ingredient && !ingredient.isAvailable) {
-            <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+            <span class="badge badge--danger">Rupture</span>
           }
         </span>
-        <app-checkbox-field [field]="item.isRemovable">
-          <ng-container i18n="@@composition.removable">Retirable</ng-container>
-        </app-checkbox-field>
+        <app-checkbox-field [field]="item.isRemovable"> Retirable </app-checkbox-field>
         <button
           type="button"
           class="icon-button"
           (click)="remove(i)"
           title="Retirer « {{ ingredient?.name }} » de la composition"
-          i18n-title="@@composition.removeIngredient"
         >
           <app-icon name="remove" />
         </button>
@@ -41,11 +38,9 @@
 @if (addable().length > 0) {
   <div class="inline-form">
     <div class="field">
-      <label class="field__label" for="composition-add" i18n="@@composition.addLabel">
-        Ajouter un ingrédient
-      </label>
+      <label class="field__label" for="composition-add"> Ajouter un ingrédient </label>
       <select #addBox id="composition-add" (change)="toAdd.set(addBox.value)">
-        <option value="" [selected]="toAdd() === ''" i18n="@@field.choose">Choisir…</option>
+        <option value="" [selected]="toAdd() === ''">Choisir…</option>
         @for (option of addable(); track option.id) {
           <option [value]="option.id">{{ option.name }}</option>
         }
@@ -58,23 +53,19 @@
       (click)="add()"
     >
       <app-icon name="plus" />
-      <span i18n="@@composition.add">Ajouter</span>
+      <span>Ajouter</span>
     </button>
   </div>
 }
 
 <app-ingredient-quick-add
   label="Ingrédient absent de la liste ? Créez-le"
-  i18n-label="@@composition.createIngredient"
   action="Créer et ajouter"
-  i18n-action="@@composition.createAndAdd"
   (created)="created($event)"
 />
 
 <div class="form__actions">
-  <button type="button" [disabled]="saving()" (click)="save()">
-    <ng-container i18n="@@composition.save">Enregistrer la composition</ng-container>
-  </button>
+  <button type="button" [disabled]="saving()" (click)="save()">Enregistrer la composition</button>
 </div>
 <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
   {{ notice() }}

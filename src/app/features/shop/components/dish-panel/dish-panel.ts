@@ -26,15 +26,13 @@ import { OrderDialog } from '../order-dialog/order-dialog';
         @for (dish of current.dishes; track dish.id) {
           <li app-dish-card [dish]="dish" (info)="showIngredients(dish)"></li>
         } @empty {
-          <li class="empty" i18n="@@shop.emptySection">Rien dans cette rubrique pour le moment.</li>
+          <li class="empty">Rien dans cette rubrique pour le moment.</li>
         }
       </ul>
     }
     <p class="order-dishes__note">
-      <a routerLink="/allergenes" i18n="@@shop.allergensLink"
-        >Informations allergènes disponibles</a
-      >
-      <ng-container i18n="@@shop.pricesTtc"> · Prix TTC.</ng-container>
+      <a routerLink="/allergenes">Informations allergènes disponibles</a>
+      · Prix TTC.
     </p>
     <app-order-dialog labelledBy="ingredients-title" [(open)]="ingredientsOpen">
       @if (ingredientsOf(); as dish) {

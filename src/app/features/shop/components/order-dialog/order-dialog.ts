@@ -33,7 +33,7 @@ import { Icon } from '../../../../shared/ui/icon/icon';
           <ng-content select="[dialogTitle]" />
           <button type="button" class="order-dialog__close" (click)="dismiss()">
             <app-icon name="remove" />
-            <span class="visually-hidden" i18n="@@shop.close">Fermer</span>
+            <span class="visually-hidden">Fermer</span>
           </button>
         </div>
         <ng-content />

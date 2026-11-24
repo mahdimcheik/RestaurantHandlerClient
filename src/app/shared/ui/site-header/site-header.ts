@@ -7,23 +7,21 @@ import { SessionService } from '../../../core/auth/session.service';
   imports: [RouterLink],
   template: `
     <header class="site-header gutter">
-      <a class="site-header__brand" routerLink="/" i18n="@@brand">Greenadine</a>
-      <nav class="inline-list" aria-label="Navigation principale" i18n-aria-label="@@nav.label">
-        <a routerLink="/" fragment="infos" i18n="@@nav.info">Infos</a>
+      <a class="site-header__brand" routerLink="/">Greenadine</a>
+      <nav class="inline-list" aria-label="Navigation principale">
+        <a routerLink="/" fragment="infos">Infos</a>
         @if (session.user(); as user) {
           @if (session.isManager()) {
-            <a routerLink="/gestion" i18n="@@nav.admin">Gestion</a>
+            <a routerLink="/gestion">Gestion</a>
           } @else {
-            <a routerLink="/commandes" i18n="@@nav.myOrders">Mes commandes</a>
+            <a routerLink="/commandes">Mes commandes</a>
           }
           <span class="site-header__user">{{ user.firstName }}</span>
-          <button type="button" class="link-button" (click)="logout()" i18n="@@nav.logout">
-            Déconnexion
-          </button>
+          <button type="button" class="link-button" (click)="logout()">Déconnexion</button>
         } @else {
-          <a routerLink="/auth/connexion" i18n="@@nav.login">Connexion</a>
+          <a routerLink="/auth/connexion">Connexion</a>
         }
-        <a class="btn btn--outline" routerLink="/commander" i18n="@@header.order">Commander</a>
+        <a class="btn btn--outline" routerLink="/commander">Commander</a>
       </nav>
     </header>
   `,

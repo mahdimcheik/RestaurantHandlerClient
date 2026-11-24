@@ -16,12 +16,7 @@ import { parseEuros } from '../../../shared/utils/money';
   template: `
     <form class="inline-form" novalidate (submit)="onSubmit($event)">
       <app-text-field [field]="form.name" [label]="label()" />
-      <app-text-field
-        [field]="form.price"
-        inputmode="decimal"
-        label="Prix de référence (€)"
-        i18n-label="@@ingredient.priceLabel"
-      />
+      <app-text-field [field]="form.price" inputmode="decimal" label="Prix de référence (€)" />
       <button type="submit" class="btn btn--outline btn--icon" [disabled]="form().submitting()">
         <app-icon name="plus" />
         <span>{{ action() }}</span>
@@ -33,8 +28,8 @@ import { parseEuros } from '../../../shared/utils/money';
   `,
 })
 export class IngredientQuickAdd {
-  readonly label = input($localize`:@@ingredient.newName:Nouvel ingrédient`);
-  readonly action = input($localize`:@@ingredient.add:Ajouter`);
+  readonly label = input('Nouvel ingrédient');
+  readonly action = input('Ajouter');
   readonly created = output<IngredientDetails>();
 
   private readonly ingredients = inject(IngredientsService);

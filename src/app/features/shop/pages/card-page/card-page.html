@@ -4,8 +4,8 @@
 
   <div class="order-page gutter">
     <header class="order-page__head">
-      <p class="eyebrow" i18n="@@shop.order.eyebrow">Commander</p>
-      <h1 class="display-title display-title--md" i18n="@@shop.cardTitle">La carte</h1>
+      <p class="eyebrow">Commander</p>
+      <h1 class="display-title display-title--md">La carte</h1>
       @if (openingText()) {
         <p class="shop__opening" role="status">
           <app-icon
@@ -17,7 +17,7 @@
     </header>
 
     @if (cart.removed().length > 0) {
-      <p class="alert alert--error" role="alert" i18n="@@shop.removedFromCart">
+      <p class="alert alert--error" role="alert">
         Retiré de votre panier, plus à la carte : {{ cart.removed().join(', ') }}.
       </p>
     }
@@ -25,9 +25,9 @@
     @if (error()) {
       <p class="alert alert--error" role="alert">{{ error() }}</p>
     } @else if (loading()) {
-      <p role="status" i18n="@@common.loading">Chargement…</p>
+      <p role="status">Chargement…</p>
     } @else if (sections().length === 0) {
-      <p class="empty" i18n="@@shop.emptyCard">La carte n'est pas encore en ligne.</p>
+      <p class="empty">La carte n'est pas encore en ligne.</p>
     } @else {
       <div class="order-layout">
         <app-category-rail [sections]="sections()" [(selectedId)]="selectedId" panelId="rubrique" />
@@ -43,9 +43,7 @@
     }
 
     <app-order-dialog variant="cart" labelledBy="cart-sheet-title" [(open)]="cartOpen">
-      <h2 dialogTitle #dialogTitle id="cart-sheet-title" class="eyebrow" i18n="@@shop.yourOrder">
-        Votre commande
-      </h2>
+      <h2 dialogTitle #dialogTitle id="cart-sheet-title" class="eyebrow">Votre commande</h2>
       @if (cartOpen()) {
         <app-cart-summary (navigated)="cartOpen.set(false)" />
       }

@@ -10,7 +10,7 @@
         >
           {{ editing.product.name }}
         </h1>
-        <p class="shop__lead" i18n="@@shop.inMenu">Dans votre {{ menu.name }}</p>
+        <p class="shop__lead">Dans votre {{ menu.name }}</p>
         <app-product-options
           [product]="editing.product"
           [replacements]="replacements()"
@@ -22,16 +22,10 @@
             class="btn"
             [disabled]="editMissing().length > 0"
             (click)="applyCustomization()"
-            i18n="@@shop.applyChoices"
           >
             Valider ces choix
           </button>
-          <button
-            type="button"
-            class="btn btn--outline"
-            (click)="cancelCustomization()"
-            i18n="@@dialog.cancel"
-          >
+          <button type="button" class="btn btn--outline" (click)="cancelCustomization()">
             Annuler
           </button>
         </div>
@@ -57,9 +51,7 @@
         <p class="sheet__price">{{ menu.priceCents | euros }}</p>
 
         @if (!menu.isAvailable) {
-          <p class="alert alert--error" role="alert" i18n="@@shop.menuUnavailable">
-            Ce menu est indisponible pour le moment.
-          </p>
+          <p class="alert alert--error" role="alert">Ce menu est indisponible pour le moment.</p>
         } @else {
           <app-menu-slots
             [menu]="menu"
@@ -68,12 +60,7 @@
             (customize)="customize($event)"
           />
           <div class="sheet__order">
-            <span
-              class="stepper"
-              role="group"
-              aria-label="Quantité"
-              i18n-aria-label="@@shop.quantity"
-            >
+            <span class="stepper" role="group" aria-label="Quantité">
               <button
                 type="button"
                 class="icon-button"
@@ -81,12 +68,12 @@
                 (click)="step(-1)"
               >
                 <app-icon name="minus" />
-                <span class="visually-hidden" i18n="@@shop.less">Un de moins</span>
+                <span class="visually-hidden">Un de moins</span>
               </button>
               <span class="stepper__value" aria-live="polite">{{ quantity() }}</span>
               <button type="button" class="icon-button" (click)="step(1)">
                 <app-icon name="plus" />
-                <span class="visually-hidden" i18n="@@shop.more">Un de plus</span>
+                <span class="visually-hidden">Un de plus</span>
               </button>
             </span>
             <button
@@ -96,9 +83,9 @@
               (click)="add()"
             >
               @if (line()) {
-                <ng-container i18n="@@shop.updateLine">Mettre à jour</ng-container>
+                Mettre à jour
               } @else {
-                <ng-container i18n="@@shop.addToCart">Ajouter au panier</ng-container>
+                Ajouter au panier
               }
               @if (quote.total() !== null) {
                 <span aria-live="polite"> · {{ quote.total() | euros }}</span>
@@ -106,7 +93,7 @@
             </button>
           </div>
           @if (!complete()) {
-            <p class="field__hint" i18n="@@shop.menuIncomplete">
+            <p class="field__hint">
               Complétez chaque rubrique selon la règle indiquée à côté de son titre.
             </p>
           }
@@ -117,10 +104,8 @@
       </article>
     }
   } @else if (loading()) {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   } @else {
-    <p class="alert alert--error" role="alert" i18n="@@shop.menuNotFound">
-      Ce menu n'est plus à la carte.
-    </p>
+    <p class="alert alert--error" role="alert">Ce menu n'est plus à la carte.</p>
   }
 </div>

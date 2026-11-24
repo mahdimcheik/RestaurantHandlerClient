@@ -113,11 +113,9 @@ export function setIngredient(
 /** Règle d'un groupe ou d'un emplacement, à lire à côté de son titre. */
 export function ruleText(min: number, max: number): string {
   if (min === max) {
-    return $localize`:@@counter.ruleExact:choisir ${min}:count:`;
+    return `choisir ${min}`;
   }
-  return min > 0
-    ? $localize`:@@counter.ruleRange:de ${min}:min: à ${max}:max:`
-    : $localize`:@@counter.ruleUpTo:facultatif, ${max}:max: au plus`;
+  return min > 0 ? `de ${min} à ${max}` : `facultatif, ${max} au plus`;
 }
 
 /**
@@ -137,7 +135,7 @@ export function toCustomization(
     }
     if (change.removed) {
       result.modifications.push({ type: 'Remove', ingredientId: ingredient.id });
-      result.labels.push($localize`:@@counter.without:Sans ${ingredient.name}:name:`);
+      result.labels.push(`Sans ${ingredient.name}`);
     } else if (change.replacementId) {
       result.modifications.push({
         type: 'Replace',

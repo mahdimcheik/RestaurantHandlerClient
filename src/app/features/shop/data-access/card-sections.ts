@@ -34,7 +34,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
       ? [
           {
             id: 'menus',
-            name: $localize`:@@shop.menus:Menus`,
+            name: 'Menus',
             imageUrl: card.menus.find((menu) => menu.imageUrl)?.imageUrl,
             isMenus: true,
             dishes: card.menus.map((menu) => ({

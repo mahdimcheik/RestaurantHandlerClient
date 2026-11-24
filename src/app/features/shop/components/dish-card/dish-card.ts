@@ -38,16 +38,16 @@ import { Dish } from '../../data-access/card-sections';
         @if (item.isAvailable) {
           <span class="dish-card__price">{{ item.priceCents | euros }}</span>
         } @else if (item.isMenu) {
-          <span class="dish-card__price" i18n="@@shop.unavailable">Indisponible</span>
+          <span class="dish-card__price">Indisponible</span>
         } @else {
-          <span class="dish-card__price" i18n="@@status.outOfStock">Rupture</span>
+          <span class="dish-card__price">Rupture</span>
         }
       </span>
     </a>
     @if (item.ingredients.length > 0 || item.description) {
       <button type="button" class="dish-tile__info" aria-haspopup="dialog" (click)="info.emit()">
         <app-icon name="info" />
-        <span class="visually-hidden" i18n="@@shop.dishInfo">Informations : {{ item.name }}</span>
+        <span class="visually-hidden">Informations : {{ item.name }}</span>
       </button>
     }
   `,

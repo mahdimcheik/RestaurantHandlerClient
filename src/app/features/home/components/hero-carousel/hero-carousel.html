@@ -81,7 +81,6 @@
       class="showcase__eyebrow eyebrow"
       [style.left.px]="eyebrowSlot().left"
       [style.top.px]="eyebrowSlot().top"
-      i18n="@@home.hero.eyebrow"
     >
       Fait maison
     </p>
@@ -100,7 +99,6 @@
       routerLink="/commander"
       [style.left.px]="ctaSlot().left"
       [style.top.px]="ctaSlot().top"
-      i18n="@@home.cta"
       >Commander</a
     >
   </div>
@@ -112,10 +110,10 @@
   <button type="button" class="showcase__pause" (click)="togglePlaying()">
     @if (playing()) {
       <app-icon name="pause" />
-      <span class="visually-hidden" i18n="@@home.hero.pause">Mettre l’animation en pause</span>
+      <span class="visually-hidden">Mettre l’animation en pause</span>
     } @else {
       <app-icon name="play" />
-      <span class="visually-hidden" i18n="@@home.hero.play">Relancer l’animation</span>
+      <span class="visually-hidden">Relancer l’animation</span>
     }
   </button>
 </section>

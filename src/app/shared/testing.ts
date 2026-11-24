@@ -52,7 +52,9 @@ export function clickButton(fixture: ComponentFixture<unknown>, text: string): v
   button.click();
 }
 
-export const text = (fixture: ComponentFixture<unknown>) => root(fixture).textContent ?? '';
+/** Texte affiché, espaces fusionnés comme à l'écran. */
+export const text = (fixture: ComponentFixture<unknown>) =>
+  (root(fixture).textContent ?? '').replace(/\s+/g, ' ');
 
 /** Réponse de l'API pour les tests. */
 export const envelope = <T>(data: T) => ({ data, message: 'OK', status: 200 });

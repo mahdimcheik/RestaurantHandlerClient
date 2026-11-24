@@ -2,7 +2,7 @@
 <div class="stack-list__head">
   <div>
     <h3 class="stack-list__title">{{ current.label }}</h3>
-    <p class="stack-list__meta" i18n="@@menuSlot.summary">
+    <p class="stack-list__meta">
       {{ current.minChoices }} à {{ current.maxChoices }} choix ·
       {{ current.options.length }} produits proposés
     </p>
@@ -21,7 +21,6 @@
       [disabled]="busy()"
       (click)="askRemove()"
       title="Retirer « {{ current.label }} »"
-      i18n-title="@@list.remove"
     >
       <app-icon name="remove" />
     </button>
@@ -34,35 +33,24 @@
 
 <form class="form" novalidate (submit)="saveRules($event)">
   <div class="form__row form__row--3">
-    <app-text-field [field]="rulesForm.label" label="Libellé" i18n-label="@@menuSlot.label" />
+    <app-text-field [field]="rulesForm.label" label="Libellé" />
     <app-number-field
       [field]="rulesForm.minChoices"
       label="Minimum de choix"
-      i18n-label="@@optionGroup.min"
       hint="0 : emplacement facultatif"
-      i18n-hint="@@menuSlot.minHint"
     />
-    <app-number-field
-      [field]="rulesForm.maxChoices"
-      label="Maximum de choix"
-      i18n-label="@@optionGroup.max"
-    />
+    <app-number-field [field]="rulesForm.maxChoices" label="Maximum de choix" />
   </div>
   <div class="form__actions">
-    <button
-      type="submit"
-      class="btn btn--outline"
-      [disabled]="busy() || rulesForm().submitting()"
-      i18n="@@menuSlot.saveRules"
-    >
+    <button type="submit" class="btn btn--outline" [disabled]="busy() || rulesForm().submitting()">
       Enregistrer l'emplacement
     </button>
   </div>
 </form>
 
-<h4 class="stack-list__title" i18n="@@menuSlot.products">Produits proposés</h4>
+<h4 class="stack-list__title">Produits proposés</h4>
 @if (options().options.length === 0) {
-  <p class="empty" i18n="@@menuSlot.noProducts">Aucun produit dans cet emplacement.</p>
+  <p class="empty">Aucun produit dans cet emplacement.</p>
 } @else {
   <ol class="stack-list">
     @for (
@@ -78,12 +66,7 @@
             <app-status-badges [active]="false" />
           }
         </span>
-        <app-text-field
-          [field]="option.extraPrice"
-          inputmode="decimal"
-          label="Surcoût (€)"
-          i18n-label="@@menuSlot.extraPrice"
-        />
+        <app-text-field [field]="option.extraPrice" inputmode="decimal" label="Surcoût (€)" />
         <div class="stack-list__tools">
           <app-move-buttons
             [name]="model.name"
@@ -96,7 +79,6 @@
             class="icon-button"
             (click)="removeProduct(i)"
             title="Retirer « {{ model.name }} »"
-            i18n-title="@@list.remove"
           >
             <app-icon name="remove" />
           </button>
@@ -109,11 +91,9 @@
 <div class="toolbar">
   @if (productGroups().length > 0) {
     <div class="field">
-      <label class="field__label" [for]="id + '-add'" i18n="@@menuSlot.addProductLabel">
-        Ajouter un produit
-      </label>
+      <label class="field__label" [for]="id + '-add'"> Ajouter un produit </label>
       <select #productBox [id]="id + '-add'" (change)="productToAdd.set(productBox.value)">
-        <option value="" [selected]="productToAdd() === ''" i18n="@@field.choose">Choisir…</option>
+        <option value="" [selected]="productToAdd() === ''">Choisir…</option>
         @for (group of productGroups(); track group.label) {
           <optgroup [label]="group.label">
             @for (product of group.products; track product.id) {
@@ -132,22 +112,15 @@
       (click)="addProduct()"
     >
       <app-icon name="plus" />
-      <span i18n="@@product.addGroup">Ajouter</span>
+      <span>Ajouter</span>
     </button>
   } @else if (products().length === 0) {
-    <p class="sheet__lead" i18n="@@menuSlot.noActiveProducts">
-      Aucun produit actif sur la carte : créez d'abord des produits.
-    </p>
+    <p class="sheet__lead">Aucun produit actif sur la carte : créez d'abord des produits.</p>
   }
 </div>
 
 <div class="form__actions">
-  <button
-    type="button"
-    [disabled]="busy() || optionsForm().submitting()"
-    (click)="saveOptions()"
-    i18n="@@menuSlot.saveProducts"
-  >
+  <button type="button" [disabled]="busy() || optionsForm().submitting()" (click)="saveOptions()">
     Enregistrer les produits
   </button>
 </div>
@@ -157,12 +130,8 @@
 
 <app-confirm-dialog
   title="Retirer « {{ current.label }} » du menu ?"
-  i18n-title="@@menuSlot.removeTitle"
   confirmLabel="Retirer l'emplacement"
-  i18n-confirmLabel="@@menuSlot.removeConfirm"
   (confirmed)="remove()"
 >
-  <ng-container i18n="@@menuSlot.removeText">
-    L'emplacement et ses produits disparaissent du menu. Les commandes passées les conservent.
-  </ng-container>
+  L'emplacement et ses produits disparaissent du menu. Les commandes passées les conservent.
 </app-confirm-dialog>

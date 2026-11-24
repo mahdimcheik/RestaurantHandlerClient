@@ -9,9 +9,9 @@ import { Icon, IconName } from '../icon/icon';
 type MenuName = 'nav' | 'account' | 'theme';
 
 const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }[] = [
-  { value: 'system', label: $localize`:@@theme.system:Système`, icon: 'monitor' },
-  { value: 'light', label: $localize`:@@theme.light:Clair`, icon: 'sun' },
-  { value: 'dark', label: $localize`:@@theme.dark:Sombre`, icon: 'moon' },
+  { value: 'system', label: 'Système', icon: 'monitor' },
+  { value: 'light', label: 'Clair', icon: 'sun' },
+  { value: 'dark', label: 'Sombre', icon: 'moon' },
 ];
 
 /**
@@ -45,31 +45,30 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
             (click)="toggle('nav', $event)"
           >
             <app-icon name="menu" />
-            <span class="visually-hidden" i18n="@@topbar.menu">Menu</span>
+            <span class="visually-hidden">Menu</span>
           </button>
           @if (open() === 'nav') {
             <ul id="topbar-nav" class="topbar__panel topbar__links">
-              <li><a routerLink="/" (click)="close()" i18n="@@topbar.home">Accueil</a></li>
-              <li><a routerLink="/commander" (click)="close()" i18n="@@topbar.card">Carte</a></li>
+              <li><a routerLink="/" (click)="close()">Accueil</a></li>
+              <li><a routerLink="/commander" (click)="close()">Carte</a></li>
               <li>
-                <a routerLink="/a-propos" (click)="close()" i18n="@@topbar.about">À propos</a>
+                <a routerLink="/a-propos" (click)="close()">À propos</a>
               </li>
               <li>
-                <a routerLink="/commander" (click)="close()" i18n="@@header.order">Commander</a>
+                <a routerLink="/commander" (click)="close()">Commander</a>
               </li>
             </ul>
           }
         </div>
       </div>
 
-      <nav class="topbar__nav" aria-label="Navigation principale" i18n-aria-label="@@nav.label">
+      <nav class="topbar__nav" aria-label="Navigation principale">
         <a
           class="topbar__link"
           routerLink="/"
           routerLinkActive="topbar__link--active"
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
-          i18n="@@topbar.home"
           >Accueil</a
         >
         <a
@@ -77,7 +76,6 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
           routerLink="/commander"
           routerLinkActive="topbar__link--active"
           ariaCurrentWhenActive="page"
-          i18n="@@topbar.card"
           >Carte</a
         >
         <a
@@ -85,21 +83,13 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
           routerLink="/a-propos"
           routerLinkActive="topbar__link--active"
           ariaCurrentWhenActive="page"
-          i18n="@@topbar.about"
           >À propos</a
         >
       </nav>
 
       <div class="topbar__end">
-        <a class="topbar__btn topbar__btn--text" routerLink="/commander" i18n="@@header.order"
-          >Commander</a
-        >
-        <a
-          class="topbar__btn"
-          routerLink="/panier"
-          aria-label="Panier"
-          i18n-aria-label="@@topbar.cart"
-        >
+        <a class="topbar__btn topbar__btn--text" routerLink="/commander">Commander</a>
+        <a class="topbar__btn" routerLink="/panier" aria-label="Panier">
           <app-icon name="cart" />
         </a>
 
@@ -112,7 +102,7 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
             (click)="toggle('account', $event)"
           >
             <app-icon name="user" />
-            <span class="visually-hidden" i18n="@@topbar.account">Compte</span>
+            <span class="visually-hidden">Compte</span>
           </button>
           @if (open() === 'account') {
             <div id="topbar-account" class="topbar__panel topbar__panel--end">
@@ -121,22 +111,15 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
                 <ul class="topbar__links">
                   @if (session.isManager()) {
                     <li>
-                      <a routerLink="/gestion" (click)="close()" i18n="@@nav.admin">Gestion</a>
+                      <a routerLink="/gestion" (click)="close()">Gestion</a>
                     </li>
                   } @else {
                     <li>
-                      <a routerLink="/commandes" (click)="close()" i18n="@@nav.myOrders"
-                        >Mes commandes</a
-                      >
+                      <a routerLink="/commandes" (click)="close()">Mes commandes</a>
                     </li>
                   }
                   <li>
-                    <button
-                      type="button"
-                      class="topbar__item"
-                      (click)="logout()"
-                      i18n="@@nav.logout"
-                    >
+                    <button type="button" class="topbar__item" (click)="logout()">
                       Déconnexion
                     </button>
                   </li>
@@ -144,14 +127,10 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
               } @else {
                 <ul class="topbar__links">
                   <li>
-                    <a routerLink="/auth/connexion" (click)="close()" i18n="@@nav.login"
-                      >Connexion</a
-                    >
+                    <a routerLink="/auth/connexion" (click)="close()">Connexion</a>
                   </li>
                   <li>
-                    <a routerLink="/auth/inscription" (click)="close()" i18n="@@topbar.register"
-                      >Créer un compte</a
-                    >
+                    <a routerLink="/auth/inscription" (click)="close()">Créer un compte</a>
                   </li>
                 </ul>
               }
@@ -168,9 +147,7 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
             (click)="toggle('theme', $event)"
           >
             <app-icon [name]="currentTheme().icon" />
-            <span class="visually-hidden" i18n="@@topbar.theme"
-              >Thème : {{ currentTheme().label }}</span
-            >
+            <span class="visually-hidden">Thème : {{ currentTheme().label }}</span>
           </button>
           @if (open() === 'theme') {
             <ul id="topbar-theme" class="topbar__panel topbar__panel--end topbar__links">
@@ -206,9 +183,7 @@ export class SiteTopbar {
   /** Bouton qui a ouvert le panneau, pour lui rendre le focus à la fermeture par Échap. */
   private trigger: HTMLElement | null = null;
 
-  protected readonly name = computed(
-    () => this.store.info.value()?.tradeName || $localize`:@@brand:Greenadine`,
-  );
+  protected readonly name = computed(() => this.store.info.value()?.tradeName || 'Greenadine');
   protected readonly logoUrl = computed(() => this.store.info.value()?.logoUrl ?? null);
   protected readonly currentTheme = computed(
     () => THEMES.find((option) => option.value === this.theme.preference()) ?? THEMES[0],

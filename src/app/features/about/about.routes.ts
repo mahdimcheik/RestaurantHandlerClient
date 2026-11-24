@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 export const ABOUT_ROUTES: Routes = [
   {
     path: 'a-propos',
-    title: $localize`:@@about.pageTitle:À propos`,
+    title: 'À propos',
     data: { header: false },
     loadComponent: () => import('./pages/about-page/about-page').then((m) => m.AboutPage),
   },

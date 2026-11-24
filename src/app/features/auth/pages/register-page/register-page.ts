@@ -47,19 +47,19 @@ export class RegisterPage {
     newPasswordRules(path.password);
     mustBeChecked(
       path.termsConsent,
-      $localize`:@@register.termsRequired:Acceptez les conditions générales d'utilisation pour créer un compte.`,
+      `Acceptez les conditions générales d'utilisation pour créer un compte.`,
     );
     mustBeChecked(
       path.privacyPolicyConsent,
-      $localize`:@@register.privacyRequired:Acceptez la politique de confidentialité pour créer un compte.`,
+      'Acceptez la politique de confidentialité pour créer un compte.',
     );
     mustBeChecked(
       path.dataProcessingConsent,
-      $localize`:@@register.processingRequired:Acceptez le traitement de vos données pour créer un compte.`,
+      'Acceptez le traitement de vos données pour créer un compte.',
     );
   });
 
-  protected readonly passwordHint = $localize`:@@register.passwordHint:Au moins ${PASSWORD_MIN_LENGTH}:min: caractères.`;
+  protected readonly passwordHint = `Au moins ${PASSWORD_MIN_LENGTH} caractères.`;
   protected readonly error = signal('');
   /** Adresse à laquelle le lien d'activation a été envoyé, une fois le compte créé. */
   protected readonly registeredEmail = signal<string | null>(null);
@@ -93,9 +93,7 @@ export class RegisterPage {
     consents.forEach((consent) => consent().markAsTouched());
     const missing = consents.find((consent) => consent().invalid());
     if (missing) {
-      this.error.set(
-        $localize`:@@register.googleConsents:Cochez les trois consentements avant de continuer avec Google.`,
-      );
+      this.error.set('Cochez les trois consentements avant de continuer avec Google.');
       missing().focusBoundControl();
       return;
     }

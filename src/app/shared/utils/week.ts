@@ -13,11 +13,11 @@ export const WEEK: readonly DayOfWeek[] = [
 
 /** Nom affiché de chaque jour. */
 export const DAY_NAMES: Record<DayOfWeek, string> = {
-  Monday: $localize`:@@day.monday:Lundi`,
-  Tuesday: $localize`:@@day.tuesday:Mardi`,
-  Wednesday: $localize`:@@day.wednesday:Mercredi`,
-  Thursday: $localize`:@@day.thursday:Jeudi`,
-  Friday: $localize`:@@day.friday:Vendredi`,
-  Saturday: $localize`:@@day.saturday:Samedi`,
-  Sunday: $localize`:@@day.sunday:Dimanche`,
+  Monday: 'Lundi',
+  Tuesday: 'Mardi',
+  Wednesday: 'Mercredi',
+  Thursday: 'Jeudi',
+  Friday: 'Vendredi',
+  Saturday: 'Samedi',
+  Sunday: 'Dimanche',
 };

@@ -92,8 +92,8 @@ export class ProductListPage {
       );
       this.notice.set(
         product.isAvailable
-          ? $localize`:@@product.markedOut:« ${product.name}:name: » est en rupture.`
-          : $localize`:@@product.markedIn:« ${product.name}:name: » est de nouveau disponible.`,
+          ? `« ${product.name} » est en rupture.`
+          : `« ${product.name} » est de nouveau disponible.`,
       );
     } catch (error) {
       this.actionError.set(apiErrorMessage(error));

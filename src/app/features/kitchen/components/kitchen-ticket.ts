@@ -32,7 +32,7 @@ function line(item: OrderItemDto): LineView {
   template: `
     <div class="kds-ticket__head">
       <h3 class="kds-ticket__number">
-        <span class="visually-hidden" i18n="@@kitchen.number">Commande n°</span>
+        <span class="visually-hidden">Commande n°</span>
         {{ order().dailyNumber }}
       </h3>
       <p class="kds-ticket__meta">
@@ -40,7 +40,7 @@ function line(item: OrderItemDto): LineView {
           <app-icon name="clock" />
           {{ order().pickupAt | restaurantTime }}
           @if (order().pickupMode === 'Asap') {
-            <span i18n="@@kitchen.asap">dès que possible</span>
+            <span>dès que possible</span>
           }
         </span>
         <span>{{ channel() }}</span>
@@ -62,10 +62,7 @@ function line(item: OrderItemDto): LineView {
     @if (order().customerNote) {
       <p class="kds-ticket__note">
         <app-icon name="alert" />
-        <span
-          ><span class="kds-ticket__note-label" i18n="@@kitchen.note">Note :</span>
-          {{ order().customerNote }}</span
-        >
+        <span><span class="kds-ticket__note-label">Note :</span> {{ order().customerNote }}</span>
       </p>
     }
 
@@ -78,10 +75,10 @@ function line(item: OrderItemDto): LineView {
     >
       @if (order().status === 'Confirmed') {
         <app-icon name="flame" />
-        <span i18n="@@kitchen.start">Commencer</span>
+        <span>Commencer</span>
       } @else {
         <app-icon name="bell" />
-        <span i18n="@@kitchen.ready">Prête</span>
+        <span>Prête</span>
       }
       <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
     </button>

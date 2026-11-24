@@ -31,7 +31,7 @@ import {
   template: `
     @if (removable().length > 0) {
       <fieldset class="picker">
-        <legend class="picker__legend" i18n="@@counter.composition">Composition</legend>
+        <legend class="picker__legend">Composition</legend>
         <ul class="picker__rows">
           @for (ingredient of removable(); track ingredient.id) {
             <li class="picker__row">
@@ -40,24 +40,21 @@ import {
                 class="chip"
                 [attr.aria-pressed]="isRemoved(ingredient.id)"
                 (click)="toggleRemove(ingredient.id)"
-                i18n="@@counter.withoutButton"
               >
                 Sans {{ ingredient.name }}
               </button>
               @if (!ingredient.isAvailable) {
-                <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+                <span class="badge badge--danger">Rupture</span>
               }
               @if (candidates(ingredient).length > 0) {
                 <label class="picker__replace">
-                  <span class="visually-hidden" i18n="@@counter.replaceLabel"
-                    >Remplacer {{ ingredient.name }} par</span
-                  >
+                  <span class="visually-hidden">Remplacer {{ ingredient.name }} par</span>
                   <select
                     #replace
                     [value]="replacementOf(ingredient.id)"
                     (change)="setReplacement(ingredient.id, replace.value)"
                   >
-                    <option value="" i18n="@@counter.noReplacement">Pas de remplacement</option>
+                    <option value="">Pas de remplacement</option>
                     @for (candidate of candidates(ingredient); track candidate.id) {
                       <option
                         [value]="candidate.id"
@@ -93,7 +90,7 @@ import {
               >
                 <span class="tile__name">{{ choice.name }}</span>
                 @if (!choice.isAvailable) {
-                  <span class="tile__meta" i18n="@@status.outOfStock">Rupture</span>
+                  <span class="tile__meta">Rupture</span>
                 } @else if (choice.extraPriceCents > 0) {
                   <span class="tile__meta">+ {{ choice.extraPriceCents | euros }}</span>
                 }
@@ -107,7 +104,7 @@ import {
                 <span class="picker__name">
                   {{ choice.name }}
                   @if (!choice.isAvailable) {
-                    <span class="badge badge--danger" i18n="@@status.outOfStock">Rupture</span>
+                    <span class="badge badge--danger">Rupture</span>
                   } @else if (choice.extraPriceCents > 0) {
                     <span class="picker__price">+ {{ choice.extraPriceCents | euros }}</span>
                   }
@@ -120,9 +117,7 @@ import {
                     (click)="step(group, choice, -1)"
                   >
                     <app-icon name="minus" />
-                    <span class="visually-hidden" i18n="@@counter.less"
-                      >Un de moins : {{ choice.name }}</span
-                    >
+                    <span class="visually-hidden">Un de moins : {{ choice.name }}</span>
                   </button>
                   <span class="stepper__value stepper__value--small">{{ quantityOf(choice) }}</span>
                   <button
@@ -132,9 +127,7 @@ import {
                     (click)="step(group, choice, 1)"
                   >
                     <app-icon name="plus" />
-                    <span class="visually-hidden" i18n="@@counter.more"
-                      >Un de plus : {{ choice.name }}</span
-                    >
+                    <span class="visually-hidden">Un de plus : {{ choice.name }}</span>
                   </button>
                 </span>
               </li>
@@ -164,8 +157,8 @@ export class ProductOptions {
   protected replaceText(ingredient: ProductIngredient, candidate: ReplacementOption): string {
     const extra = replacementSurcharge(ingredient, candidate);
     return extra
-      ? $localize`:@@order.replaceWithPrice:Remplacer par ${candidate.name}:name: (+ ${formatEuros(extra)}:price:)`
-      : $localize`:@@counter.replaceWith:Remplacer par ${candidate.name}:name:`;
+      ? `Remplacer par ${candidate.name} (+ ${formatEuros(extra)})`
+      : `Remplacer par ${candidate.name}`;
   }
 
   protected isRemoved(ingredientId: string): boolean {

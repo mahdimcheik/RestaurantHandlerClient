@@ -22,10 +22,10 @@ import {
 } from '../../reports-format';
 
 const PERIOD_LABELS: Record<StatsPeriod, string> = {
-  Day: $localize`:@@stats.period.day:Jour`,
-  Week: $localize`:@@stats.period.week:Semaine`,
-  Month: $localize`:@@stats.period.month:Mois`,
-  Custom: $localize`:@@stats.period.custom:Dates libres`,
+  Day: 'Jour',
+  Week: 'Semaine',
+  Month: 'Mois',
+  Custom: 'Dates libres',
 };
 
 /**
@@ -59,7 +59,7 @@ export class StatsPage {
   protected readonly periods = PERIODS.map((value) => ({ value, label: PERIOD_LABELS[value] }));
   protected readonly buckets = BUCKETS;
   protected readonly days: readonly { value: DayFilter; label: string }[] = [
-    { value: 'all', label: $localize`:@@stats.allDays:Tous les jours` },
+    { value: 'all', label: 'Tous les jours' },
     ...WEEK.map((value) => ({ value, label: DAY_NAMES[value] })),
   ];
 
@@ -88,7 +88,7 @@ export class StatsPage {
     const from = formatLocal(`${report.from}T00:00:00`);
     return report.from === report.to
       ? from
-      : $localize`:@@stats.range:du ${from}:from: au ${formatLocal(`${report.to}T00:00:00`)}:to:`;
+      : `du ${from} au ${formatLocal(`${report.to}T00:00:00`)}`;
   });
 
   protected readonly rows = computed(() =>

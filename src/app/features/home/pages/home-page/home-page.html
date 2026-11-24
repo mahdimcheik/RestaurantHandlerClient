@@ -3,7 +3,7 @@
 </app-hero-carousel>
 
 <section id="infos" class="section gutter" aria-labelledby="infos-title">
-  <h2 id="infos-title" class="visually-hidden" i18n="@@home.infos.title">Infos pratiques</h2>
+  <h2 id="infos-title" class="visually-hidden">Infos pratiques</h2>
   @if (openingText()) {
     <p class="shop__opening" role="status">
       <app-icon
@@ -15,12 +15,12 @@
   <dl class="facts">
     @if (info()?.address; as address) {
       <div>
-        <dt i18n="@@home.info.address">Adresse</dt>
+        <dt>Adresse</dt>
         <dd>{{ address }}</dd>
       </div>
     }
     <div>
-      <dt i18n="@@home.info.hours">Horaires</dt>
+      <dt>Horaires</dt>
       <dd>
         <ul class="hours">
           @for (day of hours(); track day.day) {
@@ -30,7 +30,7 @@
                 @if (day.ranges) {
                   {{ day.ranges }}
                 } @else {
-                  <ng-container i18n="@@home.closedDay">Fermé</ng-container>
+                  Fermé
                 }
               </span>
             </li>
@@ -40,7 +40,7 @@
     </div>
     @if (info()?.phone; as phone) {
       <div>
-        <dt i18n="@@home.info.phone">Téléphone</dt>
+        <dt>Téléphone</dt>
         <dd>
           <a [href]="'tel:' + phone">{{ phone }}</a>
         </dd>
@@ -50,7 +50,7 @@
   @if (closures().length > 0) {
     <ul class="note hours__closures">
       @for (closure of closures(); track closure.id) {
-        <li i18n="@@home.closure">
+        <li>
           Fermeture exceptionnelle du {{ closure.from }} au {{ closure.to }}
           @if (closure.reason) {
             ({{ closure.reason }})

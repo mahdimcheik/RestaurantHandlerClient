@@ -88,14 +88,14 @@ export class UserPage {
   protected setStatus(status: AccountStatusEnum): void {
     this.run(
       this.management.setStatus(this.id(), status),
-      $localize`:@@user.statusChanged:Statut du compte : ${ACCOUNT_STATUS_LABELS[status]}:status:.`,
+      `Statut du compte : ${ACCOUNT_STATUS_LABELS[status]}.`,
     );
   }
 
   protected resetNoShows(): void {
     this.run(
       this.orders.resetCustomerNoShows(this.id()),
-      $localize`:@@user.noShowsReset:Le paiement au retrait est de nouveau autorisé.`,
+      'Le paiement au retrait est de nouveau autorisé.',
     );
   }
 

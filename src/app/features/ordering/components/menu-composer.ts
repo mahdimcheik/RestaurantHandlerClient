@@ -35,18 +35,10 @@ let nextId = 0;
             (customize)="customize($event)"
           />
           <div class="form__actions">
-            <button
-              type="button"
-              class="btn"
-              [disabled]="!complete()"
-              (click)="apply()"
-              i18n="@@counter.addMenu"
-            >
+            <button type="button" class="btn" [disabled]="!complete()" (click)="apply()">
               Ajouter le menu
             </button>
-            <button type="button" class="btn btn--outline" (click)="close()" i18n="@@dialog.cancel">
-              Annuler
-            </button>
+            <button type="button" class="btn btn--outline" (click)="close()">Annuler</button>
           </div>
         </div>
       }

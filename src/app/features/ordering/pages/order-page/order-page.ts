@@ -103,55 +103,36 @@ export class OrderPage {
   }
 
   protected accept(): Promise<void> {
-    return this.run(
-      (id) => this.orders.accept(id),
-      $localize`:@@order.accepted:Commande acceptée : elle part en cuisine.`,
-    );
+    return this.run((id) => this.orders.accept(id), 'Commande acceptée : elle part en cuisine.');
   }
 
   protected refuse(reason: string): Promise<void> {
     return this.run(
       (id) => this.orders.refuse(id, { reason }),
-      $localize`:@@order.refused:Commande refusée : le client est prévenu.`,
+      'Commande refusée : le client est prévenu.',
     );
   }
 
   protected complete(): Promise<void> {
-    return this.run(
-      (id) => this.orders.complete(id),
-      $localize`:@@order.completed:Commande remise au client.`,
-    );
+    return this.run((id) => this.orders.complete(id), 'Commande remise au client.');
   }
 
   protected noShow(): Promise<void> {
-    return this.run(
-      (id) => this.orders.markNoShow(id),
-      $localize`:@@order.noShowDone:Client déclaré non venu.`,
-    );
+    return this.run((id) => this.orders.markNoShow(id), 'Client déclaré non venu.');
   }
 
   protected cancel(reason: string): Promise<void> {
-    return this.run(
-      (id) => this.orders.cancel(id, { reason }),
-      $localize`:@@order.cancelledDone:Commande annulée.`,
-    );
+    return this.run((id) => this.orders.cancel(id, { reason }), 'Commande annulée.');
   }
 
   protected refund(): Promise<void> {
-    return this.run(
-      (id) => this.orders.refund(id),
-      $localize`:@@order.refundDone:Remboursement demandé.`,
-    );
+    return this.run((id) => this.orders.refund(id), 'Remboursement demandé.');
   }
 
   protected paid(order: OrderDetails): void {
     this.order.set(order);
     this.error.set('');
-    this.notice.set(
-      order.isPaid
-        ? $localize`:@@order.paidDone:Commande payée.`
-        : $localize`:@@order.partPaid:Montant enregistré.`,
-    );
+    this.notice.set(order.isPaid ? 'Commande payée.' : 'Montant enregistré.');
   }
 
   protected conflict(): void {

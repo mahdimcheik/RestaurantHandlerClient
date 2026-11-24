@@ -17,9 +17,7 @@ let nextId = 0;
         <app-textarea-field [field]="form.reason" [label]="reasonLabel" />
         <div class="form__actions">
           <button type="submit" class="btn btn--danger">{{ confirmLabel() }}</button>
-          <button type="button" class="btn btn--outline" (click)="close()" i18n="@@dialog.cancel">
-            Annuler
-          </button>
+          <button type="button" class="btn btn--outline" (click)="close()">Annuler</button>
         </div>
       </form>
     </dialog>
@@ -31,7 +29,7 @@ export class ReasonDialog {
   readonly confirmed = output<string>();
 
   protected readonly id = `reason-${nextId++}`;
-  protected readonly reasonLabel = $localize`:@@order.reason:Motif (communiqué au client)`;
+  protected readonly reasonLabel = 'Motif (communiqué au client)';
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly model = signal({ reason: '' });
   protected readonly form = form(this.model, (path) => {

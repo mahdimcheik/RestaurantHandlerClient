@@ -1,11 +1,11 @@
 <div class="page-head">
-  <h1 i18n="@@admin.restaurant">Restaurant</h1>
+  <h1>Restaurant</h1>
 </div>
 
 @if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else if (settings.isLoading() && !settings.value()) {
-  <p role="status" i18n="@@common.loading">Chargement…</p>
+  <p role="status">Chargement…</p>
 } @else {
   @if (error()) {
     <p class="alert alert--error" role="alert">{{ error() }}</p>
@@ -16,55 +16,36 @@
 
   <form class="sheet" novalidate (submit)="onSubmit($event)">
     <section class="sheet__section" aria-labelledby="restaurant-identity">
-      <h2 id="restaurant-identity" i18n="@@restaurant.identity">Informations</h2>
-      <p class="sheet__lead" i18n="@@restaurant.identityLead">
-        Affichées sur l'application des clients et sur les reçus.
-      </p>
+      <h2 id="restaurant-identity">Informations</h2>
+      <p class="sheet__lead">Affichées sur l'application des clients et sur les reçus.</p>
       <div class="form">
-        <app-text-field
-          [field]="form.tradeName"
-          label="Nom commercial"
-          i18n-label="@@restaurant.tradeName"
-        />
-        <app-text-field
-          [field]="form.legalName"
-          label="Raison sociale (facultative)"
-          i18n-label="@@restaurant.legalName"
-        />
+        <app-text-field [field]="form.tradeName" label="Nom commercial" />
+        <app-text-field [field]="form.legalName" label="Raison sociale (facultative)" />
         <app-text-field
           [field]="form.address"
           label="Adresse (facultative)"
-          i18n-label="@@restaurant.address"
           autocomplete="street-address"
         />
         <app-text-field
           type="tel"
           [field]="form.phone"
           label="Téléphone (facultatif)"
-          i18n-label="@@restaurant.phone"
           autocomplete="tel"
         />
         <div class="form__row">
-          <app-text-field
-            [field]="form.siret"
-            label="SIRET (facultatif)"
-            i18n-label="@@restaurant.siret"
-            inputmode="numeric"
-          />
+          <app-text-field [field]="form.siret" label="SIRET (facultatif)" inputmode="numeric" />
           <app-text-field
             [field]="form.vatNumber"
             label="N° de TVA intracommunautaire (facultatif)"
-            i18n-label="@@restaurant.vatNumber"
           />
         </div>
       </div>
     </section>
 
     <section class="sheet__section" aria-labelledby="restaurant-logo">
-      <h2 id="restaurant-logo" i18n="@@restaurant.logo">Logo</h2>
+      <h2 id="restaurant-logo">Logo</h2>
       <app-image-field
         label="Choisir un logo"
-        i18n-label="@@restaurant.chooseLogo"
         [imageUrl]="logoUrl()"
         [alt]="model().tradeName"
         [upload]="uploadLogo"
@@ -73,8 +54,8 @@
     </section>
 
     <section class="sheet__section" aria-labelledby="restaurant-service">
-      <h2 id="restaurant-service" i18n="@@restaurant.service">Service</h2>
-      <p class="sheet__lead" i18n="@@restaurant.serviceLead">
+      <h2 id="restaurant-service">Service</h2>
+      <p class="sheet__lead">
         Durées en minutes. Le délai de préparation s'ajuste aussi pendant le service, depuis la
         barre du haut.
       </p>
@@ -83,80 +64,62 @@
           <app-number-field
             [field]="form.asapDelayMinutes"
             label="Délai de préparation annoncé"
-            i18n-label="@@restaurant.asap"
             hint="De 0 à 240 min."
-            i18n-hint="@@restaurant.asapHint"
           />
           <app-number-field
             [field]="form.minLeadMinutes"
             label="Délai avant le premier créneau"
-            i18n-label="@@restaurant.minLead"
             hint="De 0 à 240 min."
-            i18n-hint="@@restaurant.minLeadHint"
           />
         </div>
         <div class="form__row">
           <app-number-field
             [field]="form.slotDurationMinutes"
             label="Durée d'un créneau de retrait"
-            i18n-label="@@restaurant.slotDuration"
             hint="De 5 à 120 min."
-            i18n-hint="@@restaurant.slotDurationHint"
           />
           <app-number-field
             [field]="form.slotCapacityOrders"
             label="Commandes par créneau"
-            i18n-label="@@restaurant.slotCapacity"
             hint="De 1 à 500."
-            i18n-hint="@@restaurant.slotCapacityHint"
           />
         </div>
         <div class="form__row">
           <app-number-field
             [field]="form.approvalTimeoutMinutes"
             label="Délai de validation par le Manager"
-            i18n-label="@@restaurant.approval"
             hint="Commandes à payer au retrait, de 1 à 120 min."
-            i18n-hint="@@restaurant.approvalHint"
           />
           <app-number-field
             [field]="form.pickupGraceMinutes"
             label="Délai de grâce au retrait"
-            i18n-label="@@restaurant.grace"
             hint="Avant de compter une non-venue, de 0 à 240 min."
-            i18n-hint="@@restaurant.graceHint"
           />
         </div>
         <div class="form__row">
           <app-number-field
             [field]="form.noShowThreshold"
             label="Seuil de non-venues"
-            i18n-label="@@restaurant.noShow"
             hint="De 1 à 20."
-            i18n-hint="@@restaurant.noShowHint"
           />
           <app-number-field
             [field]="form.onlinePaymentExpiryMinutes"
             label="Expiration d'un paiement en ligne"
-            i18n-label="@@restaurant.paymentExpiry"
             hint="De 5 à 30 min."
-            i18n-hint="@@restaurant.paymentExpiryHint"
           />
         </div>
       </div>
     </section>
 
     <div class="form__actions">
-      <button type="submit" [disabled]="form().submitting()" i18n="@@sheet.save">
-        Enregistrer
-      </button>
+      <button type="submit" [disabled]="form().submitting()">Enregistrer</button>
     </div>
 
     <section class="sheet__section" aria-labelledby="restaurant-history">
-      <h2 id="restaurant-history" i18n="@@restaurant.history">Dernières modifications</h2>
+      <h2 id="restaurant-history">Dernières modifications</h2>
       @if (history.value(); as items) {
         @if (items.length === 0) {
-          <p class="empty" i18n="@@restaurant.historyEmpty">Aucune modification enregistrée.</p>
+          <p class="empty">Aucune modification enregistrée.</p>
         } @else {
           <ul class="stack-list">
             @for (item of items; track item.id) {
@@ -168,9 +131,7 @@
           </ul>
         }
       } @else if (history.error()) {
-        <p class="alert alert--error" role="alert" i18n="@@restaurant.historyError">
-          Historique indisponible.
-        </p>
+        <p class="alert alert--error" role="alert">Historique indisponible.</p>
       }
     </section>
   </form>

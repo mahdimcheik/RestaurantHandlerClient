@@ -1,64 +1,72 @@
 <div class="page-head">
-  <h1 i18n="@@dashboard.title">Tableau de bord</h1>
+  <h1>Tableau de bord</h1>
   <div class="toolbar">
     <a class="btn btn--icon" routerLink="/gestion/produits/nouveau">
       <app-icon name="plus" />
-      <span i18n="@@dashboard.addProduct">Ajouter un produit</span>
+      <span>Ajouter un produit</span>
     </a>
     <a class="btn btn--outline btn--icon" routerLink="/gestion/categories/nouvelle">
       <app-icon name="plus" />
-      <span i18n="@@dashboard.addCategory">Ajouter une catégorie</span>
+      <span>Ajouter une catégorie</span>
     </a>
   </div>
 </div>
 
 <section class="sheet__section" aria-labelledby="dashboard-today">
-  <h2 id="dashboard-today" i18n="@@dashboard.today">Aujourd'hui</h2>
+  <h2 id="dashboard-today">Aujourd'hui</h2>
   @if (todayError()) {
     <p class="alert alert--error" role="alert">{{ todayError() }}</p>
   } @else if (today.value(); as stats) {
     <ul class="stats">
       <li class="stat">
-        <span class="stat__label" i18n="@@dashboard.orders">Commandes</span>
+        <span class="stat__label">Commandes</span>
         <span class="stat__value">{{ stats.orders }}</span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@dashboard.revenue">Chiffre d'affaires</span>
+        <span class="stat__label">Chiffre d'affaires</span>
         <span class="stat__value">{{ stats.revenueCents | euros }}</span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@dashboard.basket">Panier moyen</span>
+        <span class="stat__label">Panier moyen</span>
         <span class="stat__value">{{ stats.averageBasketCents | euros }}</span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@order.channel.counter">Comptoir</span>
+        <span class="stat__label">Comptoir</span>
         <span class="stat__value">{{ stats.counter.revenueCents | euros }}</span>
-        <span class="stat__detail" i18n="@@dashboard.channelOrders">{stats.counter.orders, plural,
-          =0 {Aucune commande}
-          =1 {1 commande}
-          other {{{ stats.counter.orders }} commandes}
-        }</span>
+        <span class="stat__detail">
+          @if (stats.counter.orders === 0) {
+            Aucune commande
+          } @else if (stats.counter.orders === 1) {
+            1 commande
+          } @else {
+            {{ stats.counter.orders }} commandes
+          }
+        </span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@order.channel.online">En ligne</span>
+        <span class="stat__label">En ligne</span>
         <span class="stat__value">{{ stats.online.revenueCents | euros }}</span>
-        <span class="stat__detail" i18n="@@dashboard.channelOrders">{stats.online.orders, plural,
-          =0 {Aucune commande}
-          =1 {1 commande}
-          other {{{ stats.online.orders }} commandes}
-        }</span>
+        <span class="stat__detail">
+          @if (stats.online.orders === 0) {
+            Aucune commande
+          } @else if (stats.online.orders === 1) {
+            1 commande
+          } @else {
+            {{ stats.online.orders }} commandes
+          }
+        </span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@dashboard.paidOnline">Payé en ligne</span>
+        <span class="stat__label">Payé en ligne</span>
         <span class="stat__value">{{ stats.paidOnlineCents | euros }}</span>
       </li>
       <li class="stat">
-        <span class="stat__label" i18n="@@dashboard.paidOnSite">Payé sur place</span>
+        <span class="stat__label">Payé sur place</span>
         <span class="stat__value">{{ stats.paidOnSiteCents | euros }}</span>
       </li>
     </ul>
 
-    <h3 i18n="@@dashboard.byStatus">Commandes par étape</h3>
+    <h3>Commandes par étape</h3>
     <dl class="summary">
       @for (item of statusCounts(); track item.status) {
         <div>
@@ -69,27 +77,27 @@
     </dl>
 
     @if (stats.vat.length > 0) {
-      <h3 id="dashboard-vat" i18n="@@dashboard.vat">TVA du jour</h3>
+      <h3 id="dashboard-vat">TVA du jour</h3>
       <table class="data-table" aria-labelledby="dashboard-vat">
         <thead>
           <tr>
-            <th scope="col" i18n="@@dashboard.vatRate">Taux</th>
-            <th scope="col" class="data-table__num" i18n="@@dashboard.net">HT</th>
-            <th scope="col" class="data-table__num" i18n="@@dashboard.vatAmount">TVA</th>
-            <th scope="col" class="data-table__num" i18n="@@dashboard.gross">TTC</th>
+            <th scope="col">Taux</th>
+            <th scope="col" class="data-table__num">HT</th>
+            <th scope="col" class="data-table__num">TVA</th>
+            <th scope="col" class="data-table__num">TTC</th>
           </tr>
         </thead>
         <tbody>
           @for (line of stats.vat; track line.rate) {
             <tr>
               <th scope="row" class="data-table__main">{{ vatRate(line.rate) }}</th>
-              <td class="data-table__num" data-label="HT" i18n-data-label="@@dashboard.net">
+              <td class="data-table__num" data-label="HT">
                 {{ line.netCents | euros }}
               </td>
-              <td class="data-table__num" data-label="TVA" i18n-data-label="@@dashboard.vatAmount">
+              <td class="data-table__num" data-label="TVA">
                 {{ line.vatCents | euros }}
               </td>
-              <td class="data-table__num" data-label="TTC" i18n-data-label="@@dashboard.gross">
+              <td class="data-table__num" data-label="TTC">
                 {{ line.grossCents | euros }}
               </td>
             </tr>
@@ -101,16 +109,16 @@
     <div class="toolbar">
       <a class="btn btn--outline btn--icon" routerLink="/gestion/statistiques">
         <app-icon name="chart" />
-        <span i18n="@@dashboard.seeStats">Voir les statistiques</span>
+        <span>Voir les statistiques</span>
       </a>
     </div>
   } @else {
-    <p role="status" i18n="@@common.loading">Chargement…</p>
+    <p role="status">Chargement…</p>
   }
 </section>
 
 <section class="sheet__section" aria-labelledby="dashboard-service">
-  <h2 id="dashboard-service" i18n="@@dashboard.service">Service</h2>
+  <h2 id="dashboard-service">Service</h2>
   @if (openingLabel()) {
     <p class="stat__value">{{ openingLabel() }}</p>
     @if (openingReason()) {
@@ -120,57 +128,55 @@
   <div class="toolbar">
     <a class="btn btn--outline btn--icon" routerLink="/gestion/ruptures">
       <app-icon name="stock" />
-      <span i18n="@@admin.stock">Ruptures</span>
+      <span>Ruptures</span>
     </a>
     <a class="btn btn--outline btn--icon" routerLink="/gestion/ouverture">
       <app-icon name="clock" />
-      <span i18n="@@admin.opening">Horaires et fermetures</span>
+      <span>Horaires et fermetures</span>
     </a>
     <a class="btn btn--outline btn--icon" routerLink="/gestion/restaurant">
       <app-icon name="store" />
-      <span i18n="@@admin.restaurant">Restaurant</span>
+      <span>Restaurant</span>
     </a>
   </div>
 </section>
 
 <section class="sheet__section" aria-labelledby="dashboard-menu">
-  <h2 id="dashboard-menu" i18n="@@dashboard.menu">Carte</h2>
+  <h2 id="dashboard-menu">Carte</h2>
   <ul class="stats">
     <li>
       <a class="stat" routerLink="/gestion/categories">
-        <span class="stat__label" i18n="@@admin.categories">Catégories</span>
+        <span class="stat__label">Catégories</span>
         <span class="stat__value">{{ categoryCount() }}</span>
       </a>
     </li>
     <li>
       <a class="stat" routerLink="/gestion/produits">
-        <span class="stat__label" i18n="@@dashboard.activeProducts">Produits actifs</span>
+        <span class="stat__label">Produits actifs</span>
         <span class="stat__value">{{ activeProductCount() }}</span>
       </a>
     </li>
     <li>
       <a class="stat" routerLink="/gestion/ruptures">
-        <span class="stat__label" i18n="@@dashboard.outOfStock">Produits en rupture</span>
+        <span class="stat__label">Produits en rupture</span>
         <span class="stat__value">{{ outOfStockCount() }}</span>
       </a>
     </li>
     <li>
       <a class="stat" routerLink="/gestion/menus">
-        <span class="stat__label" i18n="@@dashboard.activeMenus">Menus actifs</span>
+        <span class="stat__label">Menus actifs</span>
         <span class="stat__value">{{ activeMenuCount() }}</span>
       </a>
     </li>
     <li>
       <a class="stat" routerLink="/gestion/options">
-        <span class="stat__label" i18n="@@admin.options">Groupes d'options</span>
+        <span class="stat__label">Groupes d'options</span>
         <span class="stat__value">{{ optionGroupCount() }}</span>
       </a>
     </li>
     <li>
       <a class="stat" routerLink="/gestion/ruptures">
-        <span class="stat__label" i18n="@@dashboard.outOfStockIngredients">
-          Ingrédients en rupture
-        </span>
+        <span class="stat__label"> Ingrédients en rupture </span>
         <span class="stat__value">{{ outOfStockIngredientCount() }}</span>
       </a>
     </li>

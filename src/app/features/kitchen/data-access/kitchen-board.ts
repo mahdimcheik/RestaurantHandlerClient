@@ -33,8 +33,8 @@ export const KITCHEN_SOUND = new InjectionToken<() => void>('KITCHEN_SOUND', {
 
 const SOUND_KEY = 'rh.kitchen-sound';
 
-const OFFLINE = $localize`:@@kitchen.offline:Pas de réseau : le geste n'a pas été enregistré. Réessayez quand la connexion revient.`;
-const CHANGED = $localize`:@@kitchen.conflict:La commande a changé sur un autre écran : la file a été rechargée.`;
+const OFFLINE = `Pas de réseau : le geste n'a pas été enregistré. Réessayez quand la connexion revient.`;
+const CHANGED = 'La commande a changé sur un autre écran : la file a été rechargée.';
 
 /** Dernier geste, annulable jusqu'à `deadline` (ms). */
 export interface LastGesture {
@@ -177,7 +177,7 @@ export class KitchenBoard {
 
   private announce(arrived: OrderDetails[]): void {
     const numbers = arrived.map((order) => order.dailyNumber).join(', ');
-    this.notice.set($localize`:@@kitchen.newOrder:Nouvelle commande n° ${numbers}:numbers:`);
+    this.notice.set(`Nouvelle commande n° ${numbers}`);
     if (!this.muted()) {
       this.sound();
     }

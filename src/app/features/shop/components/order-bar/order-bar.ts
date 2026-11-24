@@ -18,14 +18,17 @@ import { CartStore } from '../../data-access/cart.store';
       (click)="opened.emit()"
     >
       <app-icon name="bag" />
-      <span class="visually-hidden" i18n="@@shop.openCart">Voir ma commande :</span>
-      <span class="order-bar__count" i18n="@@shop.itemCount">{cart.itemCount(), plural,
-        =1 {1 article}
-        other {{{ cart.itemCount() }} articles}
-      }</span>
+      <span class="visually-hidden">Voir ma commande :</span>
+      <span class="order-bar__count">
+        @if (cart.itemCount() === 1) {
+          1 article
+        } @else {
+          {{ cart.itemCount() }} articles
+        }
+      </span>
       <span class="order-bar__total">
         @if (quote.total() === null) {
-          <ng-container i18n="@@counter.computing">Calcul…</ng-container>
+          Calcul…
         } @else {
           {{ quote.total() | euros }}
         }

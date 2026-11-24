@@ -99,8 +99,8 @@ export class StockPage {
       await firstValueFrom(action);
       this.notice.set(
         item.isAvailable
-          ? $localize`:@@stock.markedOut:« ${item.name}:name: » est en rupture.`
-          : $localize`:@@stock.markedIn:« ${item.name}:name: » est de nouveau disponible.`,
+          ? `« ${item.name} » est en rupture.`
+          : `« ${item.name} » est de nouveau disponible.`,
       );
     } catch (error) {
       this.error.set(apiErrorMessage(error));

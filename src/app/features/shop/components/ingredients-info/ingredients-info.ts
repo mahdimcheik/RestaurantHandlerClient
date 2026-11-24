@@ -33,7 +33,7 @@ import { Dish } from '../../data-access/card-sections';
         {{ item.name }}
       </h2>
       @if (item.ingredients.length > 0) {
-        <p class="eyebrow" i18n="@@shop.ingredients">Ingrédients</p>
+        <p class="eyebrow">Ingrédients</p>
         <ul class="ingredient-list">
           @for (ingredient of item.ingredients; track ingredient.ingredientId) {
             <li
@@ -53,7 +53,7 @@ import { Dish } from '../../data-access/card-sections';
               </span>
               <span class="ingredient-list__name">{{ ingredient.name }}</span>
               @if (ingredient.isForcedRemoved) {
-                <span class="ingredient-list__status" i18n="@@status.outOfStock">Rupture</span>
+                <span class="ingredient-list__status">Rupture</span>
               }
             </li>
           }

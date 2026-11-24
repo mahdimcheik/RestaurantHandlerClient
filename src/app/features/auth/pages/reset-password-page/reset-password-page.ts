@@ -14,7 +14,7 @@ import {
   requiredRule,
 } from '../../auth-validation';
 
-const invalidLink = $localize`:@@reset.invalidLink:Ce lien de réinitialisation n'est plus valide. Demandez-en un nouveau.`;
+const invalidLink = `Ce lien de réinitialisation n'est plus valide. Demandez-en un nouveau.`;
 
 /** Ouverte depuis le lien de l'e-mail : `?userId=…&resetToken=…`. */
 @Component({
@@ -22,7 +22,7 @@ const invalidLink = $localize`:@@reset.invalidLink:Ce lien de réinitialisation 
   imports: [AuthLayout, TextField, RouterLink],
   template: `
     <app-auth-layout>
-      <h1 class="auth__title" i18n="@@reset.title">Nouveau mot de passe</h1>
+      <h1 class="auth__title">Nouveau mot de passe</h1>
       @if (hasLink()) {
         @if (error()) {
           <p class="alert alert--error" role="alert">{{ error() }}</p>
@@ -33,7 +33,6 @@ const invalidLink = $localize`:@@reset.invalidLink:Ce lien de réinitialisation 
             type="password"
             autocomplete="new-password"
             label="Nouveau mot de passe"
-            i18n-label="@@field.newPassword"
             [hint]="passwordHint"
           />
           <app-text-field
@@ -41,13 +40,12 @@ const invalidLink = $localize`:@@reset.invalidLink:Ce lien de réinitialisation 
             type="password"
             autocomplete="new-password"
             label="Confirmer le mot de passe"
-            i18n-label="@@field.passwordConfirmation"
           />
           <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
             @if (form().submitting()) {
-              <ng-container i18n="@@reset.submitting">Enregistrement…</ng-container>
+              Enregistrement…
             } @else {
-              <ng-container i18n="@@reset.submit">Enregistrer</ng-container>
+              Enregistrer
             }
           </button>
         </form>
@@ -55,11 +53,7 @@ const invalidLink = $localize`:@@reset.invalidLink:Ce lien de réinitialisation 
         <p class="alert alert--error" role="alert">{{ invalidLink }}</p>
       }
       @if (!hasLink() || linkRejected()) {
-        <a
-          class="btn btn--outline form__submit"
-          routerLink="/auth/mot-de-passe-oublie"
-          i18n="@@reset.askNew"
-        >
+        <a class="btn btn--outline form__submit" routerLink="/auth/mot-de-passe-oublie">
           Demander un nouveau lien
         </a>
       }
@@ -75,7 +69,7 @@ export class ResetPasswordPage {
 
   protected readonly hasLink = computed(() => !!this.userId() && !!this.resetToken());
   protected readonly invalidLink = invalidLink;
-  protected readonly passwordHint = $localize`:@@register.passwordHint:Au moins ${PASSWORD_MIN_LENGTH}:min: caractères.`;
+  protected readonly passwordHint = `Au moins ${PASSWORD_MIN_LENGTH} caractères.`;
 
   private readonly model = signal({ password: '', passwordConfirmation: '' });
   protected readonly form = form(this.model, (path) => {
@@ -85,7 +79,7 @@ export class ResetPasswordPage {
       value() && value() !== valueOf(path.password)
         ? {
             kind: 'mismatch',
-            message: $localize`:@@validation.mismatch:Les deux mots de passe ne correspondent pas.`,
+            message: 'Les deux mots de passe ne correspondent pas.',
           }
         : undefined,
     );

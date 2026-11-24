@@ -32,30 +32,26 @@ export function describeOpening(state: OpeningStateDto, now: Date = new Date()):
   switch (state.status) {
     case 'Open': {
       if (!state.closesAt) {
-        return $localize`:@@opening.open:Ouvert`;
+        return 'Ouvert';
       }
       const { day, time } = splitMoment(state.closesAt, now);
-      return day
-        ? $localize`:@@opening.openUntilDay:Ouvert — ferme ${day}:day: à ${time}:time:`
-        : $localize`:@@opening.openUntil:Ouvert — ferme à ${time}:time:`;
+      return day ? `Ouvert — ferme ${day} à ${time}` : `Ouvert — ferme à ${time}`;
     }
     case 'Paused': {
       if (!state.pausedUntil) {
-        return $localize`:@@opening.paused:Commandes en pause`;
+        return 'Commandes en pause';
       }
       const { day, time } = splitMoment(state.pausedUntil, now);
       return day
-        ? $localize`:@@opening.pausedUntilDay:Commandes en pause jusqu'à ${day}:day: ${time}:time:`
-        : $localize`:@@opening.pausedUntil:Commandes en pause jusqu'à ${time}:time:`;
+        ? `Commandes en pause jusqu'à ${day} ${time}`
+        : `Commandes en pause jusqu'à ${time}`;
     }
     default: {
       if (!state.nextOpeningAt) {
-        return $localize`:@@opening.closed:Fermé`;
+        return 'Fermé';
       }
       const { day, time } = splitMoment(state.nextOpeningAt, now);
-      return day
-        ? $localize`:@@opening.closedUntilDay:Fermé — ouvre ${day}:day: à ${time}:time:`
-        : $localize`:@@opening.closedUntil:Fermé — ouvre à ${time}:time:`;
+      return day ? `Fermé — ouvre ${day} à ${time}` : `Fermé — ouvre à ${time}`;
     }
   }
 }

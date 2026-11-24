@@ -144,7 +144,7 @@ export class OptionGroupEditPage {
       value().length === 0 || value().length * valueOf(path.maxPerChoice) < valueOf(path.minChoices)
         ? {
             kind: 'tooFew',
-            message: $localize`:@@optionGroup.tooFew:Proposez au moins un choix, et au moins autant que le minimum.`,
+            message: 'Proposez au moins un choix, et au moins autant que le minimum.',
           }
         : undefined,
     );
@@ -266,7 +266,7 @@ export class OptionGroupEditPage {
         try {
           if (id) {
             this.group.set(await firstValueFrom(this.groups.update(id, toWrite(this.model()))));
-            this.notice.set($localize`:@@sheet.saved:Modifications enregistrées.`);
+            this.notice.set('Modifications enregistrées.');
           } else {
             const created = await firstValueFrom(this.groups.create(toWrite(this.model())));
             await this.router.navigate(['/gestion/options', created.id], { replaceUrl: true });

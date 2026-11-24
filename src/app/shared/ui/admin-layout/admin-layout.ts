@@ -34,11 +34,11 @@ interface NavLink {
   ],
   host: { class: 'admin' },
   template: `
-    <a class="skip-link" href="#contenu-gestion" i18n="@@skipToContent">Aller au contenu</a>
-    <nav class="admin__nav" aria-label="Back-office" i18n-aria-label="@@admin.nav">
-      <a class="admin__brand" routerLink="/gestion" title="Gestion" i18n-title="@@admin.brand">
+    <a class="skip-link" href="#contenu-gestion">Aller au contenu</a>
+    <nav class="admin__nav" aria-label="Back-office">
+      <a class="admin__brand" routerLink="/gestion" title="Gestion">
         <app-icon name="dashboard" />
-        <span class="admin__label" i18n="@@admin.brand">Gestion</span>
+        <span class="admin__label">Gestion</span>
       </a>
       <ul class="admin__links">
         @for (link of links; track link.path) {
@@ -56,8 +56,7 @@ interface NavLink {
               @if (link.path === ordersPath && toApprove() > 0) {
                 {{ ' '
                 }}<span class="admin__count"
-                  >{{ toApprove() }}
-                  <span class="visually-hidden" i18n="@@admin.toApprove">à valider</span></span
+                  >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
                 >
               }
             </a>
@@ -66,21 +65,15 @@ interface NavLink {
       </ul>
       <ul class="admin__links admin__links--end">
         <li>
-          <a class="admin__link" routerLink="/" title="Retour au site" i18n-title="@@admin.site">
+          <a class="admin__link" routerLink="/" title="Retour au site">
             <app-icon name="site" />
-            <span class="admin__label" i18n="@@admin.site">Retour au site</span>
+            <span class="admin__label">Retour au site</span>
           </a>
         </li>
         <li>
-          <button
-            type="button"
-            class="admin__link"
-            title="Déconnexion"
-            i18n-title="@@nav.logout"
-            (click)="logout()"
-          >
+          <button type="button" class="admin__link" title="Déconnexion" (click)="logout()">
             <app-icon name="logout" />
-            <span class="admin__label" i18n="@@nav.logout">Déconnexion</span>
+            <span class="admin__label">Déconnexion</span>
           </button>
         </li>
       </ul>
@@ -94,13 +87,10 @@ interface NavLink {
             class="icon-button"
             [attr.aria-pressed]="!approvals.muted()"
             title="Son des commandes à valider"
-            i18n-title="@@admin.approvalSound"
             (click)="approvals.toggleMuted()"
           >
             <app-icon [name]="approvals.muted() ? 'bellOff' : 'bell'" />
-            <span class="visually-hidden" i18n="@@admin.approvalSound"
-              >Son des commandes à valider</span
-            >
+            <span class="visually-hidden">Son des commandes à valider</span>
           </button>
           <app-connection-status />
           <span class="admin__user">{{ session.user()?.firstName }}</span>
@@ -127,7 +117,7 @@ export class AdminLayout {
     source: this.toApprove,
     computation: (count, previous) =>
       previous && count > previous.source
-        ? $localize`:@@admin.newToApprove:Nouvelle commande à valider (${count}:count: en attente).`
+        ? `Nouvelle commande à valider (${count} en attente).`
         : (previous?.value ?? ''),
   });
 
@@ -140,85 +130,85 @@ export class AdminLayout {
     {
       path: '/gestion',
       icon: 'dashboard',
-      label: $localize`:@@admin.dashboard:Tableau de bord`,
+      label: 'Tableau de bord',
       exact: true,
     },
     {
       path: '/gestion/comptoir',
       icon: 'counter',
-      label: $localize`:@@admin.counter:Comptoir`,
+      label: 'Comptoir',
       exact: false,
     },
     {
       path: '/gestion/commandes',
       icon: 'orders',
-      label: $localize`:@@admin.orders:Commandes`,
+      label: 'Commandes',
       exact: false,
     },
     {
       path: '/cuisine',
       icon: 'flame',
-      label: $localize`:@@admin.kitchen:Cuisine`,
+      label: 'Cuisine',
       exact: false,
     },
     {
       path: '/gestion/statistiques',
       icon: 'chart',
-      label: $localize`:@@admin.stats:Statistiques`,
+      label: 'Statistiques',
       exact: false,
     },
     {
       path: '/gestion/categories',
       icon: 'categories',
-      label: $localize`:@@admin.categories:Catégories`,
+      label: 'Catégories',
       exact: false,
     },
     {
       path: '/gestion/produits',
       icon: 'products',
-      label: $localize`:@@admin.products:Produits`,
+      label: 'Produits',
       exact: false,
     },
     {
       path: '/gestion/menus',
       icon: 'menus',
-      label: $localize`:@@admin.menus:Menus`,
+      label: 'Menus',
       exact: false,
     },
     {
       path: '/gestion/ingredients',
       icon: 'ingredients',
-      label: $localize`:@@admin.ingredients:Ingrédients`,
+      label: 'Ingrédients',
       exact: false,
     },
     {
       path: '/gestion/options',
       icon: 'options',
-      label: $localize`:@@admin.options:Groupes d'options`,
+      label: `Groupes d'options`,
       exact: false,
     },
     {
       path: '/gestion/ruptures',
       icon: 'stock',
-      label: $localize`:@@admin.stock:Ruptures`,
+      label: 'Ruptures',
       exact: false,
     },
     {
       path: '/gestion/ouverture',
       icon: 'clock',
-      label: $localize`:@@admin.opening:Horaires et fermetures`,
+      label: 'Horaires et fermetures',
       exact: false,
     },
     {
       path: '/gestion/restaurant',
       icon: 'store',
-      label: $localize`:@@admin.restaurant:Restaurant`,
+      label: 'Restaurant',
       exact: false,
     },
     {
       path: '/gestion/utilisateurs',
       icon: 'users',
-      label: $localize`:@@admin.users:Utilisateurs`,
+      label: 'Utilisateurs',
       exact: false,
     },
   ];
