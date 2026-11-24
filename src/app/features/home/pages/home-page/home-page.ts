@@ -1,20 +1,32 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import {
   describeOpening,
   OpeningStateService,
 } from '../../../../shared/services/opening-state.service';
 import { PublicStore } from '../../../../shared/services/public-store.service';
-import { Icon } from '../../../../shared/ui/icon/icon';
+import { SITE_DETAILS } from '../../../../shared/site-details';
+import { Icon, IconName } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
-import { formatLocal } from '../../../../shared/utils/restaurant-time';
+import { formatLocal, restaurantDay } from '../../../../shared/utils/restaurant-time';
+import { DAY_NAMES, WEEK } from '../../../../shared/utils/week';
 import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { weeklyHours } from '../../home-format';
+
+/** Moyen de joindre le restaurant, affiché en carte cliquable dans la section Contact. */
+interface ContactChannel {
+  label: string;
+  value: string;
+  href: string;
+  icon: IconName;
+  external: boolean;
+}
 
 /** Accueil : carrousel (nom, accès à la carte), état d'ouverture en direct, infos pratiques de l'API. */
 @Component({
   selector: 'app-home-page',
-  imports: [HeroCarousel, SiteTopbar, Icon],
+  imports: [HeroCarousel, SiteTopbar, Icon, RouterLink],
   templateUrl: './home-page.html',
 })
 export class HomePage {
@@ -32,6 +44,45 @@ export class HomePage {
       reason: closure.reason,
     })),
   );
+  /** Nom du jour courant à Paris, pour signaler la ligne d'aujourd'hui. */
+  protected readonly today = computed(() => {
+    const weekday = new Date(`${restaurantDay()}T12:00:00Z`).getUTCDay();
+    return DAY_NAMES[WEEK[(weekday + 6) % 7]];
+  });
+  /** Moyens de contact renseignés (API ou `SITE_DETAILS`) ; les autres sont omis. */
+  protected readonly contacts = computed(() => {
+    const info = this.info();
+    const channels: ContactChannel[] = [];
+    if (info?.phone) {
+      const href = `tel:${info.phone.replace(/\s/g, '')}`;
+      channels.push({ label: 'Appeler', value: info.phone, href, icon: 'phone', external: false });
+    }
+    if (SITE_DETAILS.email) {
+      const href = `mailto:${SITE_DETAILS.email}`;
+      channels.push({
+        label: 'Écrire',
+        value: SITE_DETAILS.email,
+        href,
+        icon: 'mail',
+        external: false,
+      });
+    }
+    if (info?.address) {
+      const href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(info.address)}`;
+      channels.push({ label: 'Venir', value: info.address, href, icon: 'pin', external: true });
+    }
+    if (SITE_DETAILS.instagramUrl) {
+      const href = SITE_DETAILS.instagramUrl;
+      channels.push({
+        label: 'Instagram',
+        value: 'Suivre nos actualités',
+        href,
+        icon: 'camera',
+        external: true,
+      });
+    }
+    return channels;
+  });
   protected readonly status = computed(() => this.opening.state()?.status);
   protected readonly openingText = computed(() => {
     const state = this.opening.state();

@@ -39,5 +39,7 @@ describe('App', () => {
     expect(el.querySelector('main#contenu')).toBeTruthy();
     expect(el.querySelector('app-site-footer footer')?.textContent).toContain('Chez Nino');
     expect(el.querySelector('app-site-footer app-theme-switcher')).toBeNull();
+    expect(el.querySelector('app-site-footer a[href="/#contact"]')).not.toBeNull();
+    expect(el.querySelector('app-site-footer a[href*="instagram"]')).toBeNull();
   });
 });

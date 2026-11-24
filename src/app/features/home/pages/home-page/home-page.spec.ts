@@ -53,6 +53,17 @@ describe('HomePage', () => {
     expect(text(fixture)).toContain('11:30 – 14:30');
     expect(text(fixture)).toContain('Noël');
     expect(el.querySelector('a[href^="tel:"]')).not.toBeNull();
+
+    // Contact : appeler et venir (téléphone et adresse connus) ; ni e-mail ni Instagram renseignés.
+    const cards = [...el.querySelectorAll<HTMLAnchorElement>('#contact .contact__card')];
+    expect(cards.map((card) => card.querySelector('.visit__title')?.textContent?.trim())).toEqual([
+      'Appeler',
+      'Venir',
+    ]);
+    expect(cards[0].getAttribute('href')).toBe('tel:0400000000');
+    expect(cards[1].getAttribute('href')).toContain(encodeURIComponent('3 place du Marché'));
+    expect(cards[1].getAttribute('target')).toBe('_blank');
+    expect(el.querySelector('#contact a[href^="mailto:"]')).toBeNull();
     http.verify();
   });
 });

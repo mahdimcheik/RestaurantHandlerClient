@@ -1,19 +1,19 @@
 import { Component, inject, input } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicStore } from '../../shared/services/public-store.service';
+import { SITE_DETAILS } from '../../shared/site-details';
+import { LegalDocument } from './components/legal-document';
+import { LegalIdentity } from './components/legal-identity';
 
-export type LegalPageKind = 'terms' | 'privacy' | 'notice' | 'allergens';
+export type LegalPageKind = 'terms' | 'allergens';
 
 /**
- * Pages légales. L'identité du vendeur vient de `/restaurant/info` ; les textes eux-mêmes sont à
- * rédiger hors du code et à faire valider (conformité, questions ouvertes 6 et 8) : chaque
- * rubrique encore vide est signalée comme telle, rien n'est inventé.
+ * CGV et allergènes. Le texte des CGV reste à rédiger hors du code et à faire valider
+ * (conformité, questions ouvertes 6 et 8) : chaque rubrique encore vide est signalée comme telle.
  */
 @Component({
   selector: 'app-legal-page',
-  host: { class: 'shop' },
-  imports: [RouterLink, NgTemplateOutlet],
+  imports: [RouterLink, LegalDocument, LegalIdentity],
   templateUrl: './legal-page.html',
 })
 export class LegalPage {
@@ -23,6 +23,7 @@ export class LegalPage {
   readonly page = input.required<LegalPageKind>();
 
   protected readonly info = this.store.info.value;
+  protected readonly updatedOn = SITE_DETAILS.legalUpdatedOn;
 
   constructor() {
     this.store.info.load();

@@ -1,0 +1,163 @@
+<app-legal-document
+  heading="Politique de confidentialité"
+  [updatedOn]="details.legalUpdatedOn"
+  lead="Cette page explique quelles données nous collectons quand vous utilisez ce site, pourquoi, combien de temps nous les gardons et comment exercer vos droits."
+  [sections]="sections"
+>
+  <section id="responsable" aria-labelledby="responsable-title">
+    <h2 id="responsable-title">1. Responsable du traitement</h2>
+    <p>Le responsable du traitement de vos données personnelles est le restaurant :</p>
+    <app-legal-identity />
+  </section>
+
+  <section id="donnees" aria-labelledby="donnees-title">
+    <h2 id="donnees-title">2. Données collectées</h2>
+    <p>Nous ne collectons que les données nécessaires à votre compte et à vos commandes :</p>
+    <ul>
+      <li>
+        <strong>Compte :</strong> nom, prénom, adresse e-mail, mot de passe (enregistré sous forme
+        chiffrée, jamais lisible) et, si vous le renseignez, numéro de téléphone.
+      </li>
+      <li>
+        <strong>Commandes :</strong> articles choisis, personnalisations, montant, date, heure de
+        retrait et état de la commande.
+      </li>
+      <li>
+        <strong>Paiement :</strong> le paiement en ligne est traité par notre prestataire de
+        paiement ; nous ne recevons ni ne conservons jamais vos données de carte bancaire, seulement
+        le résultat du paiement.
+      </li>
+      <li>
+        <strong>Connexion avec Google (facultative) :</strong> si vous la choisissez, Google nous
+        transmet votre nom et votre adresse e-mail.
+      </li>
+      <li>
+        <strong>Données techniques :</strong> journaux de connexion (date, adresse IP) utilisés pour
+        la sécurité du service.
+      </li>
+    </ul>
+  </section>
+
+  <section id="finalites" aria-labelledby="finalites-title">
+    <h2 id="finalites-title">3. Finalités et bases légales</h2>
+    <ul>
+      <li>
+        <strong>Gérer votre compte, vos commandes et leur paiement</strong> : exécution du contrat
+        de vente.
+      </li>
+      <li>
+        <strong>Tenir notre comptabilité</strong> (tickets, factures, journal de caisse) :
+        obligation légale.
+      </li>
+      <li><strong>Protéger le service contre la fraude et les abus</strong> : intérêt légitime.</li>
+    </ul>
+    <p>
+      Nous n’utilisons pas vos données à des fins de prospection commerciale et ne les vendons
+      jamais.
+    </p>
+  </section>
+
+  <section id="conservation" aria-labelledby="conservation-title">
+    <h2 id="conservation-title">4. Durées de conservation</h2>
+    <ul>
+      <li>
+        <strong>Compte :</strong> tant qu’il reste ouvert. À sa suppression, il est anonymisé : vos
+        nom, e-mail et téléphone sont effacés.
+      </li>
+      <li>
+        <strong>Commandes et pièces comptables :</strong> 10 ans, comme l’impose la loi ; elles ne
+        sont plus rattachées à votre identité après l’anonymisation du compte.
+      </li>
+      <li><strong>Journaux techniques :</strong> durée limitée au besoin de sécurité.</li>
+    </ul>
+  </section>
+
+  <section id="destinataires" aria-labelledby="destinataires-title">
+    <h2 id="destinataires-title">5. Destinataires et sous-traitants</h2>
+    <p>
+      Vos données sont accessibles au seul personnel du restaurant, pour préparer et remettre vos
+      commandes. Elles sont confiées, pour les seuls besoins du service, à :
+    </p>
+    <ul>
+      <li>
+        <strong>l’hébergeur du site</strong> (voir les
+        <a routerLink="/mentions-legales" fragment="hebergement">mentions légales</a>) ;
+      </li>
+      <li><strong>SumUp</strong>, pour le paiement en ligne ;</li>
+      <li>
+        <strong>Google</strong>, uniquement si vous choisissez de vous connecter avec Google ;
+      </li>
+      <li><strong>OVHcloud</strong>, pour le stockage des photos de la carte.</li>
+    </ul>
+  </section>
+
+  <section id="cookies" aria-labelledby="cookies-title">
+    <h2 id="cookies-title">6. Cookies et stockage sur l’appareil</h2>
+    <p>Ce site n’utilise que ce qui est indispensable à son fonctionnement :</p>
+    <ul>
+      <li>
+        <strong>Cookie de session</strong>, qui vous garde connecté ; inaccessible aux scripts de la
+        page.
+      </li>
+      <li><strong>Cookie de sécurité</strong>, qui protège vos actions contre la falsification.</li>
+      <li>
+        <strong>Stockage local</strong> de votre panier et de votre choix de thème (clair ou
+        sombre), qui reste sur votre appareil.
+      </li>
+    </ul>
+    <p>
+      Aucun cookie publicitaire ni de mesure d’audience : c’est pourquoi aucun bandeau de
+      consentement ne vous est présenté.
+    </p>
+  </section>
+
+  <section id="securite" aria-labelledby="securite-title">
+    <h2 id="securite-title">7. Sécurité</h2>
+    <ul>
+      <li>Échanges chiffrés (HTTPS) entre votre appareil et nos serveurs.</li>
+      <li>Mots de passe enregistrés sous forme chiffrée irréversible.</li>
+      <li>Accès aux données réservé au personnel habilité, selon son rôle.</li>
+    </ul>
+    <p>
+      En cas de violation de données présentant un risque pour vous, nous prévenons la CNIL dans les
+      72 heures et, si nécessaire, les personnes concernées.
+    </p>
+  </section>
+
+  <section id="droits" aria-labelledby="droits-title">
+    <h2 id="droits-title">8. Vos droits</h2>
+    <p>Vous pouvez à tout moment demander :</p>
+    <ul>
+      <li><strong>l’accès</strong> à vos données et une copie de celles-ci ;</li>
+      <li><strong>la rectification</strong> de données inexactes ;</li>
+      <li><strong>l’effacement</strong> de vos données (anonymisation du compte) ;</li>
+      <li><strong>la portabilité</strong> de vos données dans un format lisible ;</li>
+      <li><strong>la limitation</strong> d’un traitement ;</li>
+      <li><strong>l’opposition</strong> à un traitement fondé sur notre intérêt légitime.</li>
+    </ul>
+    <p>
+      Écrivez-nous à
+      @if (details.email) {
+        <a [href]="'mailto:' + details.email">{{ details.email }}</a>
+      } @else {
+        <span class="legal__todo">adresse e-mail à compléter</span>
+      }
+      ou adressez-vous au comptoir. Nous répondons dans un délai d’un mois.
+    </p>
+    <p>
+      Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à
+      la Commission nationale de l’informatique et des libertés (CNIL) :
+      <a href="https://www.cnil.fr" target="_blank" rel="noopener">
+        www.cnil.fr<span class="visually-hidden"> (nouvel onglet)</span> </a
+      >.
+    </p>
+  </section>
+
+  <section id="modifications" aria-labelledby="modifications-title">
+    <h2 id="modifications-title">9. Modifications</h2>
+    <p>
+      Cette politique peut évoluer, par exemple à l’arrivée d’un nouveau service. La date de
+      dernière mise à jour figure en haut de la page.
+    </p>
+  </section>
+</app-legal-document>

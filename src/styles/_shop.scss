@@ -243,12 +243,174 @@
   }
 }
 
-// Horaires de la semaine (accueil).
+// Infos pratiques de l'accueil : surface de parfum, deux cartes (horaires, adresse) côte à
+// côte dès 48 rem.
+.visit {
+  overflow: hidden;
+
+  > :not(.waves) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.visit__head {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.visit__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius);
+  background: var(--brand-glaze);
+  font-weight: 600;
+}
+
+.visit__grid {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 60rem;
+  margin-inline: auto;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.visit__card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-6);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+  box-shadow: 0 18px 28px var(--brand-shade);
+}
+
+.visit__title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.visit__facts {
+  gap: var(--space-5);
+
+  > div {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+}
+
+// Contact de l'accueil : cartes-liens (appeler, écrire, venir, Instagram), 1 → 2 → 4 colonnes.
+.contact {
+  overflow: hidden;
+
+  > :not(.waves) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .lead {
+    max-width: 40rem;
+  }
+}
+
+.contact__grid {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 64rem) {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  > li {
+    display: grid;
+  }
+}
+
+.contact__card {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-6);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+  box-shadow: 0 18px 28px var(--brand-shade);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    .contact__value {
+      text-decoration: underline;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.contact__card .contact__icon {
+  width: 2rem;
+  height: 2rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.contact__value {
+  font-size: var(--text-lg);
+  overflow-wrap: anywhere;
+}
+
+// Horaires de la semaine : jour à gauche, plages à droite ; la ligne du jour est encadrée.
 .hours {
   display: grid;
-  gap: var(--space-1);
-  max-width: 22rem;
-  margin-inline: auto;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -256,15 +418,52 @@
 
 .hours__day {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-3);
+  border-bottom: var(--border-width) solid var(--brand-shade-mid);
   font-variant-numeric: tabular-nums;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.hours__day--today {
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius);
+  font-weight: 700;
+}
+
+.hours__name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hours__today {
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--brand-radius);
+  background: var(--brand-ink);
+  color: var(--brand-bg);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hours__ranges {
+  text-align: end;
 }
 
 .hours__closures {
-  max-width: 40rem;
-  margin-inline: auto;
-  padding-inline-start: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) dashed currentColor;
+  border-radius: var(--brand-radius);
+  list-style: none;
 }
 
 // Créneaux de retrait : plusieurs par ligne dès que la place le permet.
@@ -399,20 +598,121 @@
   }
 }
 
-// Pages légales.
+// Pages légales (nouveau design) : colonne de lecture, en-tête, sommaire à ancres, rubriques.
 .legal {
+  display: grid;
+  gap: var(--space-8);
+  max-width: 48rem;
+  margin-inline: auto;
+  padding-block: var(--space-6) var(--space-9);
+}
+
+.legal__head {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.legal__meta {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.legal__toc {
+  padding: var(--space-5) var(--space-6);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+
+  ol {
+    display: grid;
+    gap: var(--space-1) var(--space-6);
+    margin: 0;
+    padding-inline-start: var(--space-5);
+
+    @media (min-width: 40rem) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    color: inherit;
+  }
+}
+
+.legal__toc-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.legal__body {
+  display: grid;
+  gap: var(--space-8);
+  line-height: 1.6;
+
+  section {
+    display: grid;
+    gap: var(--space-3);
+    scroll-margin-top: var(--space-6);
+  }
+
   h2 {
-    margin-block: var(--space-3) 0;
+    margin: 0;
+    font-family: var(--font-display);
     font-size: var(--text-xl);
   }
 
-  p {
+  p,
+  ul {
+    margin: 0;
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-2);
+    padding-inline-start: var(--space-5);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+// Fiche d'identité : intitulé au-dessus de sa valeur, côte à côte dès 40 rem.
+.legal__facts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+
+  > div {
+    display: grid;
+    gap: var(--space-1);
+
+    @media (min-width: 40rem) {
+      grid-template-columns: 14rem 1fr;
+      gap: var(--space-4);
+    }
+  }
+
+  dt {
+    font-weight: 700;
+  }
+
+  dd {
     margin: 0;
   }
 }
 
 .legal__todo {
-  color: var(--color-muted);
   font-style: italic;
 }
 
@@ -427,6 +727,7 @@
     display: inline-flex;
     align-items: center;
     min-height: var(--tap-min);
+    color: inherit;
   }
 }
 
