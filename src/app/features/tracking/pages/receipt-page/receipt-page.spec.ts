@@ -1,0 +1,59 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { OrderReceipt } from '../../../../core/api/generated';
+import { envelope, text } from '../../../../shared/testing';
+import { ReceiptPage } from './receipt-page';
+
+const receipt: OrderReceipt = {
+  tradeName: 'Chez Nino',
+  legalName: 'Nino SAS',
+  address: '3 place du Marché, 69000 Lyon',
+  siret: '12345678900011',
+  vatNumber: 'FR00123456789',
+  orderNumber: 1042,
+  dailyNumber: 12,
+  paidAt: '2026-11-23T12:05:00+01:00',
+  totalCents: 1100,
+  items: [
+    {
+      id: 'i1',
+      name: 'Burger',
+      quantity: 1,
+      unitPriceCents: 1100,
+      lineTotalCents: 1100,
+      components: [],
+      modifications: [],
+    },
+  ],
+  vat: [{ rate: 10, grossCents: 1100, netCents: 1000, vatCents: 100 }],
+  payments: [
+    { id: 'p0', method: 'SumupOnline', status: 'Failed', amountCents: 1100 },
+    { id: 'p1', method: 'SumupOnline', status: 'Successful', amountCents: 1100 },
+  ],
+};
+
+describe('ReceiptPage', () => {
+  it('porte vendeur, lignes, TVA par taux, total et paiement réussi', async () => {
+    TestBed.configureTestingModule({
+      imports: [ReceiptPage],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    });
+    const fixture = TestBed.createComponent(ReceiptPage);
+    fixture.componentRef.setInput('id', 'o1');
+    TestBed.tick();
+    TestBed.inject(HttpTestingController).expectOne('/orders/o1/receipt').flush(envelope(receipt));
+    await fixture.whenStable();
+    const content = text(fixture).replace(/\s+/g, ' ');
+    expect(content).toContain('Nino SAS');
+    expect(content).toContain('SIRET 12345678900011');
+    expect(content).toContain('N° TVA FR00123456789');
+    expect(content).toContain('Commande 1042 (n° du jour 12)');
+    const compact = content.replace(/\s+/g, '');
+    expect(compact).toContain('TotalHT10,00€');
+    expect(compact).toContain('TVA10%sur10,00€1,00€');
+    expect(compact).toContain('TotalTTC11,00€');
+    expect(fixture.nativeElement.querySelectorAll('.receipt__payments li').length).toBe(1);
+  });
+});

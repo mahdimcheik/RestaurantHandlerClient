@@ -130,9 +130,20 @@
             Annuler la commande
           </button>
         }
+        @if (order.isPaid && order.paymentChoice === 'Online') {
+          <a
+            class="btn btn--outline"
+            [routerLink]="['/commandes', order.id, 'recu']"
+            i18n="@@tracking.receipt"
+            >Reçu</a
+          >
+        }
         @if (final()) {
           <a class="btn" routerLink="/commander" i18n="@@tracking.orderAgain">Commander</a>
         }
+        <a class="link-button" routerLink="/commandes" i18n="@@tracking.allOrders"
+          >Toutes mes commandes</a
+        >
       </div>
     </section>
   } @else if (notFound()) {

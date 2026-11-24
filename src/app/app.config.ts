@@ -3,6 +3,7 @@ import {
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
+  isDevMode,
 } from '@angular/core';
 import {
   provideHttpClient,
@@ -16,6 +17,7 @@ import { provideApiConfiguration } from './core/api/generated';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { idempotencyInterceptor } from './core/http/idempotency.interceptor';
 import { SessionService } from './core/auth/session.service';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,5 +34,9 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
     provideAppInitializer(() => inject(SessionService).restore()),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

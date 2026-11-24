@@ -16,6 +16,10 @@ export const routes: Routes = [
       import('./features/tracking/tracking.routes').then((m) => m.TRACKING_ROUTES),
   },
   {
+    path: '',
+    loadChildren: () => import('./features/legal/legal.routes').then((m) => m.LEGAL_ROUTES),
+  },
+  {
     path: 'auth',
     data: { bare: true },
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),

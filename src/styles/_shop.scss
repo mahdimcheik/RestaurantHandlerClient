@@ -369,6 +369,8 @@
 .hours {
   display: grid;
   gap: var(--space-1);
+  max-width: 22rem;
+  margin-inline: auto;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -392,4 +394,165 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
   gap: var(--space-2);
+}
+
+// Bandeau « commande en cours », sous l'en-tête de toutes les pages client.
+.current-order {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding-block: var(--space-2);
+  border-bottom: var(--border);
+  background: var(--surface-sunken);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+
+  > span {
+    flex: 1;
+  }
+}
+
+.current-order--ready {
+  border-bottom: var(--border-width-strong) solid var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+// Historique des commandes.
+.history-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  min-height: var(--tap-min);
+  padding: var(--space-3);
+  border: var(--border);
+  background: var(--surface-raised);
+  color: var(--color-ink);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+.history-list__main,
+.history-list__side {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.history-list__side {
+  justify-items: end;
+}
+
+.history-list__number {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.history-list__date {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.history-list__total {
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+// Reçu (justificatif de paiement en ligne), imprimable.
+.receipt {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-strong);
+  background: var(--surface-raised);
+}
+
+.receipt__head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.receipt__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+}
+
+.receipt__seller,
+.receipt__meta {
+  margin: 0;
+}
+
+.receipt__meta {
+  color: var(--color-muted);
+}
+
+.receipt__payments {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+}
+
+@media print {
+  .skip-link,
+  .banner,
+  .site-header,
+  .site-footer,
+  .current-order,
+  .no-print {
+    display: none !important;
+  }
+
+  .receipt {
+    border: 0;
+    padding: 0;
+  }
+}
+
+// Pages légales.
+.legal {
+  h2 {
+    margin-block: var(--space-3) 0;
+    font-size: var(--text-xl);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.legal__todo {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.legal__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-block-start: var(--space-4);
+  border-top: var(--border-soft);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+  }
+}
+
+.sheet__allergens {
+  justify-self: start;
+  min-height: var(--tap-min);
 }

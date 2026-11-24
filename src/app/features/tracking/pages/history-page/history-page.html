@@ -1,0 +1,57 @@
+<div class="gutter shop__page shop__page--narrow">
+  <h1 i18n="@@history.title">Mes commandes</h1>
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  } @else if (result.isLoading() && items().length === 0) {
+    <p role="status" i18n="@@common.loading">Chargement…</p>
+  } @else {
+    <ul class="history-list">
+      @for (order of items(); track order.id) {
+        <li>
+          <a class="history-list__item" [routerLink]="['/commandes', order.id]">
+            <span class="history-list__main">
+              <span class="history-list__number" i18n="@@history.number"
+                >N° {{ order.dailyNumber }}</span
+              >
+              <span class="history-list__date">{{ order.createdAt | restaurantDateTime }}</span>
+            </span>
+            <span class="history-list__side">
+              <app-order-status [status]="order.status" [customer]="true" />
+              <span class="history-list__total">{{ order.totalCents | euros }}</span>
+            </span>
+          </a>
+        </li>
+      } @empty {
+        <li class="empty" i18n="@@history.empty">Vous n'avez pas encore passé de commande.</li>
+      }
+    </ul>
+
+    @if (pages() > 1) {
+      <nav class="day-stepper" aria-label="Pages" i18n-aria-label="@@users.pages">
+        <button
+          type="button"
+          class="icon-button"
+          [disabled]="page() <= 1"
+          (click)="page.set(page() - 1)"
+        >
+          <app-icon name="back" />
+          <span class="visually-hidden" i18n="@@users.previousPage">Page précédente</span>
+        </button>
+        <span class="day-stepper__value" aria-live="polite" i18n="@@users.pageOf"
+          >Page {{ page() }} sur {{ pages() }}</span
+        >
+        <button
+          type="button"
+          class="icon-button"
+          [disabled]="page() >= pages()"
+          (click)="page.set(page() + 1)"
+        >
+          <app-icon name="forward" />
+          <span class="visually-hidden" i18n="@@users.nextPage">Page suivante</span>
+        </button>
+      </nav>
+    }
+  }
+  <a class="btn" routerLink="/commander" i18n="@@history.order">Commander</a>
+</div>

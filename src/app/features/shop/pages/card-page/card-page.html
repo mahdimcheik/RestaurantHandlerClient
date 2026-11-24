@@ -120,8 +120,11 @@
       <p class="empty" i18n="@@shop.emptyCard">La carte n'est pas encore en ligne.</p>
     }
 
-    <p class="note" i18n="@@shop.allergens">
-      Informations allergènes disponibles sur demande au comptoir. Prix TTC.
+    <p class="note">
+      <a routerLink="/allergenes" i18n="@@shop.allergensLink"
+        >Informations allergènes disponibles</a
+      >
+      <ng-container i18n="@@shop.pricesTtc"> · Prix TTC.</ng-container>
     </p>
   }
 </div>

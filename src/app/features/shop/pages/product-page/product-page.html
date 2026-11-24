@@ -25,6 +25,9 @@
         <p class="sheet__description">{{ product.description }}</p>
       }
       <p class="sheet__price">{{ product.priceCents | euros }}</p>
+      <a class="link-button sheet__allergens" routerLink="/allergenes" i18n="@@shop.allergensLink"
+        >Informations allergènes disponibles</a
+      >
 
       @if (!product.isAvailable) {
         <p class="alert alert--error" role="alert" i18n="@@shop.productUnavailable">
