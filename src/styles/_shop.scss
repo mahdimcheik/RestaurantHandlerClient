@@ -1,0 +1,558 @@
+// Commande en ligne côté client (téléphone d'abord) : carte, fiche, panier, validation, suivi.
+// Réutilise `.ticket`, `.tile`, `.picker`, `.chip`, `.stepper` et `.order-number` des commandes.
+
+.shop__page {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-block: var(--space-5) var(--space-10);
+}
+
+.shop__page--narrow {
+  max-width: 40rem;
+}
+
+.shop__head {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.shop__opening {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-weight: var(--weight-medium);
+}
+
+.shop__lead {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.shop__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-height: var(--tap-min);
+}
+
+// Rubriques de la carte : rangée défilante sur téléphone, collée en haut.
+.shop__nav {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-2);
+  margin-inline: calc(-1 * var(--space-4));
+  padding: var(--space-2) var(--space-4);
+  overflow-x: auto;
+  background: var(--surface-page);
+  border-bottom: var(--border-soft);
+
+  .chip {
+    flex: none;
+    min-height: var(--tap-min);
+    border: var(--border);
+    text-decoration: none;
+  }
+}
+
+.shop__section {
+  display: grid;
+  gap: var(--space-3);
+  scroll-margin-top: calc(var(--tap-min) + var(--space-5));
+}
+
+// Produit ou menu de la carte : lien pleine largeur, image à droite.
+.dishes {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dish {
+  display: flex;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  height: 100%;
+  padding: var(--space-3);
+  border: var(--border);
+  background: var(--surface-raised);
+  color: var(--color-ink);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+.dish--unavailable {
+  border-style: dashed;
+  background: var(--surface-sunken);
+
+  .dish__price {
+    color: var(--color-muted);
+  }
+}
+
+.dish__image {
+  flex: none;
+  order: 1;
+  width: 6.5rem;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.dish__body {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+}
+
+.dish__name {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.dish__description {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.dish__price {
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+// Accès au panier, collé en bas de l'écran (pouce).
+.cart-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border);
+  background: var(--surface-page);
+}
+
+.cart-bar__button {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 40rem;
+  min-height: calc(var(--tap-min) * 1.25);
+  margin-inline: auto;
+}
+
+// Fiche produit ou menu.
+.sheet {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sheet__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.sheet__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+}
+
+.sheet__description {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.sheet__price {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet__order {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-top: var(--border);
+  background: var(--surface-page);
+}
+
+.sheet__add {
+  flex: 1 1 12rem;
+  min-height: calc(var(--tap-min) * 1.25);
+}
+
+.picker__price {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+// Panier : ligne refusée par le serveur (filet + message, jamais la couleur seule).
+.ticket__line--refused {
+  border-inline-start: 6px solid var(--color-danger);
+  padding-inline-start: var(--space-3);
+}
+
+.ticket__issue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: var(--weight-bold);
+}
+
+.ticket__vat {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Liste de choix exclusifs en lignes larges (retrait, paiement) : radios natifs visibles.
+.choice-list {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-list__legend {
+  margin-block-end: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.choice-list__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-3);
+  border: var(--border);
+  background: var(--surface-raised);
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-block-start: 0.125rem;
+    accent-color: var(--color-ink);
+  }
+
+  > span {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  &:has(input:checked) {
+    border: var(--border-strong);
+    font-weight: var(--weight-bold);
+  }
+}
+
+.choice-list__option--disabled {
+  border-style: dashed;
+  background: var(--surface-sunken);
+  cursor: not-allowed;
+}
+
+.choice-list__hint {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+}
+
+// Suivi de commande.
+.tracking__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.tracking {
+  display: grid;
+  gap: var(--space-5);
+
+  .facts {
+    text-align: start;
+  }
+}
+
+.tracking__status {
+  margin: 0;
+  text-align: center;
+
+  .status {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-lg);
+  }
+}
+
+// « Prête » : bandeau inversé, épais, et une pulsation si le mouvement est accepté.
+.tracking--ready {
+  .order-number {
+    border: var(--border-width-strong) solid var(--color-success);
+    background: var(--color-success-bg);
+  }
+
+  .tracking__status .status {
+    font-size: var(--text-xl);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .order-number {
+      animation: tracking-ready 1.2s ease-in-out 3;
+    }
+  }
+}
+
+.tracking__ready {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  text-align: center;
+}
+
+.tracking--closed .order-number__value {
+  color: var(--color-muted);
+}
+
+@keyframes tracking-ready {
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+// Horaires de la semaine (accueil).
+.hours {
+  display: grid;
+  gap: var(--space-1);
+  max-width: 22rem;
+  margin-inline: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hours__day {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.hours__closures {
+  max-width: 40rem;
+  margin-inline: auto;
+  padding-inline-start: var(--space-5);
+}
+
+// Créneaux de retrait : plusieurs par ligne dès que la place le permet.
+.choice-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-2);
+}
+
+// Bandeau « commande en cours », sous l'en-tête de toutes les pages client.
+.current-order {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding-block: var(--space-2);
+  border-bottom: var(--border);
+  background: var(--surface-sunken);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+
+  > span {
+    flex: 1;
+  }
+}
+
+.current-order--ready {
+  border-bottom: var(--border-width-strong) solid var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+// Historique des commandes.
+.history-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  min-height: var(--tap-min);
+  padding: var(--space-3);
+  border: var(--border);
+  background: var(--surface-raised);
+  color: var(--color-ink);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+.history-list__main,
+.history-list__side {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.history-list__side {
+  justify-items: end;
+}
+
+.history-list__number {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.history-list__date {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.history-list__total {
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+// Reçu (justificatif de paiement en ligne), imprimable.
+.receipt {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-strong);
+  background: var(--surface-raised);
+}
+
+.receipt__head {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.receipt__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+}
+
+.receipt__seller,
+.receipt__meta {
+  margin: 0;
+}
+
+.receipt__meta {
+  color: var(--color-muted);
+}
+
+.receipt__payments {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+}
+
+@media print {
+  .skip-link,
+  .banner,
+  .site-header,
+  .site-footer,
+  .current-order,
+  .no-print {
+    display: none !important;
+  }
+
+  .receipt {
+    border: 0;
+    padding: 0;
+  }
+}
+
+// Pages légales.
+.legal {
+  h2 {
+    margin-block: var(--space-3) 0;
+    font-size: var(--text-xl);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.legal__todo {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.legal__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-block-start: var(--space-4);
+  border-top: var(--border-soft);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+  }
+}
+
+.sheet__allergens {
+  justify-self: start;
+  min-height: var(--tap-min);
+}

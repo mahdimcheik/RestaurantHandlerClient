@@ -7,6 +7,19 @@ export const routes: Routes = [
     loadChildren: () => import('./features/home/home.routes').then((m) => m.HOME_ROUTES),
   },
   {
+    path: '',
+    loadChildren: () => import('./features/shop/shop.routes').then((m) => m.SHOP_ROUTES),
+  },
+  {
+    path: '',
+    loadChildren: () =>
+      import('./features/tracking/tracking.routes').then((m) => m.TRACKING_ROUTES),
+  },
+  {
+    path: '',
+    loadChildren: () => import('./features/legal/legal.routes').then((m) => m.LEGAL_ROUTES),
+  },
+  {
     path: 'auth',
     data: { bare: true },
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),

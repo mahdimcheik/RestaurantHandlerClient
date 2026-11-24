@@ -45,6 +45,23 @@ export function statusLabel(status: OrderStatus): string {
   return STATUS[status].label;
 }
 
+const CUSTOMER_STATUS: Record<OrderStatus, string> = {
+  PendingPayment: $localize`:@@order.customerStatus.pendingPayment:Paiement en attente`,
+  AwaitingApproval: $localize`:@@order.customerStatus.awaitingApproval:En attente de validation par le restaurant`,
+  Confirmed: $localize`:@@order.customerStatus.confirmed:Confirmée`,
+  InPreparation: $localize`:@@order.customerStatus.inPreparation:En préparation`,
+  Ready: $localize`:@@order.customerStatus.ready:Prête — venez la chercher`,
+  Completed: $localize`:@@order.customerStatus.completed:Retirée`,
+  NoShow: $localize`:@@order.customerStatus.noShow:Non retirée`,
+  Refused: $localize`:@@order.customerStatus.refused:Refusée par le restaurant`,
+  Cancelled: $localize`:@@order.customerStatus.cancelled:Annulée`,
+};
+
+/** Statut tel que le client le lit (suivi, historique, bandeau). */
+export function customerStatusLabel(status: OrderStatus): string {
+  return CUSTOMER_STATUS[status];
+}
+
 export function channelLabel(channel: OrderChannel): string {
   return channel === 'Counter'
     ? $localize`:@@order.channel.counter:Comptoir`
@@ -79,9 +96,14 @@ export function paymentStatusLabel(status: PaymentStatus): string {
   selector: 'app-order-status',
   imports: [Icon],
   host: { class: 'status', '[class]': "'status--' + info().tone" },
-  template: `<app-icon [name]="info().icon" /><span>{{ info().label }}</span>`,
+  template: `<app-icon [name]="info().icon" /><span>{{ label() }}</span>`,
 })
 export class OrderStatusBadge {
   readonly status = input.required<OrderStatus>();
+  /** Libellé côté client (« En attente de validation par le restaurant »…). */
+  readonly customer = input(false);
   protected readonly info = computed(() => STATUS[this.status()]);
+  protected readonly label = computed(() =>
+    this.customer() ? CUSTOMER_STATUS[this.status()] : this.info().label,
+  );
 }

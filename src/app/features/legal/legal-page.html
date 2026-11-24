@@ -1,0 +1,102 @@
+<div class="gutter shop__page shop__page--narrow legal">
+  @switch (page()) {
+    @case ('terms') {
+      <h1 i18n="@@legal.termsTitle">Conditions générales de vente</h1>
+      <p class="alert" role="note" i18n="@@legal.draft">
+        Texte en cours de rédaction : les rubriques ci-dessous seront complétées avant l'ouverture
+        de la commande en ligne.
+      </p>
+      <h2 i18n="@@legal.seller">Vendeur</h2>
+      <ng-container [ngTemplateOutlet]="identity" />
+      <h2 i18n="@@legal.prices">Prix</h2>
+      <p i18n="@@legal.pricesText">
+        Les prix sont indiqués en euros, toutes taxes comprises. Le montant de la commande est
+        calculé par le restaurant à partir de la carte en vigueur au moment de la validation.
+      </p>
+      <h2 i18n="@@legal.pickup">Commande et retrait</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+      <h2 i18n="@@legal.payment">Paiement</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+      <h2 i18n="@@legal.cancellation">Annulation et remboursement</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+      <h2 i18n="@@legal.withdrawal">Droit de rétractation</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+      <h2 i18n="@@legal.mediation">Médiation de la consommation</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+    }
+    @case ('privacy') {
+      <h1 i18n="@@legal.privacyTitle">Politique de confidentialité</h1>
+      <p class="alert" role="note" i18n="@@legal.draft">
+        Texte en cours de rédaction : les rubriques ci-dessous seront complétées avant l'ouverture
+        de la commande en ligne.
+      </p>
+      <h2 i18n="@@legal.controller">Responsable du traitement</h2>
+      <ng-container [ngTemplateOutlet]="identity" />
+      <h2 i18n="@@legal.data">Données collectées</h2>
+      <p i18n="@@legal.dataText">
+        Identité, adresse e-mail, téléphone et historique de vos commandes, pour gérer votre compte
+        et vos commandes. Aucune prospection, aucun cookie de mesure d'audience.
+      </p>
+      <h2 i18n="@@legal.retention">Durée de conservation et droits</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+      <h2 i18n="@@legal.processors">Sous-traitants</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+    }
+    @case ('notice') {
+      <h1 i18n="@@legal.noticeTitle">Mentions légales</h1>
+      <h2 i18n="@@legal.publisher">Éditeur</h2>
+      <ng-container [ngTemplateOutlet]="identity" />
+      <h2 i18n="@@legal.host">Hébergement</h2>
+      <p class="legal__todo" i18n="@@legal.todo">À rédiger.</p>
+    }
+    @case ('allergens') {
+      <h1 i18n="@@legal.allergensTitle">Allergènes</h1>
+      <p i18n="@@legal.allergensText">
+        Nos plats peuvent contenir un ou plusieurs des 14 allergènes réglementaires. Les
+        informations allergènes de chaque produit sont disponibles sur demande au comptoir, avant
+        votre commande.
+      </p>
+      @if (info()?.phone; as phone) {
+        <p>
+          <ng-container i18n="@@legal.allergensPhone"
+            >Une question avant de commander ?</ng-container
+          >
+          <a [href]="'tel:' + phone">{{ phone }}</a>
+        </p>
+      }
+      <a class="btn" routerLink="/commander" i18n="@@shop.seeCard">Voir la carte</a>
+    }
+  }
+
+  <nav class="legal__links" aria-label="Informations légales" i18n-aria-label="@@legal.links">
+    <a routerLink="/cgv" i18n="@@legal.termsTitle">Conditions générales de vente</a>
+    <a routerLink="/confidentialite" i18n="@@legal.privacyTitle">Politique de confidentialité</a>
+    <a routerLink="/mentions-legales" i18n="@@legal.noticeTitle">Mentions légales</a>
+    <a routerLink="/allergenes" i18n="@@legal.allergensTitle">Allergènes</a>
+  </nav>
+</div>
+
+<ng-template #identity>
+  @if (info(); as info) {
+    <p>
+      <strong>{{ info.legalName || info.tradeName }}</strong>
+      @if (info.legalName && info.legalName !== info.tradeName) {
+        <ng-container i18n="@@legal.tradeName">, sous l'enseigne {{ info.tradeName }}</ng-container>
+      }
+      @if (info.address) {
+        <br />{{ info.address }}
+      }
+      @if (info.siret) {
+        <br /><ng-container i18n="@@receipt.siret">SIRET {{ info.siret }}</ng-container>
+      }
+      @if (info.vatNumber) {
+        <br /><ng-container i18n="@@receipt.vatNumber">N° TVA {{ info.vatNumber }}</ng-container>
+      }
+      @if (info.phone) {
+        <br /><ng-container i18n="@@home.info.phone">Téléphone</ng-container> : {{ info.phone }}
+      }
+    </p>
+  } @else {
+    <p role="status" i18n="@@common.loading">Chargement…</p>
+  }
+</ng-template>

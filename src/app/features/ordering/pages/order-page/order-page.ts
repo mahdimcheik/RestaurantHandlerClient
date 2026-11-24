@@ -16,14 +16,14 @@ import {
   paymentStatusLabel,
   statusLabel,
 } from '../../../../shared/ui/order-status/order-status';
-import { EurosPipe } from '../../../../shared/utils/money';
+import { EurosPipe, RatePipe } from '../../../../shared/utils/money';
 import {
   RestaurantDateTimePipe,
   RestaurantTimePipe,
 } from '../../../../shared/utils/restaurant-time';
 import { PaymentPanel } from '../../components/payment-panel';
 import { ReasonDialog } from '../../components/reason-dialog';
-import { CONFLICT_MESSAGE, isConflict } from '../../conflict';
+import { CONFLICT_MESSAGE, isConflict } from '../../../../shared/utils/conflict';
 import { availableActions } from '../../order-actions';
 
 /**
@@ -38,6 +38,7 @@ import { availableActions } from '../../order-actions';
     RouterLink,
     OrderStatusBadge,
     EurosPipe,
+    RatePipe,
     RestaurantTimePipe,
     RestaurantDateTimePipe,
     PaymentPanel,

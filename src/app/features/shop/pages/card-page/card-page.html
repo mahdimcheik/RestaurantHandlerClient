@@ -1,0 +1,142 @@
+<div class="gutter shop__page">
+  <header class="shop__head">
+    <h1 i18n="@@shop.cardTitle">La carte</h1>
+    @if (openingText()) {
+      <p class="shop__opening" role="status">
+        <app-icon
+          [name]="status() === 'Open' ? 'store' : status() === 'Paused' ? 'pause' : 'clock'"
+        />
+        <span>{{ openingText() }}</span>
+      </p>
+    }
+  </header>
+
+  @if (cart.removed().length > 0) {
+    <p class="alert alert--error" role="alert" i18n="@@shop.removedFromCart">
+      Retiré de votre panier, plus à la carte : {{ cart.removed().join(', ') }}.
+    </p>
+  }
+
+  @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+  } @else if (loading()) {
+    <p role="status" i18n="@@common.loading">Chargement…</p>
+  } @else {
+    <nav class="shop__nav" aria-label="Rubriques de la carte" i18n-aria-label="@@shop.sections">
+      @for (category of categories(); track category.id) {
+        <a class="chip chip--large" routerLink="." [fragment]="'rubrique-' + category.id">{{
+          category.name
+        }}</a>
+      }
+      @if (menus().length > 0) {
+        <a class="chip chip--large" routerLink="." fragment="rubrique-menus" i18n="@@shop.menus"
+          >Menus</a
+        >
+      }
+    </nav>
+
+    @if (menus().length > 0) {
+      <section class="shop__section" id="rubrique-menus" aria-labelledby="menus-title">
+        <h2 id="menus-title" i18n="@@shop.menus">Menus</h2>
+        <ul class="dishes">
+          @for (menu of menus(); track menu.id) {
+            <li>
+              <a
+                class="dish"
+                [class.dish--unavailable]="!menu.isAvailable"
+                [routerLink]="['/commander/menu', menu.id]"
+              >
+                @if (menu.imageUrl) {
+                  <img
+                    class="dish__image"
+                    [ngSrc]="menu.imageUrl"
+                    width="160"
+                    height="120"
+                    alt=""
+                  />
+                }
+                <span class="dish__body">
+                  <span class="dish__name">{{ menu.name }}</span>
+                  @if (menu.description) {
+                    <span class="dish__description">{{ menu.description }}</span>
+                  }
+                  @if (menu.isAvailable) {
+                    <span class="dish__price">{{ menu.priceCents | euros }}</span>
+                  } @else {
+                    <span class="dish__price" i18n="@@shop.unavailable">Indisponible</span>
+                  }
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @for (category of categories(); track category.id) {
+      <section
+        class="shop__section"
+        [id]="'rubrique-' + category.id"
+        [attr.aria-labelledby]="'titre-' + category.id"
+      >
+        <h2 [id]="'titre-' + category.id">{{ category.name }}</h2>
+        @if (category.description) {
+          <p class="shop__lead">{{ category.description }}</p>
+        }
+        <ul class="dishes">
+          @for (product of category.products; track product.id) {
+            <li>
+              <a
+                class="dish"
+                [class.dish--unavailable]="!product.isAvailable"
+                [routerLink]="['/commander/produit', product.id]"
+              >
+                @if (product.imageUrl) {
+                  <img
+                    class="dish__image"
+                    [ngSrc]="product.imageUrl"
+                    width="160"
+                    height="120"
+                    alt=""
+                  />
+                }
+                <span class="dish__body">
+                  <span class="dish__name">{{ product.name }}</span>
+                  @if (product.description) {
+                    <span class="dish__description">{{ product.description }}</span>
+                  }
+                  @if (product.isAvailable) {
+                    <span class="dish__price">{{ product.priceCents | euros }}</span>
+                  } @else {
+                    <span class="dish__price" i18n="@@status.outOfStock">Rupture</span>
+                  }
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    } @empty {
+      <p class="empty" i18n="@@shop.emptyCard">La carte n'est pas encore en ligne.</p>
+    }
+
+    <p class="note">
+      <a routerLink="/allergenes" i18n="@@shop.allergensLink"
+        >Informations allergènes disponibles</a
+      >
+      <ng-container i18n="@@shop.pricesTtc"> · Prix TTC.</ng-container>
+    </p>
+  }
+</div>
+
+@if (!cart.isEmpty()) {
+  <div class="cart-bar">
+    <a class="btn cart-bar__button" routerLink="/panier">
+      <app-icon name="bag" />
+      <span i18n="@@shop.viewCart"
+        >Voir le panier ·
+        {cart.itemCount(), plural, =1 {1 article} other {{{ cart.itemCount() }} articles}}</span
+      >
+    </a>
+  </div>
+}

@@ -10,8 +10,11 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { CheckoutOptionsResponse } from '../models/checkout-options-response';
 import { OrderDetailsResponse } from '../models/order-details-response';
 import { OrderReceiptResponse } from '../models/order-receipt-response';
+import { ordersCheckoutOptionsGet } from '../fn/orders/orders-checkout-options-get';
+import { OrdersCheckoutOptionsGet$Params } from '../fn/orders/orders-checkout-options-get';
 import { ordersIdCancelPost } from '../fn/orders/orders-id-cancel-post';
 import { OrdersIdCancelPost$Params } from '../fn/orders/orders-id-cancel-post';
 import { ordersIdGet } from '../fn/orders/orders-id-get';
@@ -90,6 +93,33 @@ export class OrdersApi extends BaseService {
     const resp = this.ordersPost$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `ordersCheckoutOptionsGet()` */
+  static readonly OrdersCheckoutOptionsGetPath = '/orders/checkout-options';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `ordersCheckoutOptionsGet()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  ordersCheckoutOptionsGet$Response(params?: OrdersCheckoutOptionsGet$Params, context?: HttpContext): Observable<StrictHttpResponse<CheckoutOptionsResponse>> {
+    const obs = ordersCheckoutOptionsGet(this.http, this.rootUrl, params, context);
+    return obs;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `ordersCheckoutOptionsGet$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  ordersCheckoutOptionsGet(params?: OrdersCheckoutOptionsGet$Params, context?: HttpContext): Observable<CheckoutOptionsResponse> {
+    const resp = this.ordersCheckoutOptionsGet$Response(params, context);
+    return resp.pipe(
+      map((r: StrictHttpResponse<CheckoutOptionsResponse>): CheckoutOptionsResponse => r.body)
     );
   }
 

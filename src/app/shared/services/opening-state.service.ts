@@ -1,11 +1,9 @@
 import { computed, effect, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { filter, merge, Observable, tap } from 'rxjs';
-import { OpeningStateDto, PauseRequest } from '../../core/api/generated';
+import { filter, merge } from 'rxjs';
+import { OpeningStateDto } from '../../core/api/generated';
 import { RealtimeService } from '../../core/realtime/realtime.service';
 import { PublicService } from './public.service';
-import { RestaurantService } from './restaurant.service';
-import { StoreService } from './store.service';
 import { splitMoment } from '../utils/restaurant-time';
 
 /** Plafond du minuteur de relecture (au-delà, `setTimeout` déborde ; une relecture le réarme). */
@@ -63,16 +61,14 @@ export function describeOpening(state: OpeningStateDto, now: Date = new Date()):
 }
 
 /**
- * État d'ouverture du restaurant (ouvert, fermé, en pause) partagé par le back-office,
- * avec la pause et la reprise des commandes en ligne. Rien n'est demandé avant `load()`.
+ * État d'ouverture du restaurant (ouvert, fermé, en pause), lu sur la route publique : partagé
+ * par le back-office et la commande en ligne. Rien n'est demandé avant `load()`.
  * Relu à chaque `AvailabilityChanged` (portée `opening`), à chaque resynchronisation et à
  * l'échéance de la prochaine bascule horaire.
  */
 @Service()
 export class OpeningStateService {
   private readonly publicApi = inject(PublicService);
-  private readonly restaurant = inject(RestaurantService);
-  private readonly store = inject(StoreService);
   private readonly realtime = inject(RealtimeService);
 
   private readonly requested = signal(false);
@@ -115,22 +111,8 @@ export class OpeningStateService {
     }
   }
 
-  /** `durationMinutes` : 15, 30 ou 60 ; `null` jusqu'à la reprise. */
-  pause(durationMinutes: PauseRequest['durationMinutes']): Observable<OpeningStateDto> {
-    return this.restaurant.pause({ durationMinutes }).pipe(tap((state) => this.apply(state)));
-  }
-
-  resume(): Observable<OpeningStateDto> {
-    return this.restaurant.resume().pipe(tap((state) => this.apply(state)));
-  }
-
-  /** Délai ASAP annoncé aux clients, ajustable pendant le service. */
-  setAsapDelay(minutes: number): Observable<unknown> {
-    return this.restaurant.updateAsapDelay(minutes).pipe(tap(() => this.reload()));
-  }
-
-  private apply(state: OpeningStateDto): void {
+  /** État renvoyé par une écriture (pause, reprise) : affiché sans relecture. */
+  apply(state: OpeningStateDto): void {
     this.resource.set(state);
-    this.store.settings.reload();
   }
 }

@@ -63,6 +63,16 @@
         <app-checkbox-field [field]="form.dataProcessingConsent" i18n="@@register.processing">
           J'accepte le traitement de mes données pour gérer mon compte et mes commandes.
         </app-checkbox-field>
+        <p class="field__hint">
+          <ng-container i18n="@@register.readTexts">À lire :</ng-container>
+          <a routerLink="/cgv" target="_blank" i18n="@@legal.termsTitle"
+            >Conditions générales de vente</a
+          >,
+          <a routerLink="/confidentialite" target="_blank" i18n="@@legal.privacyTitle"
+            >Politique de confidentialité</a
+          >
+          <ng-container i18n="@@register.newTab">(nouvel onglet)</ng-container>
+        </p>
       </fieldset>
 
       <button type="submit" class="btn form__submit" [disabled]="form().submitting()">

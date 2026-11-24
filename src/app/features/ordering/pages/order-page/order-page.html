@@ -183,7 +183,7 @@
       <dl class="summary summary--small">
         @for (line of order.vat; track line.rate) {
           <div>
-            <dt i18n="@@order.vatLine">TVA {{ line.rate }} %</dt>
+            <dt i18n="@@order.vatLine">TVA {{ line.rate | rate }} %</dt>
             <dd>{{ line.vatCents | euros }}</dd>
           </div>
         }

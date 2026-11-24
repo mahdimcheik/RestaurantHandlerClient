@@ -13,6 +13,8 @@ import { SessionService } from '../../../core/auth/session.service';
         @if (session.user(); as user) {
           @if (session.isManager()) {
             <a routerLink="/gestion" i18n="@@nav.admin">Gestion</a>
+          } @else {
+            <a routerLink="/commandes" i18n="@@nav.myOrders">Mes commandes</a>
           }
           <span class="site-header__user">{{ user.firstName }}</span>
           <button type="button" class="link-button" (click)="logout()" i18n="@@nav.logout">

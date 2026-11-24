@@ -9,15 +9,19 @@ export { Api } from './api';
 
 export type { AccountStatusEnum } from './models/account-status-enum';
 export type { AvailabilityUpdate } from './models/availability-update';
+export type { CartIssueDto } from './models/cart-issue-dto';
 export type { CartLineDto } from './models/cart-line-dto';
 export type { CartMenuChoiceDto } from './models/cart-menu-choice-dto';
 export type { CartModificationDto } from './models/cart-modification-dto';
 export type { CartOptionChoiceDto } from './models/cart-option-choice-dto';
+export type { CartProblemDetails } from './models/cart-problem-details';
 export type { CategoryDetails } from './models/category-details';
 export type { CategoryDetailsListResponse } from './models/category-details-list-response';
 export type { CategoryDetailsResponse } from './models/category-details-response';
 export type { CategoryWrite } from './models/category-write';
 export type { ChannelStats } from './models/channel-stats';
+export type { CheckoutOptions } from './models/checkout-options';
+export type { CheckoutOptionsResponse } from './models/checkout-options-response';
 export type { ClosureDetails } from './models/closure-details';
 export type { ClosureDetailsListResponse } from './models/closure-details-list-response';
 export type { ClosureDetailsResponse } from './models/closure-details-response';
@@ -325,6 +329,8 @@ export type { OrdersQuotePost$Params as OrdersQuotePost$Params } from './fn/orde
 export { ordersQuotePost as ordersQuotePost } from './fn/orders/orders-quote-post';
 export type { OrdersPost$Params as OrdersPost$Params } from './fn/orders/orders-post';
 export { ordersPost as ordersPost } from './fn/orders/orders-post';
+export type { OrdersCheckoutOptionsGet$Params as OrdersCheckoutOptionsGet$Params } from './fn/orders/orders-checkout-options-get';
+export { ordersCheckoutOptionsGet as ordersCheckoutOptionsGet } from './fn/orders/orders-checkout-options-get';
 export type { OrdersIdPaymentPost$Params as OrdersIdPaymentPost$Params } from './fn/orders/orders-id-payment-post';
 export { ordersIdPaymentPost as ordersIdPaymentPost } from './fn/orders/orders-id-payment-post';
 export type { OrdersIdPayOnSitePost$Params as OrdersIdPayOnSitePost$Params } from './fn/orders/orders-id-pay-on-site-post';

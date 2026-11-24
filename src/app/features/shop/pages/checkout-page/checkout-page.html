@@ -1,0 +1,177 @@
+<div class="gutter shop__page shop__page--narrow">
+  <a class="link-button shop__back" routerLink="/panier" i18n="@@shop.backToCart"
+    >Retour au panier</a
+  >
+  <h1 i18n="@@shop.checkoutTitle">Valider la commande</h1>
+
+  @if (isManager()) {
+    <p class="alert alert--error" role="alert" i18n="@@shop.managerCannotOrder">
+      Un compte du restaurant ne peut pas commander en ligne : connectez-vous avec un compte client
+      ou saisissez la commande au comptoir.
+    </p>
+  } @else if (cart.isEmpty()) {
+    <p class="empty" i18n="@@shop.emptyCart">Votre panier est vide.</p>
+    <a class="btn" routerLink="/commander" i18n="@@shop.seeCard">Voir la carte</a>
+  } @else {
+    <form class="form checkout" novalidate (submit)="place($event)">
+      <fieldset class="choice-list">
+        <legend class="choice-list__legend" i18n="@@shop.pickupWhen">Retrait</legend>
+        @if (openingText()) {
+          <p class="shop__opening">{{ openingText() }}</p>
+        }
+        @if (impossible()) {
+          <p class="alert alert--error" role="alert" i18n="@@shop.noSlot">
+            Plus aucun créneau de retrait aujourd'hui : la commande en ligne n'est pas possible pour
+            le moment.
+          </p>
+        } @else if (slots.isLoading() && slotList().length === 0 && !asapAvailable()) {
+          <p role="status" i18n="@@common.loading">Chargement…</p>
+        } @else {
+          @if (asapAvailable()) {
+            <label class="choice-list__option">
+              <input
+                type="radio"
+                name="pickup"
+                [value]="asap"
+                [checked]="pickup() === asap"
+                (change)="pickup.set(asap)"
+              />
+              <span>{{ asapText() }}</span>
+            </label>
+          }
+          @if (slotList().length > 0) {
+            <div class="choice-list__grid">
+              @for (slot of slotList(); track slot.start) {
+                <label class="choice-list__option">
+                  <input
+                    type="radio"
+                    name="pickup"
+                    [value]="slot.start"
+                    [checked]="pickup() === slot.start"
+                    (change)="pickup.set(slot.start)"
+                  />
+                  <span>{{ slotText(slot.start, slot.end) }}</span>
+                </label>
+              }
+            </div>
+          }
+        }
+      </fieldset>
+
+      <fieldset class="choice-list">
+        <legend class="choice-list__legend" i18n="@@shop.paymentHow">Paiement</legend>
+        @if (optionsValue(); as options) {
+          <label
+            class="choice-list__option"
+            [class.choice-list__option--disabled]="!options.onlinePaymentEnabled"
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="Online"
+              [disabled]="!options.onlinePaymentEnabled"
+              [checked]="payment() === 'Online'"
+              (change)="payment.set('Online')"
+            />
+            <span>
+              <span i18n="@@shop.payOnline">Payer en ligne par carte</span>
+              @if (!options.onlinePaymentEnabled) {
+                <span class="choice-list__hint" i18n="@@shop.payOnlineOff"
+                  >Indisponible pour le moment.</span
+                >
+              } @else {
+                <span class="choice-list__hint" i18n="@@shop.payOnlineHint"
+                  >Paiement sécurisé chez SumUp, puis retour au suivi de votre commande.</span
+                >
+              }
+            </span>
+          </label>
+          <label
+            class="choice-list__option"
+            [class.choice-list__option--disabled]="!options.canPayOnSite"
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="OnSite"
+              [disabled]="!options.canPayOnSite"
+              [checked]="payment() === 'OnSite'"
+              (change)="payment.set('OnSite')"
+            />
+            <span>
+              <span i18n="@@shop.payOnSite">Payer au retrait</span>
+              @if (options.payOnSiteBlockedReason) {
+                <span class="choice-list__hint">{{ options.payOnSiteBlockedReason }}</span>
+              } @else {
+                <span class="choice-list__hint" i18n="@@shop.payOnSiteHint"
+                  >Le restaurant valide d'abord votre commande ; vous payez sur place.</span
+                >
+              }
+            </span>
+          </label>
+        } @else if (options.error()) {
+          <p class="alert alert--error" role="alert">{{ apiError(options.error()) }}</p>
+        } @else {
+          <p role="status" i18n="@@common.loading">Chargement…</p>
+        }
+      </fieldset>
+
+      <app-textarea-field
+        [field]="detailsForm.note"
+        label="Note pour le restaurant (facultative)"
+        i18n-label="@@shop.note"
+      />
+
+      <section class="ticket" aria-labelledby="summary-title">
+        <h2 id="summary-title" class="ticket__title" i18n="@@shop.summary">Récapitulatif</h2>
+        <ul class="ticket__lines">
+          @for (line of cart.lines(); track line.key; let index = $index) {
+            <li class="ticket__line">
+              <div class="ticket__main">
+                <span class="ticket__name">{{ line.quantity }} × {{ line.name }}</span>
+                <span class="ticket__amount">{{ quote.lineTotals().get(index) | euros }}</span>
+              </div>
+              @if (labelsOf(line).length > 0) {
+                <ul class="ticket__mods">
+                  @for (label of labelsOf(line); track $index) {
+                    <li>{{ label }}</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+        <p class="ticket__total" aria-live="polite">
+          <span i18n="@@shop.totalTtc">Total TTC</span>
+          <span class="ticket__total-value">
+            @if (quote.total() === null && !quote.error()) {
+              <ng-container i18n="@@counter.computing">Calcul…</ng-container>
+            } @else {
+              {{ quote.total() | euros }}
+            }
+          </span>
+        </p>
+      </section>
+
+      @if (error()) {
+        <p class="alert alert--error" role="alert">{{ error() }}</p>
+      }
+      <p class="note" i18n="@@shop.acceptTerms">
+        En validant, vous acceptez les <a routerLink="/cgv">conditions générales de vente</a>. Vos
+        données sont traitées selon notre
+        <a routerLink="/confidentialite">politique de confidentialité</a>.
+      </p>
+      <button
+        type="submit"
+        class="btn ticket__send"
+        [disabled]="sending() || impossible() || !pickup() || !payment()"
+      >
+        @if (payment() === 'Online') {
+          <ng-container i18n="@@shop.placeAndPay">Commander et payer</ng-container>
+        } @else {
+          <ng-container i18n="@@shop.place">Envoyer ma commande</ng-container>
+        }
+      </button>
+    </form>
+  }
+</div>

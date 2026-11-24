@@ -1,6 +1,7 @@
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  CheckoutOptions,
   OrderCreate,
   OrderDetails,
   OrderReceipt,
@@ -18,6 +19,11 @@ export class OrdersService {
 
   quote(body: QuoteRequest): Observable<QuoteResult> {
     return this.api.ordersQuotePost({ body }).pipe(unwrap());
+  }
+
+  /** Modes de paiement proposables au client connecté (indication : la validation revérifie). */
+  checkoutOptions(): Observable<CheckoutOptions> {
+    return this.api.ordersCheckoutOptionsGet().pipe(unwrap());
   }
 
   create(body: OrderCreate): Observable<OrderDetails> {
