@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, signal, viewChild } from '@angular/core';
 import { form } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { CompositionDetails, IngredientDetails } from '../../../../core/api/generated';
@@ -7,6 +7,7 @@ import { ProductsService } from '../../../../shared/services/products.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { IngredientQuickAdd } from '../ingredient-quick-add';
 
 interface CompositionModel {
@@ -25,10 +26,11 @@ const toModel = (composition: CompositionDetails | undefined): CompositionModel 
  * Ingrédients d'un produit, choisis dans la liste des ingrédients. Un ingrédient retirable se
  * retire ou se remplace par tout ingrédient « proposé en remplacement », au surcoût calculé par
  * le serveur d'après les prix de référence. Les suppléments passent par un groupe d'options.
+ * L'ajout se fait dans un dialogue ; l'enregistrement est déclenché par la fiche (`save`).
  */
 @Component({
   selector: 'app-product-composition',
-  imports: [CheckboxField, Icon, IngredientQuickAdd],
+  imports: [CheckboxField, Icon, IngredientQuickAdd, ModalDialog],
   templateUrl: './product-composition.html',
 })
 export class ProductComposition {
@@ -53,8 +55,12 @@ export class ProductComposition {
       .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   });
 
+  /** Vrai quand la liste diffère de la composition enregistrée. */
+  readonly dirty = computed(() => JSON.stringify(this.model()) !== JSON.stringify(this.saved()));
+  private readonly saved = linkedSignal(() => toModel(this.composition()));
+
   protected readonly toAdd = signal('');
-  protected readonly saving = signal(false);
+  private readonly addDialog = viewChild.required(ModalDialog);
   protected readonly error = signal('');
   protected readonly notice = signal('');
 
@@ -66,6 +72,15 @@ export class ProductComposition {
     return this.byId().get(id);
   }
 
+  protected openAdd(): void {
+    this.toAdd.set('');
+    this.addDialog().open();
+  }
+
+  protected closeAdd(): void {
+    this.addDialog().close();
+  }
+
   protected add(ingredientId = this.toAdd()): void {
     if (!ingredientId) {
       return;
@@ -75,6 +90,7 @@ export class ProductComposition {
     }));
     this.toAdd.set('');
     this.notice.set('');
+    this.closeAdd();
   }
 
   protected remove(index: number): void {
@@ -90,10 +106,13 @@ export class ProductComposition {
     this.notice.set(`« ${ingredient.name} » créé et ajouté à la composition.`);
   }
 
-  protected async save(): Promise<void> {
+  /** Enregistre la composition si elle a changé ; faux en cas d'échec (message affiché). */
+  async save(): Promise<boolean> {
     this.error.set('');
     this.notice.set('');
-    this.saving.set(true);
+    if (!this.dirty()) {
+      return true;
+    }
     try {
       const updated = await firstValueFrom(
         this.products.setComposition(this.productId(), {
@@ -103,12 +122,12 @@ export class ProductComposition {
           })),
         }),
       );
+      this.saved.set(toModel(updated.composition));
       this.model.set(toModel(updated.composition));
-      this.notice.set('Composition enregistrée.');
+      return true;
     } catch (error) {
       this.error.set(apiErrorMessage(error));
-    } finally {
-      this.saving.set(false);
+      return false;
     }
   }
 }

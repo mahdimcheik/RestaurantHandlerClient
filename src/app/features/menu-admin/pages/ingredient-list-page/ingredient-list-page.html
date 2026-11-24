@@ -1,5 +1,11 @@
-<div class="page-head">
+<div class="page-head page-head--sticky">
   <h1>Ingrédients</h1>
+  <div class="toolbar">
+    <button type="button" class="btn btn--icon" (click)="addDialog.open()">
+      <app-icon name="plus" />
+      <span>Ajouter un ingrédient</span>
+    </button>
+  </div>
 </div>
 
 <p class="sheet__lead">
@@ -8,8 +14,6 @@
   différence. Décochez « Proposé en remplacement » pour la pâte, le pain… Une rupture grise partout
   ce qui en dépend.
 </p>
-
-<app-ingredient-quick-add (created)="created($event)" />
 
 <div class="toolbar">
   <div class="field">
@@ -112,11 +116,14 @@
                     Remettre en stock
                   }
                 </button>
-                @if (editingId() !== ingredient.id) {
-                  <button type="button" class="btn btn--outline" (click)="startEdit(ingredient)">
-                    Modifier
-                  </button>
-                }
+                <button
+                  type="button"
+                  class="btn btn--outline"
+                  (click)="startEdit(ingredient)"
+                  title="Modifier « {{ ingredient.name }} »"
+                >
+                  Modifier
+                </button>
                 <app-archive-button
                   [name]="ingredient.name"
                   [busy]="busyId() === ingredient.id"
@@ -126,35 +133,53 @@
             }
           </td>
         </tr>
-        @if (editingId() === ingredient.id) {
-          <tr>
-            <td colspan="5">
-              <form class="inline-form" novalidate (submit)="save($event, ingredient)">
-                <app-text-field [field]="editForm.name" label="Nom" />
-                <app-text-field
-                  [field]="editForm.price"
-                  inputmode="decimal"
-                  label="Prix de référence (€)"
-                />
-                <app-checkbox-field [field]="editForm.isOfferedAsReplacement">
-                  Proposé en remplacement
-                </app-checkbox-field>
-                <button type="submit" [disabled]="busyId() === ingredient.id">Enregistrer</button>
-                <button type="button" class="btn btn--outline" (click)="cancelEdit()">
-                  Annuler
-                </button>
-              </form>
-              <app-image-field
-                label="Photo de l'ingrédient"
-                [imageUrl]="editImageUrl()"
-                [alt]="ingredient.name"
-                [upload]="uploadImage"
-                [remove]="removeImage"
-              />
-            </td>
-          </tr>
-        }
       }
     </tbody>
   </table>
 }
+
+<app-modal-dialog #addDialog title="Ajouter un ingrédient" [wide]="true">
+  <app-ingredient-quick-add label="Nom" action="Ajouter" (created)="created($event)" />
+  <div class="form__actions">
+    <button type="button" class="btn btn--outline" (click)="addDialog.close()">Annuler</button>
+  </div>
+</app-modal-dialog>
+
+<app-modal-dialog
+  #editDialog
+  title="Modifier « {{ editing()?.name }} »"
+  [wide]="true"
+  (closed)="editingId.set(null)"
+>
+  @if (editing(); as ingredient) {
+    @if (editError()) {
+      <p class="alert alert--error" role="alert">{{ editError() }}</p>
+    }
+    <form class="form" novalidate (submit)="save($event, ingredient)">
+      <div class="form__row">
+        <app-text-field [field]="editForm.name" label="Nom" />
+        <app-text-field
+          [field]="editForm.price"
+          inputmode="decimal"
+          label="Prix de référence (€)"
+        />
+      </div>
+      <app-checkbox-field [field]="editForm.isOfferedAsReplacement">
+        Proposé en remplacement
+      </app-checkbox-field>
+      <div class="form__actions">
+        <button type="submit" class="btn" [disabled]="busyId() === ingredient.id">
+          Enregistrer
+        </button>
+        <button type="button" class="btn btn--outline" (click)="editDialog.close()">Annuler</button>
+      </div>
+    </form>
+    <app-image-field
+      label="Photo de l'ingrédient"
+      [imageUrl]="editImageUrl()"
+      [alt]="ingredient.name"
+      [upload]="uploadImage"
+      [remove]="removeImage"
+    />
+  }
+</app-modal-dialog>

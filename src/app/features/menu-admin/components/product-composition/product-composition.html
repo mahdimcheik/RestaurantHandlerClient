@@ -35,38 +35,48 @@
   </ul>
 }
 
-@if (addable().length > 0) {
-  <div class="inline-form">
-    <div class="field">
-      <label class="field__label" for="composition-add"> Ajouter un ingrédient </label>
-      <select #addBox id="composition-add" (change)="toAdd.set(addBox.value)">
-        <option value="" [selected]="toAdd() === ''">Choisir…</option>
-        @for (option of addable(); track option.id) {
-          <option [value]="option.id">{{ option.name }}</option>
-        }
-      </select>
-    </div>
-    <button
-      type="button"
-      class="btn btn--outline btn--icon"
-      [disabled]="toAdd() === ''"
-      (click)="add()"
-    >
-      <app-icon name="plus" />
-      <span>Ajouter</span>
-    </button>
-  </div>
-}
-
-<app-ingredient-quick-add
-  label="Ingrédient absent de la liste ? Créez-le"
-  action="Créer et ajouter"
-  (created)="created($event)"
-/>
-
-<div class="form__actions">
-  <button type="button" [disabled]="saving()" (click)="save()">Enregistrer la composition</button>
+<div class="toolbar">
+  <button type="button" class="btn btn--outline btn--icon" (click)="openAdd()">
+    <app-icon name="plus" />
+    <span>Ajouter un ingrédient</span>
+  </button>
 </div>
 <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
   {{ notice() }}
 </p>
+
+<app-modal-dialog title="Ajouter un ingrédient" [wide]="true">
+  @if (addable().length > 0) {
+    <div class="form">
+      <div class="field">
+        <label class="field__label" for="composition-add"> Ingrédient </label>
+        <select #addBox id="composition-add" (change)="toAdd.set(addBox.value)">
+          <option value="" [selected]="toAdd() === ''">Choisir…</option>
+          @for (option of addable(); track option.id) {
+            <option [value]="option.id" [selected]="toAdd() === option.id">
+              {{ option.name }}
+            </option>
+          }
+        </select>
+      </div>
+      <div class="form__actions">
+        <button type="button" class="btn" [disabled]="toAdd() === ''" (click)="add()">
+          Ajouter
+        </button>
+        <button type="button" class="btn btn--outline" (click)="closeAdd()">Annuler</button>
+      </div>
+    </div>
+  } @else {
+    <p class="sheet__lead">Tous les ingrédients sont déjà dans la composition.</p>
+  }
+  <app-ingredient-quick-add
+    label="Ingrédient absent de la liste ? Créez-le"
+    action="Créer et ajouter"
+    (created)="created($event)"
+  />
+  @if (addable().length === 0) {
+    <div class="form__actions">
+      <button type="button" class="btn btn--outline" (click)="closeAdd()">Fermer</button>
+    </div>
+  }
+</app-modal-dialog>

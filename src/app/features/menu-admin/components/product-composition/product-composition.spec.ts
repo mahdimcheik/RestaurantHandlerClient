@@ -2,7 +2,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CompositionDetails, IngredientDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, submitForm, text } from '../../../../shared/testing';
+import {
+  clickButton,
+  envelope,
+  fill,
+  polyfillDialog,
+  submitForm,
+  text,
+} from '../../../../shared/testing';
 import { ProductComposition } from './product-composition';
 
 const ingredient = (id: string, name: string, priceCents = 0): IngredientDetails => ({
@@ -32,6 +39,7 @@ describe('ProductComposition', () => {
   let http: HttpTestingController;
 
   beforeEach(async () => {
+    polyfillDialog();
     TestBed.configureTestingModule({
       imports: [ProductComposition],
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -69,14 +77,16 @@ describe('ProductComposition', () => {
     expect(options).toEqual(['Choisir…', 'Mozzarella']);
   });
 
-  it('ajoute un ingrédient, retirable par défaut, et envoie la composition', async () => {
-    fill(fixture, 'Ajouter un ingrédient', 'i-mozza');
+  it('ajoute un ingrédient par le dialogue, retirable par défaut, puis l’envoie', async () => {
+    clickButton(fixture, 'Ajouter un ingrédient');
+    fill(fixture, 'Ingrédient', 'i-mozza');
     await fixture.whenStable();
     clickButton(fixture, 'Ajouter');
     await fixture.whenStable();
     expect(names()).toEqual(['Pâte', 'Tomate', 'Mozzarella']);
+    expect(fixture.nativeElement.querySelector('dialog').open).toBe(false);
 
-    clickButton(fixture, 'Enregistrer la composition');
+    const saved = fixture.componentInstance.save();
     await Promise.resolve();
 
     const request = http.expectOne('/manage/products/p1/composition');
@@ -91,7 +101,12 @@ describe('ProductComposition', () => {
     request.flush(envelope({ id: 'p1', composition: margherita }));
     await settle();
 
-    expect(text(fixture)).toContain('Composition enregistrée.');
+    expect(await saved).toBe(true);
+  });
+
+  it('n’envoie rien quand la composition n’a pas changé', async () => {
+    expect(await fixture.componentInstance.save()).toBe(true);
+    http.expectNone('/manage/products/p1/composition');
   });
 
   it('retire un ingrédient de la composition', async () => {
@@ -102,6 +117,7 @@ describe('ProductComposition', () => {
   });
 
   it('crée un ingrédient avec son prix et l’ajoute à la composition', async () => {
+    clickButton(fixture, 'Ajouter un ingrédient');
     fill(fixture, 'Ingrédient absent de la liste ? Créez-le', 'Saumon');
     fill(fixture, 'Prix de référence (€)', '3,30');
     submitForm(fixture);

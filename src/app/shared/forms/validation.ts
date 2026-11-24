@@ -2,6 +2,7 @@ import {
   email,
   FieldTree,
   minLength,
+  submit,
   maxLength,
   max,
   min,
@@ -73,6 +74,22 @@ export function maxAtLeastMin(max: SchemaPath<number>, min: SchemaPath<number>):
 /** Place le focus sur le premier champ en erreur après une soumission refusée. */
 export function focusFirstInvalid(tree: FieldTree<unknown>): void {
   tree().errorSummary()[0]?.fieldTree().focusBoundControl();
+}
+
+/**
+ * Valide un formulaire sans rien envoyer : champs marqués touchés pour afficher les erreurs, focus
+ * sur la première. Sert à vérifier toute une fiche avant d'enchaîner plusieurs enregistrements.
+ */
+export async function validateForm<T>(tree: FieldTree<T>): Promise<boolean> {
+  let valid = false;
+  await submit(tree, {
+    action: async () => {
+      valid = true;
+      return undefined;
+    },
+    onInvalid: (invalid) => focusFirstInvalid(invalid),
+  });
+  return valid;
 }
 
 export const PASSWORD_MIN_LENGTH = 8;

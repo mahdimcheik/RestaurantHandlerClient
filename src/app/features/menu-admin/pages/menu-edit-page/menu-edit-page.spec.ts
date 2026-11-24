@@ -3,7 +3,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { CategoryDetails, MenuDetails, ProductDetails } from '../../../../core/api/generated';
-import { clickButton, envelope, fill, submitForm, text } from '../../../../shared/testing';
+import {
+  clickButton,
+  envelope,
+  fill,
+  polyfillDialog,
+  submitForm,
+  text,
+} from '../../../../shared/testing';
 import { MenuEditPage } from './menu-edit-page';
 
 const category: CategoryDetails = {
@@ -53,6 +60,7 @@ const formula: MenuDetails = {
 };
 
 function setup(id?: string) {
+  polyfillDialog();
   TestBed.configureTestingModule({
     imports: [MenuEditPage],
     providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
@@ -131,7 +139,8 @@ describe('MenuEditPage — emplacements', () => {
     return request;
   }
 
-  it('ajoute un emplacement avec ses bornes', async () => {
+  it('ajoute un emplacement par le dialogue, avec ses bornes', async () => {
+    clickButton(fixture, 'Ajouter un emplacement');
     fill(fixture, 'Libellé', 'Boisson', 1);
     fill(fixture, 'Minimum de choix', '0', 1);
     clickButton(fixture, "Ajouter l'emplacement");
@@ -150,23 +159,29 @@ describe('MenuEditPage — emplacements', () => {
     expect(text(fixture)).toContain('Aucun produit dans cet emplacement.');
   });
 
-  it('refuse un maximum inférieur au minimum sans appeler l’API', async () => {
+  it('refuse un maximum inférieur au minimum sans rien envoyer', async () => {
     fill(fixture, 'Minimum de choix', '3');
     fill(fixture, 'Maximum de choix', '2');
-    clickButton(fixture, "Enregistrer l'emplacement");
+    clickButton(fixture, 'Enregistrer');
     await fixture.whenStable();
 
+    http.expectNone('/manage/menus/m1');
     http.expectNone('/manage/menus/m1/slots/s1');
     expect(text(fixture)).toContain('Le maximum doit être au moins égal au minimum.');
   });
 
-  it('enregistre les produits proposés avec leur surcoût en centimes', async () => {
-    fill(fixture, 'Ajouter un produit', 'p2');
+  it('enregistre avec la fiche les produits ajoutés et leur surcoût en centimes', async () => {
+    clickButton(fixture, 'Ajouter un produit');
+    fill(fixture, 'Produit', 'p2');
+    fill(fixture, 'Surcoût (€)', '1,50', 1);
     await fixture.whenStable();
     clickButton(fixture, 'Ajouter');
     await fixture.whenStable();
-    fill(fixture, 'Surcoût (€)', '1,50', 1);
-    clickButton(fixture, 'Enregistrer les produits');
+    expect(text(fixture)).toContain('Salade');
+
+    clickButton(fixture, 'Enregistrer');
+    await fixture.whenStable();
+    await respond('/manage/menus/m1', formula);
     const request = await respond('/manage/menus/m1/slots/s1/options', formula);
 
     expect(request.request.method).toBe('PUT');
@@ -176,6 +191,18 @@ describe('MenuEditPage — emplacements', () => {
         { productId: 'p2', extraPriceCents: 150 },
       ],
     });
+    http.expectNone('/manage/menus/m1/slots/s1');
+    await new Promise((resolve) => setTimeout(resolve));
+    await fixture.whenStable();
+    expect(text(fixture)).toContain('Modifications enregistrées.');
+  });
+
+  it('place « Enregistrer » dans l’en-tête, à côté d’« Archiver »', () => {
+    const toolbar = fixture.nativeElement.querySelector('.page-head .toolbar') as HTMLElement;
+    const labels = [
+      ...toolbar.querySelectorAll(':scope > button, :scope > app-archive-button > button'),
+    ].map((button) => button.textContent?.trim());
+    expect(labels).toEqual(['Archiver', 'Enregistrer']);
   });
 
   it('ne propose que les produits actifs absents de l’emplacement', () => {

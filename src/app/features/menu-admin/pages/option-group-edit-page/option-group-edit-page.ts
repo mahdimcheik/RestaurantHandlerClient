@@ -92,7 +92,6 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
     ArchiveButton,
     ChoiceAddDialog,
   ],
-  host: { class: 'page--full' },
   templateUrl: './option-group-edit-page.html',
 })
 export class OptionGroupEditPage {

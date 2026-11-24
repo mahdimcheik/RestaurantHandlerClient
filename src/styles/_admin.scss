@@ -241,7 +241,6 @@
   align-content: start;
   gap: var(--space-6);
   width: 100%;
-  max-width: 76rem;
   padding-block: var(--space-6) var(--space-9);
 }
 
@@ -462,13 +461,8 @@
   max-width: 48rem;
 }
 
-// Fiche sur toute la largeur disponible (posée sur l'hôte de la page, qui lève aussi la
-// limite de `.admin__content`).
-.page--full .sheet {
-  max-width: none;
-}
-
-.admin__content:has(> .page--full) {
+// Dans le back-office, les fiches prennent toute la largeur disponible.
+.admin .sheet {
   max-width: none;
 }
 

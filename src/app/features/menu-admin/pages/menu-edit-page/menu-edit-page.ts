@@ -1,4 +1,13 @@
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  signal,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
@@ -16,7 +25,9 @@ import {
 import { MenusService } from '../../../../shared/services/menus.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { ImageField } from '../../../../shared/ui/image-field/image-field';
+import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { NumberField } from '../../../../shared/ui/number-field/number-field';
 import { SelectField } from '../../../../shared/ui/select-field/select-field';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
@@ -53,7 +64,11 @@ const toWrite = (model: MenuModel): MenuWrite => ({
 
 const emptySlot = () => ({ label: '', minChoices: 1, maxChoices: 1 });
 
-/** Création (`/nouveau`) ou modification (`/:id`) d'un menu à prix fixe et de ses emplacements. */
+/**
+ * Création (`/nouveau`) ou modification (`/:id`) d'un menu à prix fixe et de ses emplacements.
+ * « Enregistrer » (en-tête) envoie les informations puis ce qui a changé dans chaque emplacement ;
+ * ajouter, déplacer ou retirer un emplacement est immédiat.
+ */
 @Component({
   selector: 'app-menu-edit-page',
   imports: [
@@ -66,6 +81,8 @@ const emptySlot = () => ({ label: '', minChoices: 1, maxChoices: 1 });
     ImageField,
     ArchiveButton,
     MenuSlot,
+    Icon,
+    ModalDialog,
   ],
   templateUrl: './menu-edit-page.html',
 })
@@ -115,6 +132,10 @@ export class MenuEditPage {
     integerRange(path.maxChoices, 1, 10);
     maxAtLeastMin(path.maxChoices, path.minChoices);
   });
+  protected readonly slotDialogError = signal('');
+  protected readonly slotDialog = viewChild(ModalDialog);
+  private readonly slots = viewChildren(MenuSlot);
+  protected readonly saving = signal(false);
   protected readonly slotsError = signal('');
   protected readonly slotsNotice = signal('');
   protected readonly movingSlots = signal(false);
@@ -132,33 +153,74 @@ export class MenuEditPage {
 
   protected async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
+    if (this.saving()) {
+      return;
+    }
     this.error.set('');
     this.notice.set('');
-    await submit(this.form, {
-      action: async () => {
-        const id = this.id();
-        try {
-          if (id) {
-            const updated = await firstValueFrom(this.menus.update(id, toWrite(this.model())));
-            this.menu.set(updated);
-            this.model.set(toModel(updated));
-            this.notice.set('Modifications enregistrées.');
-          } else {
-            const created = await firstValueFrom(this.menus.create(toWrite(this.model())));
-            await this.router.navigate(['/gestion/menus', created.id], { replaceUrl: true });
+    this.slotsNotice.set('');
+    this.saving.set(true);
+    try {
+      await submit(this.form, {
+        action: async () => {
+          const id = this.id();
+          try {
+            if (id) {
+              for (const slot of this.slots()) {
+                if (!(await slot.validate())) {
+                  return undefined;
+                }
+              }
+              const updated = await firstValueFrom(this.menus.update(id, toWrite(this.model())));
+              this.model.set(toModel(updated));
+              if (await this.saveSlots(updated)) {
+                this.notice.set('Modifications enregistrées.');
+              }
+            } else {
+              const created = await firstValueFrom(this.menus.create(toWrite(this.model())));
+              await this.router.navigate(['/gestion/menus', created.id], { replaceUrl: true });
+            }
+          } catch (error) {
+            this.error.set(apiErrorMessage(error));
           }
-        } catch (error) {
-          this.error.set(apiErrorMessage(error));
-        }
-        return undefined;
-      },
-      onInvalid: (tree) => focusFirstInvalid(tree),
-    });
+          return undefined;
+        },
+        onInvalid: (tree) => focusFirstInvalid(tree),
+      });
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  /**
+   * Enregistre les emplacements modifiés, l'un après l'autre ; le menu renvoyé n'est appliqué qu'à
+   * la fin pour ne pas effacer la saisie des emplacements suivants.
+   */
+  private async saveSlots(menu: MenuDetails): Promise<boolean> {
+    let latest = menu;
+    let ok = true;
+    for (const slot of this.slots()) {
+      const result = await slot.save();
+      if (result === false) {
+        ok = false;
+        break;
+      }
+      latest = result ?? latest;
+    }
+    this.menu.set(latest);
+    return ok;
+  }
+
+  protected openSlotDialog(): void {
+    this.newSlot.set(emptySlot());
+    this.slotForm().reset();
+    this.slotDialogError.set('');
+    this.slotDialog()?.open();
   }
 
   protected async addSlot(event: Event): Promise<void> {
     event.preventDefault();
-    this.slotsError.set('');
+    this.slotDialogError.set('');
     this.slotsNotice.set('');
     await submit(this.slotForm, {
       action: async () => {
@@ -168,11 +230,10 @@ export class MenuEditPage {
             this.menus.addSlot(this.id()!, { ...slot, label: slot.label.trim() }),
           );
           this.menu.set(updated);
-          this.newSlot.set(emptySlot());
-          this.slotForm().reset();
+          this.slotDialog()?.close();
           this.slotsNotice.set(`Emplacement « ${slot.label.trim()} » ajouté.`);
         } catch (error) {
-          this.slotsError.set(apiErrorMessage(error));
+          this.slotDialogError.set(apiErrorMessage(error));
         }
         return undefined;
       },

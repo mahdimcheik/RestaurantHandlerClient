@@ -5,7 +5,7 @@
 } @else if (loadError()) {
   <p class="alert alert--error" role="alert">{{ loadError() }}</p>
 } @else {
-  <div class="page-head">
+  <div class="page-head page-head--sticky">
     <h1>
       @if (id()) {
         {{ name() }}
@@ -13,8 +13,19 @@
         Nouveau menu
       }
     </h1>
-    @if (id() && !archived()) {
-      <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
+    @if (!archived()) {
+      <div class="toolbar">
+        @if (id()) {
+          <app-archive-button [name]="name()" [busy]="archiving()" (confirmed)="archive()" />
+        }
+        <button type="submit" form="menu-form" class="btn" [disabled]="saving()">
+          @if (id()) {
+            Enregistrer
+          } @else {
+            Créer le menu
+          }
+        </button>
+      </div>
     }
   </div>
 
@@ -33,7 +44,7 @@
     <div class="sheet">
       <section class="sheet__section" aria-labelledby="menu-info">
         <h2 id="menu-info">Informations</h2>
-        <form class="form" novalidate (submit)="onSubmit($event)">
+        <form id="menu-form" class="form" novalidate (submit)="onSubmit($event)">
           <app-text-field [field]="form.name" label="Nom" />
           <app-textarea-field [field]="form.description" label="Description (facultative)" />
           <div class="form__row">
@@ -51,15 +62,6 @@
             />
           </div>
           <app-checkbox-field [field]="form.isActive"> Visible sur la carte </app-checkbox-field>
-          <div class="form__actions">
-            <button type="submit" [disabled]="form().submitting()">
-              @if (id()) {
-                Enregistrer
-              } @else {
-                Créer le menu
-              }
-            </button>
-          </div>
         </form>
       </section>
 
@@ -114,23 +116,37 @@
             </ol>
           }
 
-          <form class="form" novalidate (submit)="addSlot($event)">
-            <h3>Ajouter un emplacement</h3>
-            <div class="form__row form__row--3">
-              <app-text-field
-                [field]="slotForm.label"
-                label="Libellé"
-                hint="Par exemple Plat, Boisson"
-              />
-              <app-number-field [field]="slotForm.minChoices" label="Minimum de choix" />
-              <app-number-field [field]="slotForm.maxChoices" label="Maximum de choix" />
-            </div>
-            <div class="form__actions">
-              <button type="submit" [disabled]="slotForm().submitting()">
-                Ajouter l'emplacement
-              </button>
-            </div>
-          </form>
+          <div class="toolbar">
+            <button type="button" class="btn btn--outline btn--icon" (click)="openSlotDialog()">
+              <app-icon name="plus" />
+              <span>Ajouter un emplacement</span>
+            </button>
+          </div>
+
+          <app-modal-dialog title="Ajouter un emplacement" [wide]="true">
+            <form class="form" novalidate (submit)="addSlot($event)">
+              @if (slotDialogError()) {
+                <p class="alert alert--error" role="alert">{{ slotDialogError() }}</p>
+              }
+              <div class="form__row form__row--3">
+                <app-text-field
+                  [field]="slotForm.label"
+                  label="Libellé"
+                  hint="Par exemple Plat, Boisson"
+                />
+                <app-number-field [field]="slotForm.minChoices" label="Minimum de choix" />
+                <app-number-field [field]="slotForm.maxChoices" label="Maximum de choix" />
+              </div>
+              <div class="form__actions">
+                <button type="submit" class="btn" [disabled]="slotForm().submitting()">
+                  Ajouter l'emplacement
+                </button>
+                <button type="button" class="btn btn--outline" (click)="slotDialog()?.close()">
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </app-modal-dialog>
           <p
             role="status"
             [class.alert]="slotsNotice() !== ''"

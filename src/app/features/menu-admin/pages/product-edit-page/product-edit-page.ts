@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { applyEach, form, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
@@ -19,12 +19,14 @@ import {
   lengthRule,
   nameRules,
   requiredMessage,
+  validateForm,
 } from '../../../../shared/forms/validation';
 import { ProductsService } from '../../../../shared/services/products.service';
 import { StoreService } from '../../../../shared/services/store.service';
 import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { ImageField } from '../../../../shared/ui/image-field/image-field';
+import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { NumberField } from '../../../../shared/ui/number-field/number-field';
 import { SelectField, SelectOption } from '../../../../shared/ui/select-field/select-field';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
@@ -95,7 +97,11 @@ const toLinkWrite = (link: GroupLinkModel): ProductOptionGroupWrite => ({
   rules: link.custom ? { minChoices: link.minChoices, maxChoices: link.maxChoices } : undefined,
 });
 
-/** Création (`/nouveau`) ou modification (`/:id`) d'un produit et de ses groupes d'options. */
+/**
+ * Création (`/nouveau`) ou modification (`/:id`) d'un produit, de sa composition et de ses groupes
+ * d'options. « Enregistrer » (en-tête) envoie les informations puis ce qui a changé dans la
+ * composition et les groupes.
+ */
 @Component({
   selector: 'app-product-edit-page',
   imports: [
@@ -110,6 +116,7 @@ const toLinkWrite = (link: GroupLinkModel): ProductOptionGroupWrite => ({
     ArchiveButton,
     MoveButtons,
     ProductComposition,
+    ModalDialog,
   ],
   templateUrl: './product-edit-page.html',
 })
@@ -173,10 +180,15 @@ export class ProductEditPage {
     const used = new Set(this.groupLinks().links.map((link) => link.id));
     return this.store.optionGroups.value().filter((group) => !used.has(group.id));
   });
+  /** Groupes tels qu'enregistrés, pour n'envoyer la liste que si elle a changé. */
+  private readonly savedLinks = linkedSignal(() => ({
+    links: this.product.value()?.optionGroups.map(toLink) ?? [],
+  }));
   protected readonly groupToAdd = signal('');
   protected readonly groupsError = signal('');
-  protected readonly groupsNotice = signal('');
-  protected readonly savingGroups = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly groupDialog = viewChild(ModalDialog);
+  private readonly composition = viewChild(ProductComposition);
 
   protected readonly uploadImage = (file: File) =>
     this.products
@@ -195,21 +207,36 @@ export class ProductEditPage {
 
   protected async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
+    if (this.saving()) {
+      return;
+    }
     this.error.set('');
     this.notice.set('');
+    this.saving.set(true);
+    try {
+      const id = this.id();
+      if (!id) {
+        await this.create();
+      } else if (
+        (await validateForm(this.form)) &&
+        (await validateForm(this.groupsForm)) &&
+        (await this.saveInfo(id)) &&
+        (await (this.composition()?.save() ?? true)) &&
+        (await this.saveGroups(id))
+      ) {
+        this.notice.set('Modifications enregistrées.');
+      }
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private async create(): Promise<void> {
     await submit(this.form, {
       action: async () => {
-        const id = this.id();
         try {
-          if (id) {
-            const updated = await firstValueFrom(this.products.update(id, toWrite(this.model())));
-            this.model.set(toModel(updated, ''));
-            this.name.set(updated.name);
-            this.notice.set('Modifications enregistrées.');
-          } else {
-            const created = await firstValueFrom(this.products.create(toWrite(this.model())));
-            await this.router.navigate(['/gestion/produits', created.id], { replaceUrl: true });
-          }
+          const created = await firstValueFrom(this.products.create(toWrite(this.model())));
+          await this.router.navigate(['/gestion/produits', created.id], { replaceUrl: true });
         } catch (error) {
           this.error.set(apiErrorMessage(error));
         }
@@ -219,11 +246,29 @@ export class ProductEditPage {
     });
   }
 
+  private async saveInfo(id: string): Promise<boolean> {
+    try {
+      const updated = await firstValueFrom(this.products.update(id, toWrite(this.model())));
+      this.model.set(toModel(updated, ''));
+      this.name.set(updated.name);
+      return true;
+    } catch (error) {
+      this.error.set(apiErrorMessage(error));
+      return false;
+    }
+  }
+
+  protected openGroupDialog(): void {
+    this.groupToAdd.set('');
+    this.groupDialog()?.open();
+  }
+
   protected addGroup(): void {
     const group = this.groupsById().get(this.groupToAdd());
     if (group) {
       this.updateLinks((links) => [...links, toLink({ ...group, productRules: undefined })]);
       this.groupToAdd.set('');
+      this.groupDialog()?.close();
     }
   }
 
@@ -235,32 +280,28 @@ export class ProductEditPage {
     this.updateLinks((links) => links.filter((_, i) => i !== index));
   }
 
-  protected async saveGroups(): Promise<void> {
+  /** Enregistre les groupes s'ils ont changé (saisie déjà validée) ; faux si l'API refuse. */
+  private async saveGroups(id: string): Promise<boolean> {
     this.groupsError.set('');
-    this.groupsNotice.set('');
-    await submit(this.groupsForm, {
-      action: async () => {
-        this.savingGroups.set(true);
-        try {
-          const updated = await firstValueFrom(
-            this.products.setOptionGroups(this.id()!, this.groupLinks().links.map(toLinkWrite)),
-          );
-          this.groupLinks.set({ links: updated.optionGroups.map(toLink) });
-          this.groupsNotice.set(`Groupes d'options enregistrés.`);
-        } catch (error) {
-          this.groupsError.set(apiErrorMessage(error));
-        } finally {
-          this.savingGroups.set(false);
-        }
-        return undefined;
-      },
-      onInvalid: (tree) => focusFirstInvalid(tree),
-    });
+    if (JSON.stringify(this.groupLinks()) === JSON.stringify(this.savedLinks())) {
+      return true;
+    }
+    try {
+      const updated = await firstValueFrom(
+        this.products.setOptionGroups(id, this.groupLinks().links.map(toLinkWrite)),
+      );
+      const links = { links: updated.optionGroups.map(toLink) };
+      this.groupLinks.set(links);
+      this.savedLinks.set(links);
+      return true;
+    } catch (error) {
+      this.groupsError.set(apiErrorMessage(error));
+      return false;
+    }
   }
 
   private updateLinks(change: (links: GroupLinkModel[]) => GroupLinkModel[]): void {
     this.groupLinks.update((model) => ({ links: change(model.links) }));
-    this.groupsNotice.set('');
   }
 
   protected async toggleAvailability(): Promise<void> {
