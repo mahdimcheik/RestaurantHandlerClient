@@ -23,7 +23,8 @@ interface NavGroup {
 
 /**
  * Coquille du back-office, au nouveau design (parfum 1) : menu à gauche par rubriques (icône et
- * texte, rail d'icônes sur petit écran) et zone de contenu avec sa barre du haut. `.brand-ui`
+ * texte, rail d'icônes sur petit écran ; seules les rubriques défilent, « Retour au site » et
+ * « Déconnexion » restent en bas) et zone de contenu avec sa barre du haut. `.brand-ui`
  * fait prendre l'encre et le fond du parfum à toutes les pages de gestion. Rendue dans le <main>
  * de l'application (route `bare`), elle porte son propre lien d'évitement vers le contenu.
  */
@@ -50,36 +51,38 @@ interface NavGroup {
           <span class="admin__brand-sub">Gestion</span>
         </span>
       </a>
-      @for (group of groups; track group.id) {
-        <div class="admin__group">
-          <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
-            {{ group.label }}
-          </p>
-          <ul class="admin__links" [attr.aria-labelledby]="'admin-group-' + group.id">
-            @for (link of group.links; track link.path) {
-              <li>
-                <a
-                  class="admin__link"
-                  [routerLink]="link.path"
-                  routerLinkActive
-                  ariaCurrentWhenActive="page"
-                  [routerLinkActiveOptions]="{ exact: link.exact }"
-                  [title]="link.label"
-                >
-                  <app-icon [name]="link.icon" />
-                  <span class="admin__label">{{ link.label }}</span>
-                  @if (link.path === ordersPath && toApprove() > 0) {
-                    {{ ' '
-                    }}<span class="admin__count"
-                      >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
-                    >
-                  }
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-      }
+      <div class="admin__menu">
+        @for (group of groups; track group.id) {
+          <div class="admin__group">
+            <p class="admin__group-title admin__label" [id]="'admin-group-' + group.id">
+              {{ group.label }}
+            </p>
+            <ul class="admin__links" [attr.aria-labelledby]="'admin-group-' + group.id">
+              @for (link of group.links; track link.path) {
+                <li>
+                  <a
+                    class="admin__link"
+                    [routerLink]="link.path"
+                    routerLinkActive
+                    ariaCurrentWhenActive="page"
+                    [routerLinkActiveOptions]="{ exact: link.exact }"
+                    [title]="link.label"
+                  >
+                    <app-icon [name]="link.icon" />
+                    <span class="admin__label">{{ link.label }}</span>
+                    @if (link.path === ordersPath && toApprove() > 0) {
+                      {{ ' '
+                      }}<span class="admin__count"
+                        >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
+                      >
+                    }
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
       <ul class="admin__links admin__links--end">
         <li>
           <a class="admin__link" routerLink="/" title="Retour au site">

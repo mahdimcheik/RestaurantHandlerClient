@@ -9,7 +9,7 @@
   grid-template-columns: auto 1fr;
   min-height: 100dvh;
 
-  > :not(.waves, .skip-link) {
+  > :not(.waves, .skip-link, .admin__nav) {
     position: relative;
     z-index: 1;
   }
@@ -18,6 +18,7 @@
 .admin__nav {
   position: sticky;
   top: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -26,7 +27,6 @@
   padding: var(--space-4) var(--space-3);
   border-right: var(--border-width-strong) solid currentColor;
   background: var(--brand-glaze);
-  overflow-y: auto;
 
   @media (min-width: 64rem) {
     width: 16rem;
@@ -76,6 +76,20 @@
   text-transform: uppercase;
 }
 
+// Rubriques du menu : seule partie qui défile quand la fenêtre est basse, la marque reste en
+// haut et les liens de fin en bas.
+.admin__menu {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: var(--space-5);
+  min-height: 0;
+  margin-inline: calc(-1 * var(--space-1));
+  padding-inline: var(--space-1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .admin__group {
   display: grid;
   gap: var(--space-2);
@@ -104,7 +118,7 @@
 }
 
 .admin__links--end {
-  margin-top: auto;
+  flex: none;
   padding-top: var(--space-3);
   border-top: var(--border-width) solid var(--brand-shade-mid);
 }
