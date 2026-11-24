@@ -105,6 +105,25 @@ describe('CardPage', () => {
     expect(tabs()[0].getAttribute('aria-selected')).toBe('true');
   });
 
+  it('affiche les ingrédients d’un produit dans un dialogue depuis le bouton info', async () => {
+    await setup('/commander');
+    tabs()[1].click();
+    await settle();
+
+    const buttons = [...root().querySelectorAll<HTMLButtonElement>('.dish-tile__info')];
+    expect(buttons.map((button) => button.textContent?.trim())).toEqual(['Informations : Burger']);
+
+    buttons[0].click();
+    await settle();
+    const info = dialog('[aria-labelledby="ingredients-title"]');
+    expect(info.open).toBe(true);
+    expect(info.querySelector('#ingredients-title')?.textContent?.trim()).toBe('Burger');
+    expect(
+      [...info.querySelectorAll('.ingredient-list__name')].map((name) => name.textContent),
+    ).toEqual(['Oignon', 'Cheddar']);
+    expect(TestBed.inject(Router).url).toBe('/commander');
+  });
+
   it('sur téléphone, montre le bandeau du panier qui ouvre le détail de la commande', async () => {
     await setup('/commander');
     expect(root().querySelector('.order-bar')).toBeNull();
@@ -147,17 +166,15 @@ describe('CardPage', () => {
   it('ouvre la fiche produit dans un dialogue par-dessus la carte, et le referme', async () => {
     await setup('/commander/produit/cola');
 
-    expect(dialog('.order-dialog:not(.order-dialog--cart)').open).toBe(true);
-    expect(dialog('.order-dialog:not(.order-dialog--cart)').textContent).toContain('Cola');
+    expect(dialog('[aria-labelledby="sheet-title"]').open).toBe(true);
+    expect(dialog('[aria-labelledby="sheet-title"]').textContent).toContain('Cola');
     expect(tabs()).toHaveLength(2);
 
     root()
-      .querySelector<HTMLButtonElement>(
-        '.order-dialog:not(.order-dialog--cart) .order-dialog__close',
-      )!
+      .querySelector<HTMLButtonElement>('[aria-labelledby="sheet-title"] .order-dialog__close')!
       .click();
     await settle();
     expect(TestBed.inject(Router).url).toBe('/commander');
-    expect(dialog('.order-dialog:not(.order-dialog--cart)').open).toBe(false);
+    expect(dialog('[aria-labelledby="sheet-title"]').open).toBe(false);
   });
 });

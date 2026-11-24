@@ -239,11 +239,14 @@
   }
 }
 
+// Visuel de hauteur fixe, quelle que soit la largeur de la colonne : l'image est recadrée au centre.
 .dish-card__media {
+  flex: none;
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
+  height: 10rem;
   background: var(--brand-shade-light);
+  overflow: hidden;
 
   .icon {
     width: 2.5rem;
@@ -255,6 +258,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .dish-card__body {
@@ -299,6 +303,152 @@
 
   .dish-card__price {
     font-style: italic;
+  }
+}
+
+// Case de la grille : la carte (lien) et, posé sur son visuel, le bouton des ingrédients.
+.dish-tile {
+  position: relative;
+}
+
+.dish-tile__info {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: max(1px, 1.5px) solid currentColor;
+  border-radius: 50%;
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+  box-shadow: 0 6px 16px var(--brand-shade);
+
+  &:hover {
+    background: var(--brand-glaze);
+    color: var(--brand-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
+  }
+}
+
+// Ingrédients d'un produit : visuel à gauche, liste à droite, description en bas (téléphone :
+// les trois empilés).
+.ingredients-info {
+  display: grid;
+  gap: var(--space-4) var(--space-5);
+
+  @media (min-width: 40rem) {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.ingredients-info__media {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-height: 15rem;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-shade-light);
+  overflow: hidden;
+
+  .icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.ingredients-info__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ingredients-info__content {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.ingredients-info__title {
+  margin: 0;
+}
+
+.ingredients-info__text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ingredients-info__description {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  margin: 0;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.ingredient-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ingredient-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ingredient-list__media {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: max(1px, 1.5px) solid currentColor;
+  border-radius: 50%;
+  background: var(--brand-shade-light);
+  overflow: hidden;
+}
+
+.ingredient-list__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ingredient-list__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.ingredient-list__status {
+  font-size: var(--text-sm);
+  font-style: italic;
+  font-weight: 700;
+}
+
+// Ingrédient en rupture : visuel éteint et nom barré, en plus du libellé.
+.ingredient-list__item--out {
+  .ingredient-list__name {
+    text-decoration: line-through;
+  }
+
+  .ingredient-list__image {
+    filter: grayscale(1);
+    opacity: 0.6;
   }
 }
 

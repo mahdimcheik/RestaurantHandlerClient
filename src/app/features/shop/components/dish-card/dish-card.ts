@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { EurosPipe } from '../../../../shared/utils/money';
@@ -7,10 +7,13 @@ import { Dish } from '../../data-access/card-sections';
 
 /**
  * Article de la carte (produit ou menu) dans la grille d'une rubrique : visuel, nom, description et
- * prix, ou « Rupture » / « Indisponible ». Ouvre la fiche sans faire défiler la carte.
+ * prix, ou « Rupture » / « Indisponible ». Ouvre la fiche sans faire défiler la carte. Un produit
+ * qui a des ingrédients ou une description porte en plus un bouton « info », posé sur le visuel à côté du lien (un
+ * bouton ne peut pas être imbriqué dans un lien).
  */
 @Component({
   selector: 'li[app-dish-card]',
+  host: { class: 'dish-tile' },
   imports: [RouterLink, NgOptimizedImage, Icon, EurosPipe],
   template: `
     @let item = dish();
@@ -41,8 +44,16 @@ import { Dish } from '../../data-access/card-sections';
         }
       </span>
     </a>
+    @if (item.ingredients.length > 0 || item.description) {
+      <button type="button" class="dish-tile__info" aria-haspopup="dialog" (click)="info.emit()">
+        <app-icon name="info" />
+        <span class="visually-hidden" i18n="@@shop.dishInfo">Informations : {{ item.name }}</span>
+      </button>
+    }
   `,
 })
 export class DishCard {
   readonly dish = input.required<Dish>();
+  /** Le client demande les ingrédients (ou, à défaut, la description) du produit. */
+  readonly info = output<void>();
 }

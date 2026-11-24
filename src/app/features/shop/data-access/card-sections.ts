@@ -1,4 +1,4 @@
-import { PublicCard } from '../../../core/api/generated';
+import { PublicCard, PublicIngredient } from '../../../core/api/generated';
 
 /** Article de la carte (produit ou menu) tel qu'affiché dans une rubrique. */
 export interface Dish {
@@ -9,6 +9,8 @@ export interface Dish {
   priceCents: number;
   isAvailable: boolean;
   isMenu: boolean;
+  /** Ingrédients d'un produit (vide pour un menu). */
+  ingredients: PublicIngredient[];
   link: string[];
 }
 
@@ -43,6 +45,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
               priceCents: menu.priceCents,
               isAvailable: menu.isAvailable,
               isMenu: true,
+              ingredients: [],
               link: ['/commander/menu', menu.id],
             })),
           },
@@ -64,6 +67,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
         priceCents: product.priceCents,
         isAvailable: product.isAvailable,
         isMenu: false,
+        ingredients: product.ingredients,
         link: ['/commander/produit', product.id],
       })),
     })),
