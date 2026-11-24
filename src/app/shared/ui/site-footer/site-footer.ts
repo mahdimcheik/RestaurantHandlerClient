@@ -1,6 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PublicStore } from '../../services/public-store.service';
+import { SITE_DETAILS } from '../../site-details';
+import { NgOptimizedImage } from '@angular/common';
 
 /**
  * Pied de page du nouveau design (parfum 1) : nom, adresse et téléphone du restaurant, liens de
@@ -8,11 +10,16 @@ import { PublicStore } from '../../services/public-store.service';
  */
 @Component({
   selector: 'app-site-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, NgOptimizedImage],
   template: `
     <footer class="site-footer brand brand--1 gutter">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
+          @if (logoUrl(); as logo) {
+            <a class="site-footer__logo-link" routerLink="/">
+              <img class="site-footer__logo" [ngSrc]="logo" fill sizes="12rem" [alt]="name()" />
+            </a>
+          }
           <p class="site-footer__name">{{ name() }}</p>
           @if (info()?.address; as address) {
             <p>{{ address }}</p>
@@ -35,7 +42,7 @@ import { PublicStore } from '../../services/public-store.service';
         <nav aria-labelledby="footer-info">
           <p id="footer-info" class="site-footer__title">Informations</p>
           <ul class="site-footer__links">
-            <li><a class="site-footer__link" routerLink="/" fragment="infos">Contact</a></li>
+            <li><a class="site-footer__link" routerLink="/" fragment="contact">Contact</a></li>
             <li><a class="site-footer__link" routerLink="/allergenes">Allergènes</a></li>
             <li><a class="site-footer__link" routerLink="/cgv">CGV</a></li>
             <li>
@@ -44,11 +51,11 @@ import { PublicStore } from '../../services/public-store.service';
             <li>
               <a class="site-footer__link" routerLink="/mentions-legales">Mentions légales</a>
             </li>
-            <li>
-              <a class="site-footer__link" href="https://www.instagram.com/" rel="noopener">
-                Instagram
-              </a>
-            </li>
+            @if (instagramUrl) {
+              <li>
+                <a class="site-footer__link" [href]="instagramUrl" rel="noopener">Instagram</a>
+              </li>
+            }
           </ul>
         </nav>
       </div>
@@ -65,6 +72,8 @@ export class SiteFooter {
     () => `tel:${(this.info()?.phone ?? '').replace(/\s/g, '')}`,
   );
   protected readonly year = new Date().getFullYear();
+  protected readonly instagramUrl = SITE_DETAILS.instagramUrl;
+  protected readonly logoUrl = computed(() => this.store.info.value()?.logoUrl ?? null);
 
   constructor() {
     this.store.info.load();

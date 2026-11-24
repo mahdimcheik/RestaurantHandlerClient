@@ -1,0 +1,86 @@
+<app-legal-document
+  heading="Mentions légales"
+  [updatedOn]="details.legalUpdatedOn"
+  lead="Informations sur l’éditeur et l’hébergeur de ce site, conformément à la loi pour la confiance dans l’économie numérique."
+  [sections]="sections"
+>
+  <section id="editeur" aria-labelledby="editeur-title">
+    <h2 id="editeur-title">1. Éditeur du site</h2>
+    <app-legal-identity />
+    <dl class="legal__facts">
+      <div>
+        <dt>Directeur de la publication</dt>
+        <dd>
+          @if (details.publicationDirector) {
+            {{ details.publicationDirector }}
+          } @else {
+            <span class="legal__todo">À compléter</span>
+          }
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="hebergement" aria-labelledby="hebergement-title">
+    <h2 id="hebergement-title">2. Hébergement</h2>
+    <dl class="legal__facts">
+      <div>
+        <dt>Hébergeur</dt>
+        <dd>
+          @if (details.host.name) {
+            {{ details.host.name }}
+          } @else {
+            <span class="legal__todo">À compléter</span>
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Adresse</dt>
+        <dd>
+          @if (details.host.address) {
+            {{ details.host.address }}
+          } @else {
+            <span class="legal__todo">À compléter</span>
+          }
+        </dd>
+      </div>
+      @if (details.host.phone) {
+        <div>
+          <dt>Téléphone</dt>
+          <dd>{{ details.host.phone }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+
+  <section id="propriete" aria-labelledby="propriete-title">
+    <h2 id="propriete-title">3. Propriété intellectuelle</h2>
+    <p>
+      Les textes, photographies, logos et éléments graphiques de ce site appartiennent au restaurant
+      ou sont utilisés avec l’autorisation de leurs auteurs. Toute reproduction, même partielle,
+      sans autorisation écrite préalable est interdite.
+    </p>
+  </section>
+
+  <section id="donnees" aria-labelledby="donnees-title">
+    <h2 id="donnees-title">4. Données personnelles</h2>
+    <p>
+      La collecte et l’utilisation de vos données, ainsi que vos droits, sont décrits dans notre
+      <a routerLink="/confidentialite">politique de confidentialité</a>. Ce site n’utilise aucun
+      cookie publicitaire ni de mesure d’audience.
+    </p>
+  </section>
+
+  <section id="contact" aria-labelledby="contact-title">
+    <h2 id="contact-title">5. Nous contacter</h2>
+    <p>
+      Pour toute question sur ce site, écrivez-nous à
+      @if (details.email) {
+        <a [href]="'mailto:' + details.email">{{ details.email }}</a>
+      } @else {
+        <span class="legal__todo">adresse e-mail à compléter</span>
+      }
+      ou passez nous voir au restaurant.
+    </p>
+  </section>
+</app-legal-document>

@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { form, submit } from '@angular/forms/signals';
@@ -25,6 +26,7 @@ import { StatusBadges } from '../../components/status-badges';
 @Component({
   selector: 'app-ingredient-list-page',
   imports: [
+    NgOptimizedImage,
     TextField,
     CheckboxField,
     ImageField,

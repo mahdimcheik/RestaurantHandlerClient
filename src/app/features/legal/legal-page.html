@@ -1,56 +1,45 @@
-<div class="gutter shop__page shop__page--narrow legal">
-  @switch (page()) {
-    @case ('terms') {
-      <h1>Conditions générales de vente</h1>
+@switch (page()) {
+  @case ('terms') {
+    <app-legal-document heading="Conditions générales de vente" [updatedOn]="updatedOn">
       <p class="alert" role="note">
         Texte en cours de rédaction : les rubriques ci-dessous seront complétées avant l'ouverture
         de la commande en ligne.
       </p>
-      <h2>Vendeur</h2>
-      <ng-container [ngTemplateOutlet]="identity" />
-      <h2>Prix</h2>
-      <p>
-        Les prix sont indiqués en euros, toutes taxes comprises. Le montant de la commande est
-        calculé par Greenadine à partir de la carte en vigueur au moment de la validation.
-      </p>
-      <h2>Commande et retrait</h2>
-      <p class="legal__todo">À rédiger.</p>
-      <h2>Paiement</h2>
-      <p class="legal__todo">À rédiger.</p>
-      <h2>Annulation et remboursement</h2>
-      <p class="legal__todo">À rédiger.</p>
-      <h2>Droit de rétractation</h2>
-      <p class="legal__todo">À rédiger.</p>
-      <h2>Médiation de la consommation</h2>
-      <p class="legal__todo">À rédiger.</p>
-    }
-    @case ('privacy') {
-      <h1>Politique de confidentialité</h1>
-      <p class="alert" role="note">
-        Texte en cours de rédaction : les rubriques ci-dessous seront complétées avant l'ouverture
-        de la commande en ligne.
-      </p>
-      <h2>Responsable du traitement</h2>
-      <ng-container [ngTemplateOutlet]="identity" />
-      <h2>Données collectées</h2>
-      <p>
-        Identité, adresse e-mail, téléphone et historique de vos commandes, pour gérer votre compte
-        et vos commandes. Aucune prospection, aucun cookie de mesure d'audience.
-      </p>
-      <h2>Durée de conservation et droits</h2>
-      <p class="legal__todo">À rédiger.</p>
-      <h2>Sous-traitants</h2>
-      <p class="legal__todo">À rédiger.</p>
-    }
-    @case ('notice') {
-      <h1>Mentions légales</h1>
-      <h2>Éditeur</h2>
-      <ng-container [ngTemplateOutlet]="identity" />
-      <h2>Hébergement</h2>
-      <p class="legal__todo">À rédiger.</p>
-    }
-    @case ('allergens') {
-      <h1>Allergènes</h1>
+      <section>
+        <h2>Vendeur</h2>
+        <app-legal-identity />
+      </section>
+      <section>
+        <h2>Prix</h2>
+        <p>
+          Les prix sont indiqués en euros, toutes taxes comprises. Le montant de la commande est
+          calculé par Greenadine à partir de la carte en vigueur au moment de la validation.
+        </p>
+      </section>
+      <section>
+        <h2>Commande et retrait</h2>
+        <p class="legal__todo">À rédiger.</p>
+      </section>
+      <section>
+        <h2>Paiement</h2>
+        <p class="legal__todo">À rédiger.</p>
+      </section>
+      <section>
+        <h2>Annulation et remboursement</h2>
+        <p class="legal__todo">À rédiger.</p>
+      </section>
+      <section>
+        <h2>Droit de rétractation</h2>
+        <p class="legal__todo">À rédiger.</p>
+      </section>
+      <section>
+        <h2>Médiation de la consommation</h2>
+        <p class="legal__todo">À rédiger.</p>
+      </section>
+    </app-legal-document>
+  }
+  @case ('allergens') {
+    <app-legal-document heading="Allergènes">
       <p>
         Nos plats peuvent contenir un ou plusieurs des 14 allergènes réglementaires. Les
         informations allergènes de chaque produit sont disponibles sur demande au comptoir, avant
@@ -58,43 +47,13 @@
       </p>
       @if (info()?.phone; as phone) {
         <p>
-          <ng-container>Une question avant de commander ?</ng-container>
-          <a [href]="'tel:' + phone">{{ phone }}</a>
+          Une question avant de commander ?
+          <a [href]="'tel:' + phone.replaceAll(' ', '')">{{ phone }}</a>
         </p>
       }
-      <a class="btn" routerLink="/carte">Voir la carte</a>
-    }
+      <div class="actions">
+        <a class="btn-brand btn-brand--solid" routerLink="/carte">Voir la carte</a>
+      </div>
+    </app-legal-document>
   }
-
-  <nav class="legal__links" aria-label="Informations légales">
-    <a routerLink="/cgv">Conditions générales de vente</a>
-    <a routerLink="/confidentialite">Politique de confidentialité</a>
-    <a routerLink="/mentions-legales">Mentions légales</a>
-    <a routerLink="/allergenes">Allergènes</a>
-  </nav>
-</div>
-
-<ng-template #identity>
-  @if (info(); as info) {
-    <p>
-      <strong>{{ info.legalName || info.tradeName }}</strong>
-      @if (info.legalName && info.legalName !== info.tradeName) {
-        , sous l'enseigne {{ info.tradeName }}
-      }
-      @if (info.address) {
-        <br />{{ info.address }}
-      }
-      @if (info.siret) {
-        <br />SIRET {{ info.siret }}
-      }
-      @if (info.vatNumber) {
-        <br />N° TVA {{ info.vatNumber }}
-      }
-      @if (info.phone) {
-        <br />Téléphone : {{ info.phone }}
-      }
-    </p>
-  } @else {
-    <p role="status">Chargement…</p>
-  }
-</ng-template>
+}
