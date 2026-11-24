@@ -12,10 +12,20 @@ describe('ProductPage', () => {
   let fixture: ComponentFixture<ProductPage>;
   let http: HttpTestingController;
 
-  const addButton = () =>
+  const buttonWith = (label: string) =>
     [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].find((b) =>
-      b.textContent?.includes('Ajouter au panier'),
-    )!;
+      b.textContent?.includes(label),
+    );
+  const addButton = () => buttonWith('Ajouter au panier')!;
+
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
+      this.open = true;
+    };
+    HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement) {
+      this.open = false;
+    };
+  });
 
   beforeEach(async () => {
     localStorage.clear();
@@ -38,16 +48,23 @@ describe('ProductPage', () => {
 
   afterEach(() => http.verify());
 
-  it('attend le choix obligatoire, puis ajoute la ligne personnalisée au prix du devis', async () => {
+  it('ouvre d’office le choix des options, pas à pas, puis ajoute la ligne personnalisée au prix du devis', async () => {
     expect(text(fixture)).toContain('Burger');
-    expect(text(fixture)).toContain('À choisir : Taille');
-    expect(addButton().disabled).toBe(true);
+    expect(buttonWith('Ajouter au panier')).toBeUndefined();
 
+    const dialog = (fixture.nativeElement as HTMLElement).querySelector('dialog')!;
+    expect(dialog.open).toBe(true);
+    expect(text(fixture)).toContain('Burger · étape 1 sur 2');
+    expect(fixture.nativeElement.querySelector('.stepper')).toBeNull();
     clickButton(fixture, 'Sans Oignon');
+    await settle();
+
     [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.tile')]
       .find((tile) => tile.textContent?.includes('Grande'))!
       .click();
     await settle(310);
+    expect(text(fixture)).toContain('Récapitulatif');
+    expect(text(fixture)).toContain('Taille Grande');
 
     const quote = http.expectOne('/orders/quote');
     expect(quote.request.body.lines).toEqual([
@@ -70,6 +87,7 @@ describe('ProductPage', () => {
     await settle();
     expect(addButton().disabled).toBe(false);
     expect(addButton().textContent).toContain('12,00');
+    expect(fixture.nativeElement.querySelector('.wizard')).not.toBeNull();
 
     addButton().click();
     await settle();
@@ -77,6 +95,19 @@ describe('ProductPage', () => {
     expect(cart.lines()).toHaveLength(1);
     expect(cart.lines()[0]).toMatchObject({ kind: 'product', productId: 'burger', quantity: 1 });
     expect(TestBed.inject(Router).url).toBe('/commander');
+  });
+
+  it('revient à la fiche par Précédent, puis rouvre les options', async () => {
+    clickButton(fixture, 'Précédent');
+    await settle();
+    const dialog = (fixture.nativeElement as HTMLElement).querySelector('dialog')!;
+    expect(dialog.open).toBe(false);
+
+    clickButton(fixture, 'Sans Oignon');
+    clickButton(fixture, 'Choisir les options');
+    await settle();
+    expect(dialog.open).toBe(true);
+    expect(buttonWith('Sans Oignon')!.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('affiche le surcoût d’un remplacement avant l’ajout', () => {

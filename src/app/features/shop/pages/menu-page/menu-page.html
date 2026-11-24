@@ -14,21 +14,44 @@
         <app-product-options
           [product]="editing.product"
           [replacements]="replacements()"
+          [groups]="false"
           [(state)]="editState"
         />
         <div class="form__actions">
-          <button
-            type="button"
-            class="btn"
-            [disabled]="editMissing().length > 0"
-            (click)="applyCustomization()"
-          >
-            Valider ces choix
-          </button>
+          @if (editing.product.groups.length > 0) {
+            <button type="button" class="btn" aria-haspopup="dialog" (click)="wizardOpen.set(true)">
+              Choisir les options
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn"
+              [disabled]="editMissing().length > 0"
+              (click)="applyCustomization()"
+            >
+              Valider ces choix
+            </button>
+          }
           <button type="button" class="btn btn--outline" (click)="cancelCustomization()">
             Annuler
           </button>
         </div>
+
+        <app-order-dialog
+          labelledBy="wizard-title"
+          [(open)]="wizardOpen"
+          (closed)="onWizardClosed()"
+        >
+          @if (wizardOpen()) {
+            <app-options-wizard
+              [product]="editing.product"
+              [(state)]="editState"
+              submitLabel="Valider ces choix"
+              (submit)="applyCustomization()"
+              (back)="onWizardClosed()"
+            />
+          }
+        </app-order-dialog>
       </section>
     } @else {
       <article class="sheet" aria-labelledby="sheet-title">
@@ -60,22 +83,6 @@
             (customize)="customize($event)"
           />
           <div class="sheet__order">
-            <span class="stepper" role="group" aria-label="Quantité">
-              <button
-                type="button"
-                class="icon-button"
-                [disabled]="quantity() <= 1"
-                (click)="step(-1)"
-              >
-                <app-icon name="minus" />
-                <span class="visually-hidden">Un de moins</span>
-              </button>
-              <span class="stepper__value" aria-live="polite">{{ quantity() }}</span>
-              <button type="button" class="icon-button" (click)="step(1)">
-                <app-icon name="plus" />
-                <span class="visually-hidden">Un de plus</span>
-              </button>
-            </span>
             <button
               type="button"
               class="btn-brand btn-brand--solid sheet__add"

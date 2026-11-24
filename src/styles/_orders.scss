@@ -122,6 +122,19 @@
   }
 }
 
+// Tuile illustrée (choix d'option avec photo) : visuel en tête, à taille fixe.
+.tile--media {
+  justify-content: flex-start;
+}
+
+.tile__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
 .tile__name {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
@@ -373,6 +386,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+.picker__image {
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border-radius: var(--radius);
+  object-fit: cover;
 }
 
 .picker__chosen {

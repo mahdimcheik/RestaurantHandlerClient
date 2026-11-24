@@ -28,48 +28,59 @@
         <app-product-options
           [product]="product"
           [replacements]="replacements()"
+          [groups]="false"
           [(state)]="state"
         />
 
         <div class="sheet__order">
-          <span class="stepper" role="group" aria-label="Quantité">
+          @if (product.groups.length > 0) {
             <button
               type="button"
-              class="icon-button"
-              [disabled]="quantity() <= 1"
-              (click)="step(-1)"
+              class="btn-brand btn-brand--solid sheet__add"
+              aria-haspopup="dialog"
+              (click)="wizardOpen.set(true)"
             >
-              <app-icon name="minus" />
-              <span class="visually-hidden">Un de moins</span>
+              @if (line()) {
+                Modifier les options
+              } @else {
+                Choisir les options
+              }
             </button>
-            <span class="stepper__value" aria-live="polite">{{ quantity() }}</span>
-            <button type="button" class="icon-button" (click)="step(1)">
-              <app-icon name="plus" />
-              <span class="visually-hidden">Un de plus</span>
+          } @else {
+            <button
+              type="button"
+              class="btn-brand btn-brand--solid sheet__add"
+              [disabled]="!canAdd()"
+              (click)="add()"
+            >
+              @if (line()) {
+                Mettre à jour
+              } @else {
+                Ajouter au panier
+              }
+              @if (quote.total() !== null) {
+                <span aria-live="polite"> · {{ quote.total() | euros }}</span>
+              }
             </button>
-          </span>
-          <button
-            type="button"
-            class="btn-brand btn-brand--solid sheet__add"
-            [disabled]="!canAdd()"
-            (click)="add()"
-          >
-            @if (line()) {
-              Mettre à jour
-            } @else {
-              Ajouter au panier
-            }
-            @if (quote.total() !== null) {
-              <span aria-live="polite"> · {{ quote.total() | euros }}</span>
-            }
-          </button>
+          }
         </div>
-        @if (missing().length > 0) {
-          <p class="field__hint">À choisir : {{ missingLabels() }}.</p>
-        }
-        @if (issue()) {
+        @if (issue() && product.groups.length === 0) {
           <p class="alert alert--error" role="alert">{{ issue() }}</p>
         }
+
+        <app-order-dialog labelledBy="wizard-title" [(open)]="wizardOpen">
+          @if (wizardOpen()) {
+            <app-options-wizard
+              [product]="product"
+              [(state)]="state"
+              [total]="quote.total()"
+              [issue]="issue()"
+              [submitLabel]="line() ? 'Mettre à jour' : 'Ajouter au panier'"
+              (submit)="add()"
+              (back)="wizardOpen.set(false)"
+            />
+          }
+        </app-order-dialog>
       }
     </article>
   } @else if (loading()) {

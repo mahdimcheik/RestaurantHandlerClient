@@ -53,6 +53,17 @@ export function chosenCount(group: ChoiceGroup, state: CustomizationState): numb
   return group.choices.reduce((sum, choice) => sum + (state.choices[choice.id] ?? 0), 0);
 }
 
+/** Choix retenus dans un groupe, pour un récapitulatif (« Frites », « Sauce × 2 »). */
+export function chosenLabels(group: ChoiceGroup, state: CustomizationState): string[] {
+  return group.choices.flatMap((choice) => {
+    const quantity = state.choices[choice.id] ?? 0;
+    if (quantity === 0) {
+      return [];
+    }
+    return [quantity > 1 ? `${choice.name} × ${quantity}` : choice.name];
+  });
+}
+
 /** Groupes dont le minimum n'est pas atteint (le serveur refuserait la ligne). */
 export function missingGroups(
   product: CustomizableProduct,

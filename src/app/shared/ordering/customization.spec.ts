@@ -1,5 +1,6 @@
 import { OptionGroupDetails, ProductDetails } from '../../core/api/generated';
 import {
+  chosenLabels,
   isCustomizable,
   missingGroups,
   pickChoice,
@@ -120,6 +121,14 @@ describe('customization', () => {
     expect(state.choices['eau']).toBe(1);
     state = stepChoice(state, sauces, coca, 1);
     expect(state.choices).toEqual({ eau: 1, coca: 1 });
+  });
+
+  it('liste les choix retenus d’un groupe pour le récapitulatif', () => {
+    const drinks = burger.groups[0];
+    expect(chosenLabels(drinks, { ingredients: {}, choices: {} })).toEqual([]);
+    expect(chosenLabels(drinks, { ingredients: {}, choices: { coca: 2, eau: 0 } })).toEqual([
+      'Coca × 2',
+    ]);
   });
 
   it('lit la carte publique : rupture d’un ingrédient retirable et surcoût de remplacement', () => {

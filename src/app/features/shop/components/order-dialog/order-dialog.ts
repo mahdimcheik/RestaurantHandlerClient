@@ -55,11 +55,28 @@ export class OrderDialog {
     afterRenderEffect(() => {
       const dialog = this.dialog().nativeElement;
       if (this.open() && !dialog.open) {
-        dialog.showModal();
+        this.show(dialog);
       } else if (!this.open() && dialog.open) {
         dialog.close();
       }
     });
+  }
+
+  /**
+   * Un dialogue posé dans un autre (assistant d'options dans la fiche) attend que celui-ci soit
+   * ouvert : ouvert avant lui, il passerait dessous dans la pile des dialogues modaux.
+   */
+  private show(dialog: HTMLDialogElement): void {
+    const host = dialog.parentElement?.closest('dialog');
+    if (host && !host.open) {
+      setTimeout(() => {
+        if (this.open() && !dialog.open && dialog.isConnected) {
+          this.show(dialog);
+        }
+      });
+      return;
+    }
+    dialog.showModal();
   }
 
   /** Fermeture par le client (Échap, bouton Fermer, clic hors du contenu). */
