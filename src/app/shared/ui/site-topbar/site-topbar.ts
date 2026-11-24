@@ -50,7 +50,7 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
           @if (open() === 'nav') {
             <ul id="topbar-nav" class="topbar__panel topbar__links">
               <li><a routerLink="/" (click)="close()">Accueil</a></li>
-              <li><a routerLink="/commander" (click)="close()">Carte</a></li>
+              <li><a routerLink="/carte" (click)="close()">Carte</a></li>
               <li>
                 <a routerLink="/a-propos" (click)="close()">À propos</a>
               </li>
@@ -73,7 +73,7 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
         >
         <a
           class="topbar__link"
-          routerLink="/commander"
+          routerLink="/carte"
           routerLinkActive="topbar__link--active"
           ariaCurrentWhenActive="page"
           >Carte</a

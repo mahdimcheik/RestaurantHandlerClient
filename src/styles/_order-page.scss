@@ -197,6 +197,61 @@
   }
 }
 
+// Carte à consulter : rubriques à la suite, barre de liens collante vers chacune.
+.menu-board {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.menu-board__section {
+  scroll-margin-top: calc(var(--tap-min) + var(--space-6));
+}
+
+.menu-board__nav {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-inline: calc(-1 * var(--space-2));
+  padding: var(--space-2);
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-bg);
+  box-shadow: 0 6px 16px var(--brand-shade);
+}
+
+.menu-board__links {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-1);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.menu-board__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding-inline: var(--space-4);
+  border: max(1px, 1.5px) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--brand-shade-light);
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
+  }
+}
+
 .dish-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));

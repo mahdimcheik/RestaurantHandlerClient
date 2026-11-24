@@ -33,7 +33,7 @@ describe('AboutPage', () => {
       'Fait maison',
       'Le contact client',
     ]);
-    expect(el.querySelector('.intro a[href="/commander"]')).not.toBeNull();
+    expect(el.querySelector('.intro a[href="/carte"]')).not.toBeNull();
     expect(el.querySelector('.topbar')).not.toBeNull();
   });
 });
