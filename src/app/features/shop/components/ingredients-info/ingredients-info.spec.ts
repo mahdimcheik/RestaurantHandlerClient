@@ -10,6 +10,7 @@ describe('IngredientsInfo', () => {
     priceCents: 1000,
     isAvailable: true,
     isMenu: false,
+    hasOptions: false,
     ingredients: [],
     link: ['/commander/produit', 'burger'],
     ...overrides,

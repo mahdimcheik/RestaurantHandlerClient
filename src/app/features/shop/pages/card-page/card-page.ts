@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   linkedSignal,
   OnDestroy,
@@ -89,6 +90,7 @@ export class CardPage implements OnDestroy {
   protected readonly sheetOpen = signal(false);
 
   private readonly outlet = viewChild.required(RouterOutlet);
+  private readonly aside = viewChild(OrderAside, { read: ElementRef });
 
   constructor() {
     inject(RealtimeService).start();
@@ -104,6 +106,15 @@ export class CardPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.cart.removed.set([]);
+  }
+
+  /** Le client doit choisir la ligne à retirer : détail de la commande ouvert, ou mis au focus. */
+  protected showCart(): void {
+    if (this.wide()) {
+      (this.aside()?.nativeElement as HTMLElement | undefined)?.focus();
+      return;
+    }
+    this.cartOpen.set(true);
   }
 
   protected onSheetActivate(): void {

@@ -9,6 +9,7 @@ import { CartSummary } from '../cart-summary/cart-summary';
     class: 'order-panel order-aside',
     role: 'complementary',
     'aria-labelledby': 'order-aside-title',
+    tabindex: '-1',
   },
   template: `
     <h2 id="order-aside-title" class="eyebrow">Votre commande</h2>

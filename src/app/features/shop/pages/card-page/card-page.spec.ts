@@ -124,6 +124,79 @@ describe('CardPage', () => {
     expect(TestBed.inject(Router).url).toBe('/commander');
   });
 
+  /** Répond à tous les devis en attente (le prix n'est pas l'objet de ces tests). */
+  async function flushQuotes(): Promise<void> {
+    await settle(310);
+    for (const request of http.match('/orders/quote')) {
+      request.flush(envelope({ totalCents: 0, lines: [], vat: [] }));
+    }
+    await settle();
+  }
+
+  const counter = (name: string) =>
+    [...root().querySelectorAll('.dish-tile')]
+      .find((tile) => tile.querySelector('.dish-card__name')?.textContent?.trim() === name)!
+      .querySelector('.dish-counter')!;
+  const counterButton = (name: string, label: 'Ajouter' | 'Retirer') =>
+    [...counter(name).querySelectorAll('button')].find((button) =>
+      button.textContent?.includes(`${label} : ${name}`),
+    );
+
+  it('ajoute d’office au compteur un produit sans options, et le retire par « − »', async () => {
+    await setup('/commander');
+    tabs()[1].click();
+    await settle();
+    expect(counterButton('Cola', 'Retirer')).toBeUndefined();
+
+    counterButton('Cola', 'Ajouter')!.click();
+    await settle();
+    counterButton('Cola', 'Ajouter')!.click();
+    await flushQuotes();
+    const cart = TestBed.inject(CartStore);
+    expect(cart.lines()).toHaveLength(1);
+    expect(counter('Cola').querySelector('.dish-counter__value')?.textContent?.trim()).toBe('2');
+
+    counterButton('Cola', 'Retirer')!.click();
+    await flushQuotes();
+    expect(cart.lines()[0].quantity).toBe(1);
+    counterButton('Cola', 'Retirer')!.click();
+    await flushQuotes();
+    expect(cart.isEmpty()).toBe(true);
+    expect(counterButton('Cola', 'Retirer')).toBeUndefined();
+  });
+
+  it('ouvre la fiche par « + » d’un produit à options', async () => {
+    await setup('/commander');
+    tabs()[1].click();
+    await settle();
+
+    counterButton('Burger', 'Ajouter')!.click();
+    await settle();
+    expect(TestBed.inject(Router).url).toBe('/commander/produit/burger');
+  });
+
+  it('ouvre le détail de la commande par « − » quand le produit y est en plusieurs lignes', async () => {
+    await setup('/commander');
+    tabs()[1].click();
+    await settle();
+    const cart = TestBed.inject(CartStore);
+    const burger = TestBed.inject(PublicStore).products().get('burger')!;
+    const choice = (choiceId: string) => ({
+      modifications: [],
+      optionChoices: [{ choiceId, quantity: 1 }],
+      labels: [choiceId],
+    });
+    cart.addProduct(burger, choice('petite'));
+    cart.addProduct(burger, choice('grande'));
+    await flushQuotes();
+    expect(counter('Burger').querySelector('.dish-counter__value')?.textContent?.trim()).toBe('2');
+
+    counterButton('Burger', 'Retirer')!.click();
+    await flushQuotes();
+    expect(cart.lines()).toHaveLength(2);
+    expect(dialog('[aria-labelledby="cart-sheet-title"]').open).toBe(true);
+  });
+
   it('sur téléphone, montre le bandeau du panier qui ouvre le détail de la commande', async () => {
     await setup('/commander');
     expect(root().querySelector('.order-bar')).toBeNull();

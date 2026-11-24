@@ -392,6 +392,72 @@
   }
 }
 
+// Compteur de la carte de commande, posé à droite du prix : « + » seul tant que l'article n'est
+// pas au panier, puis « − », quantité, « + ».
+.dish-tile--counter .dish-card__price {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding-inline-end: calc(3 * var(--tap-min));
+}
+
+.dish-tile--counter .dish-card__body {
+  padding-block-end: var(--space-3);
+}
+
+.dish-counter {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.dish-counter__button {
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: max(1px, 1.5px) solid currentColor;
+  border-radius: 50%;
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+
+  &:hover {
+    background: var(--brand-glaze);
+    color: var(--brand-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
+  }
+}
+
+.dish-counter__button--add {
+  background: var(--brand-ink);
+  color: var(--brand-bg);
+
+  &:hover {
+    background: var(--brand-bg);
+    color: var(--brand-ink);
+  }
+}
+
+.dish-counter__value {
+  min-width: 1.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.order-aside:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 4px;
+}
+
 // Ingrédients d'un produit : visuel à gauche, liste à droite, description en bas (téléphone :
 // les trois empilés).
 .ingredients-info {

@@ -31,7 +31,7 @@
     } @else {
       <div class="order-layout">
         <app-category-rail [sections]="sections()" [(selectedId)]="selectedId" panelId="rubrique" />
-        <app-dish-panel id="rubrique" [section]="selected()" />
+        <app-dish-panel id="rubrique" [section]="selected()" (showCart)="showCart()" />
         @if (wide()) {
           <app-order-aside />
         }

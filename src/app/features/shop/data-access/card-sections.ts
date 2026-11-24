@@ -9,6 +9,8 @@ export interface Dish {
   priceCents: number;
   isAvailable: boolean;
   isMenu: boolean;
+  /** Des choix à faire avant l'ajout (groupes d'options, ou composition d'un menu). */
+  hasOptions: boolean;
   /** Ingrédients d'un produit (vide pour un menu). */
   ingredients: PublicIngredient[];
   link: string[];
@@ -45,6 +47,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
               priceCents: menu.priceCents,
               isAvailable: menu.isAvailable,
               isMenu: true,
+              hasOptions: true,
               ingredients: [],
               link: ['/commander/menu', menu.id],
             })),
@@ -67,6 +70,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
         priceCents: product.priceCents,
         isAvailable: product.isAvailable,
         isMenu: false,
+        hasOptions: product.optionGroups.length > 0,
         ingredients: product.ingredients,
         link: ['/commander/produit', product.id],
       })),
