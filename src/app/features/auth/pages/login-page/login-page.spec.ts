@@ -4,7 +4,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { SessionService } from '../../../../core/auth/session.service';
 import { envelope, loginData } from '../../../../core/auth/testing';
-import { submitForm, text, typeInto } from '../../testing';
+import { fakeRealtime } from '../../../../core/realtime/testing';
+import { flushRestaurantInfo, submitForm, text, typeInto } from '../../testing';
 import { LoginPage } from './login-page';
 
 describe('LoginPage', () => {
@@ -14,14 +15,33 @@ describe('LoginPage', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [LoginPage],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        fakeRealtime().provider,
+      ],
     });
     fixture = TestBed.createComponent(LoginPage);
     http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    flushRestaurantInfo(http);
     await fixture.whenStable();
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    flushRestaurantInfo(http);
+    http.verify();
+  });
+
+  it('suit le nouveau design : barre du haut, un seul titre, bouton plein', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.brand.brand-ui .topbar')).not.toBeNull();
+    expect(el.querySelectorAll('h1').length).toBe(1);
+    expect(el.querySelector('.auth__card h1')?.textContent).toContain('Connexion');
+    expect(el.querySelector('.auth__aside')?.textContent).toContain('Bon retour parmi nous');
+    expect(el.querySelector('button[type=submit].btn-brand--solid')).not.toBeNull();
+  });
 
   it('refuse un formulaire invalide sans appeler l’API', async () => {
     typeInto(fixture, 0, 'pas-un-email');

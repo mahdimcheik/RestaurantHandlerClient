@@ -10,7 +10,7 @@ import { AuthLayout } from '../../../../shared/ui/auth-layout/auth-layout';
   imports: [AuthLayout, RouterLink],
   template: `
     <app-auth-layout>
-      <h1 class="auth__title">Lien expiré</h1>
+      <h1 class="display-title display-title--md">Lien expiré</h1>
       <p class="auth__lead">Ce lien d'activation n'est plus valide.</p>
       @if (message()) {
         <p
@@ -23,7 +23,12 @@ import { AuthLayout } from '../../../../shared/ui/auth-layout/auth-layout';
         </p>
       }
       @if (userId() && !sent()) {
-        <button type="button" class="btn form__submit" [disabled]="sending()" (click)="resend()">
+        <button
+          type="button"
+          class="btn-brand btn-brand--solid form__submit"
+          [disabled]="sending()"
+          (click)="resend()"
+        >
           @if (sending()) {
             Envoi…
           } @else {

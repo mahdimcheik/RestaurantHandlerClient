@@ -2,7 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { submitForm, text, typeInto } from '../../testing';
+import { fakeRealtime } from '../../../../core/realtime/testing';
+import { flushRestaurantInfo, submitForm, text, typeInto } from '../../testing';
 import { ResetPasswordPage } from './reset-password-page';
 
 describe('ResetPasswordPage', () => {
@@ -12,13 +13,23 @@ describe('ResetPasswordPage', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ResetPasswordPage],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        fakeRealtime().provider,
+      ],
     });
     fixture = TestBed.createComponent(ResetPasswordPage);
     http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    flushRestaurantInfo(http);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    flushRestaurantInfo(http);
+    http.verify();
+  });
 
   it('signale un lien incomplet', async () => {
     await fixture.whenStable();

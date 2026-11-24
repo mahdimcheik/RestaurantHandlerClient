@@ -519,3 +519,58 @@
   font-weight: 700;
   letter-spacing: 0.3em;
 }
+
+// Écrans de compte (connexion, inscription…) : accroche et assiette à gauche, formulaire dans
+// une carte à droite. Sous 60rem, la carte seule, pour que le formulaire vienne en premier.
+.auth {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  gap: var(--space-8);
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-block: var(--space-4) var(--space-9);
+
+  @media (min-width: 60rem) {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.auth__aside {
+  display: none;
+
+  @media (min-width: 60rem) {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    justify-self: stretch;
+
+    .plate {
+      width: min(100%, 22rem);
+    }
+  }
+}
+
+.auth__card {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 30rem;
+  padding: var(--space-5);
+  border: var(--border-width-strong) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+  box-shadow: 0 18px 28px var(--brand-shade);
+
+  @media (min-width: 40rem) {
+    padding: var(--space-7);
+  }
+
+  .form__submit {
+    white-space: normal;
+  }
+}
+
+.auth__lead {
+  line-height: 1.55;
+}

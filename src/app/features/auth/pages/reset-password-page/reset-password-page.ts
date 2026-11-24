@@ -22,7 +22,7 @@ const invalidLink = `Ce lien de réinitialisation n'est plus valide. Demandez-en
   imports: [AuthLayout, TextField, RouterLink],
   template: `
     <app-auth-layout>
-      <h1 class="auth__title">Nouveau mot de passe</h1>
+      <h1 class="display-title display-title--md">Nouveau mot de passe</h1>
       @if (hasLink()) {
         @if (error()) {
           <p class="alert alert--error" role="alert">{{ error() }}</p>
@@ -41,7 +41,11 @@ const invalidLink = `Ce lien de réinitialisation n'est plus valide. Demandez-en
             autocomplete="new-password"
             label="Confirmer le mot de passe"
           />
-          <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+          <button
+            type="submit"
+            class="btn-brand btn-brand--solid form__submit"
+            [disabled]="form().submitting()"
+          >
             @if (form().submitting()) {
               Enregistrement…
             } @else {
@@ -53,7 +57,7 @@ const invalidLink = `Ce lien de réinitialisation n'est plus valide. Demandez-en
         <p class="alert alert--error" role="alert">{{ invalidLink }}</p>
       }
       @if (!hasLink() || linkRejected()) {
-        <a class="btn btn--outline form__submit" routerLink="/auth/mot-de-passe-oublie">
+        <a class="btn-brand form__submit" routerLink="/auth/mot-de-passe-oublie">
           Demander un nouveau lien
         </a>
       }

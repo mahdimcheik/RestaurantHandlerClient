@@ -13,13 +13,15 @@ import { emailRules, focusFirstInvalid } from '../../auth-validation';
   imports: [AuthLayout, TextField, RouterLink],
   template: `
     <app-auth-layout>
-      <h1 class="auth__title">Mot de passe oublié</h1>
+      <h1 class="display-title display-title--md">Mot de passe oublié</h1>
       @if (sent()) {
         <p class="alert alert--success" role="status">
           Si un compte correspond à cette adresse, un e-mail de réinitialisation vient d'y être
           envoyé.
         </p>
-        <a class="btn form__submit" routerLink="/auth/connexion"> Retour à la connexion </a>
+        <a class="btn-brand btn-brand--solid form__submit" routerLink="/auth/connexion">
+          Retour à la connexion
+        </a>
       } @else {
         <p class="auth__lead">
           Saisissez l'adresse de votre compte : vous recevrez un lien pour choisir un nouveau mot de
@@ -30,7 +32,11 @@ import { emailRules, focusFirstInvalid } from '../../auth-validation';
         }
         <form class="form" novalidate (submit)="onSubmit($event)">
           <app-text-field [field]="form.email" type="email" autocomplete="email" label="E-mail" />
-          <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+          <button
+            type="submit"
+            class="btn-brand btn-brand--solid form__submit"
+            [disabled]="form().submitting()"
+          >
             @if (form().submitting()) {
               Envoi…
             } @else {

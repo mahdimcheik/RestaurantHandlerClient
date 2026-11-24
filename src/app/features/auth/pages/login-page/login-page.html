@@ -1,5 +1,5 @@
-<app-auth-layout>
-  <h1 class="auth__title">Connexion</h1>
+<app-auth-layout tagline="Bon retour parmi nous">
+  <h1 class="display-title display-title--md">Connexion</h1>
   <p class="auth__lead">
     Pas encore de compte ?
     <a routerLink="/auth/inscription" [queryParams]="{ returnUrl: returnUrl() }">Créer un compte</a>
@@ -18,7 +18,11 @@
       label="Mot de passe"
     />
     <a class="form__link" routerLink="/auth/mot-de-passe-oublie"> Mot de passe oublié ? </a>
-    <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+    <button
+      type="submit"
+      class="btn-brand btn-brand--solid form__submit"
+      [disabled]="form().submitting()"
+    >
       @if (form().submitting()) {
         Connexion…
       } @else {

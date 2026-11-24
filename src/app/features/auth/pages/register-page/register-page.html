@@ -1,13 +1,15 @@
-<app-auth-layout>
+<app-auth-layout tagline="Rejoignez la maison">
   @if (registeredEmail(); as sentTo) {
-    <h1 class="auth__title">Vérifiez vos e-mails</h1>
+    <h1 class="display-title display-title--md">Vérifiez vos e-mails</h1>
     <p class="alert alert--success" role="status">
       Compte créé. Un lien d'activation vient d'être envoyé à <strong>{{ sentTo }}</strong>.
     </p>
     <p class="auth__lead">Rien reçu ? Regardez dans les courriers indésirables.</p>
-    <a class="btn form__submit" routerLink="/auth/connexion"> Aller à la connexion </a>
+    <a class="btn-brand btn-brand--solid form__submit" routerLink="/auth/connexion">
+      Aller à la connexion
+    </a>
   } @else {
-    <h1 class="auth__title">Créer un compte</h1>
+    <h1 class="display-title display-title--md">Créer un compte</h1>
     <p class="auth__lead">
       Déjà inscrit ?
       <a routerLink="/auth/connexion" [queryParams]="{ returnUrl: returnUrl() }">Se connecter</a>
@@ -50,7 +52,11 @@
         </p>
       </fieldset>
 
-      <button type="submit" class="btn form__submit" [disabled]="form().submitting()">
+      <button
+        type="submit"
+        class="btn-brand btn-brand--solid form__submit"
+        [disabled]="form().submitting()"
+      >
         @if (form().submitting()) {
           Création…
         } @else {
