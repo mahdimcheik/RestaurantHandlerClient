@@ -12,8 +12,6 @@ const ingredients: OptionGroupDetails = {
   position: 0,
   minChoices: 3,
   maxChoices: 3,
-  freeChoices: 3,
-  extraChoicePriceCents: 0,
   maxPerChoice: 2,
   isArchived: false,
   productCount: 1,
@@ -78,23 +76,18 @@ describe('ProductEditPage — groupes d’options', () => {
     await fixture.whenStable();
     fill(fixture, 'Minimum de choix', '5');
     fill(fixture, 'Maximum de choix', '5');
-    fill(fixture, 'Choix offerts', '5');
     clickButton(fixture, 'Enregistrer les groupes');
     await Promise.resolve();
 
     const request = http.expectOne('/manage/products/p1/option-groups');
     expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual({
-      optionGroups: [
-        { optionGroupId: 'g1', rules: { minChoices: 5, maxChoices: 5, freeChoices: 5 } },
-      ],
+      optionGroups: [{ optionGroupId: 'g1', rules: { minChoices: 5, maxChoices: 5 } }],
     });
     request.flush(
       envelope({
         ...pizza,
-        optionGroups: [
-          { ...ingredients, productRules: { minChoices: 5, maxChoices: 5, freeChoices: 5 } },
-        ],
+        optionGroups: [{ ...ingredients, productRules: { minChoices: 5, maxChoices: 5 } }],
       }),
     );
     await flushRefresh();

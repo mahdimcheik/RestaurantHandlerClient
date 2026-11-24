@@ -5,8 +5,6 @@ import { OptionChoiceDetails } from '../models/option-choice-details';
 import { OptionGroupRules } from '../models/option-group-rules';
 export interface OptionGroupDetails {
   choices: Array<OptionChoiceDetails>;
-  extraChoicePriceCents: number;
-  freeChoices: number;
   id: string;
   imageUrl?: string | null;
   isArchived: boolean;

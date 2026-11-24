@@ -43,8 +43,6 @@ interface GroupModel {
   label: string;
   minChoices: number;
   maxChoices: number;
-  freeChoices: number;
-  extraChoicePrice: string;
   maxPerChoice: number;
   choices: ChoiceModel[];
 }
@@ -55,8 +53,6 @@ const toModel = (group: OptionGroupDetails | undefined): GroupModel => ({
   label: group?.label ?? '',
   minChoices: group?.minChoices ?? 1,
   maxChoices: group?.maxChoices ?? 1,
-  freeChoices: group?.freeChoices ?? 1,
-  extraChoicePrice: centsToInput(group?.extraChoicePriceCents ?? 0),
   maxPerChoice: group?.maxPerChoice ?? 1,
   choices: group?.choices.map((choice) => ({
     id: choice.id,
@@ -70,8 +66,6 @@ const toWrite = (model: GroupModel): OptionGroupWrite => ({
   label: model.label.trim(),
   minChoices: model.minChoices,
   maxChoices: model.maxChoices,
-  freeChoices: model.freeChoices,
-  extraChoicePriceCents: parseEuros(model.extraChoicePrice) ?? 0,
   maxPerChoice: model.maxPerChoice,
   choices: model.choices.map((choice) => ({
     id: choice.id,
@@ -136,9 +130,7 @@ export class OptionGroupEditPage {
     nameRules(path.label);
     integerRange(path.minChoices, 0, 20);
     integerRange(path.maxChoices, 1, 20);
-    integerRange(path.freeChoices, 0, 20);
     maxAtLeastMin(path.maxChoices, path.minChoices);
-    eurosRule(path.extraChoicePrice, { required: true });
     integerRange(path.maxPerChoice, 1, 10);
     validate(path.choices, ({ value, valueOf }) =>
       value().length === 0 || value().length * valueOf(path.maxPerChoice) < valueOf(path.minChoices)

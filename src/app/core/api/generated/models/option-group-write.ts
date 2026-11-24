@@ -4,8 +4,6 @@
 import { OptionChoiceWrite } from '../models/option-choice-write';
 export interface OptionGroupWrite {
   choices: Array<OptionChoiceWrite>;
-  extraChoicePriceCents?: number;
-  freeChoices?: number | null;
   label: string;
   maxChoices?: number;
   maxPerChoice?: number;

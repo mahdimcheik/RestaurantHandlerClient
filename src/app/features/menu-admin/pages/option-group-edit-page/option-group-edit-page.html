@@ -73,18 +73,6 @@
               hint="Un produit peut redéfinir ces nombres"
             />
             <app-number-field
-              [field]="form.freeChoices"
-              label="Choix offerts"
-              hint="Les suivants sont facturés"
-            />
-          </div>
-          <div class="form__row">
-            <app-text-field
-              [field]="form.extraChoicePrice"
-              inputmode="decimal"
-              label="Prix d'un choix au-delà des offerts (€)"
-            />
-            <app-number-field
               [field]="form.maxPerChoice"
               label="Fois max par choix"
               hint="2 = un ingrédient peut être doublé ; chaque fois compte comme un choix"

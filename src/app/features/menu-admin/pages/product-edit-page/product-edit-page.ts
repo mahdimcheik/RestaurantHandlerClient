@@ -78,7 +78,6 @@ interface GroupLinkModel {
   custom: boolean;
   minChoices: number;
   maxChoices: number;
-  freeChoices: number;
 }
 
 const toLink = (group: OptionGroupDetails): GroupLinkModel => {
@@ -88,15 +87,12 @@ const toLink = (group: OptionGroupDetails): GroupLinkModel => {
     custom: group.productRules != null,
     minChoices: rules.minChoices,
     maxChoices: rules.maxChoices,
-    freeChoices: rules.freeChoices,
   };
 };
 
 const toLinkWrite = (link: GroupLinkModel): ProductOptionGroupWrite => ({
   optionGroupId: link.id,
-  rules: link.custom
-    ? { minChoices: link.minChoices, maxChoices: link.maxChoices, freeChoices: link.freeChoices }
-    : undefined,
+  rules: link.custom ? { minChoices: link.minChoices, maxChoices: link.maxChoices } : undefined,
 });
 
 /** Création (`/nouveau`) ou modification (`/:id`) d'un produit et de ses groupes d'options. */
@@ -167,7 +163,6 @@ export class ProductEditPage {
     applyEach(path.links, (link) => {
       integerRange(link.minChoices, 0, 20);
       integerRange(link.maxChoices, 1, 20);
-      integerRange(link.freeChoices, 0, 20);
       maxAtLeastMin(link.maxChoices, link.minChoices);
     });
   });

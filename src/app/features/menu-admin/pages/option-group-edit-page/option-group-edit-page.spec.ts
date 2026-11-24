@@ -13,8 +13,6 @@ const sauces: OptionGroupDetails = {
   position: 0,
   minChoices: 0,
   maxChoices: 3,
-  freeChoices: 2,
-  extraChoicePriceCents: 50,
   maxPerChoice: 1,
   isArchived: false,
   productCount: 2,
@@ -98,8 +96,6 @@ describe('OptionGroupEditPage', () => {
       label: 'Taille',
       minChoices: 1,
       maxChoices: 1,
-      freeChoices: 1,
-      extraChoicePriceCents: 0,
       maxPerChoice: 1,
       choices: [
         { id: null, name: '29 cm', extraPriceCents: 0, ingredientId: null },

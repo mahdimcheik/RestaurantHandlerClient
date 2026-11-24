@@ -38,8 +38,6 @@ export const CARD: PublicCard = {
               minChoices: 1,
               maxChoices: 1,
               maxPerChoice: 1,
-              freeChoices: 1,
-              extraChoicePriceCents: 0,
               choices: [
                 { id: 'petite', name: 'Petite', extraPriceCents: 0, isAvailable: true },
                 { id: 'grande', name: 'Grande', extraPriceCents: 200, isAvailable: true },

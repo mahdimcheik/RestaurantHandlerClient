@@ -5649,8 +5649,6 @@
       "OptionGroupDetails": {
         "required": [
           "choices",
-          "extraChoicePriceCents",
-          "freeChoices",
           "id",
           "isArchived",
           "label",
@@ -5683,14 +5681,6 @@
             "format": "int32"
           },
           "maxChoices": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "freeChoices": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "extraChoicePriceCents": {
             "type": "integer",
             "format": "int32"
           },
@@ -5775,7 +5765,6 @@
       },
       "OptionGroupRules": {
         "required": [
-          "freeChoices",
           "maxChoices",
           "minChoices"
         ],
@@ -5790,12 +5779,6 @@
           "maxChoices": {
             "maximum": 20,
             "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          },
-          "freeChoices": {
-            "maximum": 20,
-            "minimum": 0,
             "type": "integer",
             "format": "int32"
           }
@@ -5823,19 +5806,6 @@
           "maxChoices": {
             "maximum": 20,
             "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          },
-          "freeChoices": {
-            "maximum": 20,
-            "minimum": 0,
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "extraChoicePriceCents": {
-            "maximum": 100000,
-            "minimum": 0,
             "type": "integer",
             "format": "int32"
           },
@@ -7305,8 +7275,6 @@
       "PublicOptionGroup": {
         "required": [
           "choices",
-          "extraChoicePriceCents",
-          "freeChoices",
           "id",
           "label",
           "maxChoices",
@@ -7332,14 +7300,6 @@
             "format": "int32"
           },
           "maxChoices": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "freeChoices": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "extraChoicePriceCents": {
             "type": "integer",
             "format": "int32"
           },

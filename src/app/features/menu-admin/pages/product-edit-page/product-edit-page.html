@@ -169,10 +169,9 @@
                     Nombre de choix propre à ce produit
                   </app-checkbox-field>
                   @if (model.custom) {
-                    <div class="form__row form__row--3">
+                    <div class="form__row">
                       <app-number-field [field]="link.minChoices" label="Minimum de choix" />
                       <app-number-field [field]="link.maxChoices" label="Maximum de choix" />
-                      <app-number-field [field]="link.freeChoices" label="Choix offerts" />
                     </div>
                   }
                 </li>
