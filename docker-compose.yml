@@ -1,0 +1,19 @@
+# Déployé sur Acer dans ~/restauranthandler/front-end. Le workflow CD réécrit la ligne
+# IMAGE_TAG= du .env voisin avant chaque `docker compose up`.
+# Rien n'est publié : Nginx Proxy Manager joint ce conteneur par global-network
+# (proxy host → container-restauranthandler-client:80, WebSockets activés).
+name: restauranthandler-front
+
+services:
+  client:
+    image: mahdimcheik/restauranthandler-client:${IMAGE_TAG:-latest}
+    container_name: container-restauranthandler-client
+    restart: unless-stopped
+    expose:
+      - 80
+    networks:
+      - global-network
+
+networks:
+  global-network:
+    external: true
