@@ -145,6 +145,10 @@ export class OpeningPage {
   );
   protected readonly week = linkedSignal(() => toWeek(this.store.openingHours.value()));
   protected readonly hasHours = computed(() => this.store.openingHours.value().length > 0);
+  /** Formulaire affiché, même vide : un restaurant neuf n'a encore aucune plage. */
+  protected readonly hoursReady = computed(
+    () => !this.hoursLoadError() && !(this.hoursLoading() && !this.hasHours()),
+  );
   protected readonly hoursForm = form(this.week, (path) => {
     applyEach(path.days, (day) => {
       applyEach(day.ranges, (range) => {

@@ -1,6 +1,6 @@
 <div class="page-head page-head--sticky">
   <h1>Horaires et fermetures</h1>
-  @if (!hoursLoadError() && hasHours()) {
+  @if (hoursReady()) {
     <div class="toolbar">
       <button type="submit" form="hours-form" class="btn" [disabled]="hoursForm().submitting()">
         Enregistrer les horaires
@@ -19,7 +19,7 @@
 
     @if (hoursLoadError()) {
       <p class="alert alert--error" role="alert">{{ hoursLoadError() }}</p>
-    } @else if (hoursLoading() && !hasHours()) {
+    } @else if (!hoursReady()) {
       <p role="status">Chargement…</p>
     } @else {
       @if (hoursError()) {

@@ -152,4 +152,26 @@ describe('OpeningPage', () => {
       expect(control(fixture, 'Du').value).toBe('');
     });
   });
+
+  describe('restaurant sans aucune plage', () => {
+    it('propose quand même d’enregistrer les horaires', async () => {
+      TestBed.configureTestingModule({
+        imports: [OpeningPage],
+        providers: [provideHttpClient(), provideHttpClientTesting()],
+      });
+      const fixture = TestBed.createComponent(OpeningPage);
+      const http = TestBed.inject(HttpTestingController);
+      fixture.detectChanges();
+      http.expectOne('/manage/restaurant/hours').flush(envelope([]));
+      http.expectOne((r) => r.url === '/manage/restaurant/closures').flush(envelope([]));
+      await fixture.whenStable();
+
+      const save: HTMLButtonElement | null = fixture.nativeElement.querySelector(
+        'button[form="hours-form"]',
+      );
+      expect(save?.textContent).toContain('Enregistrer les horaires');
+      expect(fixture.nativeElement.querySelector('#hours-form')).not.toBeNull();
+      http.verify();
+    });
+  });
 });
