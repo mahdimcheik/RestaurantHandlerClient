@@ -3,9 +3,9 @@
 // fiches produit et menu en dialogue.
 
 // Surface du nouveau design pour des composants de l'ancien style (`.btn`, `.tile`, `.picker`,
-// `.ticket`, champs…) : leurs jetons prennent l'encre et le fond du parfum. Les jetons composés
+// `.ticket`, champs…) : leurs jetons prennent l'encre et le fond de la surface. Les jetons composés
 // (`--border`, `--focus-ring`) sont redéclarés car calculés à la racine. Pas de couleur de statut
-// sur un parfum : les erreurs gardent leur filet, leur icône et leur texte.
+// sur la surface : les erreurs gardent leur filet, leur icône et leur texte.
 .brand-ui {
   --color-ink: var(--brand-ink);
   --color-ink-soft: var(--brand-ink);
@@ -33,7 +33,7 @@
   --focus-ring: 2px solid var(--brand-ink);
   --radius: var(--brand-radius);
 
-  // Les parfums sont des fonds clairs, dans les deux thèmes.
+  // La surface est un fond clair, dans les deux thèmes.
   color-scheme: light;
 }
 

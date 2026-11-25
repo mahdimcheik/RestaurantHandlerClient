@@ -22,7 +22,7 @@ import { Icon } from '../../../../shared/ui/icon/icon';
   template: `
     <dialog
       #dialog
-      class="dialog order-dialog brand brand--1 brand-ui"
+      class="dialog order-dialog brand brand-ui"
       [class.order-dialog--cart]="variant() === 'cart'"
       [attr.aria-labelledby]="labelledBy()"
       (close)="dismiss()"

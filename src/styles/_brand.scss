@@ -2,10 +2,10 @@
 // sur-titre à filets, grand titre, bouton à bord arrondi, barre du haut. Les tailles suivent
 // l'unité `--u` quand un bloc la définit (accueil), sinon 1px.
 
-// Surface du nouveau design : fond et encre d'un parfum (`--flavour-N-*`), lus par tout le bloc.
+// Surface du nouveau design : fond et encre uniques (`--flavour-bg/ink`), lus par tout le bloc.
 .brand {
-  --brand-bg: var(--flavour-1-bg);
-  --brand-ink: var(--flavour-1-ink);
+  --brand-bg: var(--flavour-bg);
+  --brand-ink: var(--flavour-ink);
 
   position: relative;
   background-color: var(--brand-bg);
@@ -16,13 +16,6 @@
   ::selection {
     background: var(--brand-ink);
     color: var(--brand-bg);
-  }
-}
-
-@for $i from 1 through 5 {
-  .brand--#{$i} {
-    --brand-bg: var(--flavour-#{$i}-bg);
-    --brand-ink: var(--flavour-#{$i}-ink);
   }
 }
 

@@ -10,7 +10,7 @@ import { SiteTopbar } from '../site-topbar/site-topbar';
   selector: 'app-auth-layout',
   imports: [NgOptimizedImage, SiteTopbar],
   template: `
-    <div class="brand brand--1 brand-ui brand-page">
+    <div class="brand brand-ui brand-page">
       <div class="waves" aria-hidden="true"></div>
       <app-site-topbar />
       <div class="auth gutter">

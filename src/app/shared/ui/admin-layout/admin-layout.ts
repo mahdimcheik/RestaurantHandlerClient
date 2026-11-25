@@ -32,10 +32,10 @@ interface NavGroup {
 }
 
 /**
- * Coquille du back-office, au nouveau design (parfum 1) : menu à gauche par rubriques (icône et
+ * Coquille du back-office, au nouveau design : menu à gauche par rubriques (icône et
  * texte, rail d'icônes sur petit écran ; seules les rubriques défilent, « Retour au site » et
  * « Déconnexion » restent en bas) et zone de contenu avec sa barre du haut. `.brand-ui`
- * fait prendre l'encre et le fond du parfum à toutes les pages de gestion. Rendue dans le <main>
+ * fait prendre l'encre et le fond de la surface à toutes les pages de gestion. Rendue dans le <main>
  * de l'application (route `bare`), elle porte son propre lien d'évitement vers le contenu.
  */
 @Component({
@@ -50,7 +50,7 @@ interface NavGroup {
     ConnectionBanner,
   ],
   host: {
-    class: 'admin brand brand--1 brand-ui',
+    class: 'admin brand brand-ui',
     '[style.--admin-bar-height.px]': 'barHeight()',
   },
   template: `

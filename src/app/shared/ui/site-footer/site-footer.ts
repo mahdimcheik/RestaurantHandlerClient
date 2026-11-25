@@ -5,14 +5,14 @@ import { SITE_DETAILS } from '../../site-details';
 import { NgOptimizedImage } from '@angular/common';
 
 /**
- * Pied de page du nouveau design (parfum 1) : nom, adresse et téléphone du restaurant, liens de
+ * Pied de page du nouveau design : nom, adresse et téléphone du restaurant, liens de
  * commande et liens d'information. Le thème se règle depuis la barre du haut.
  */
 @Component({
   selector: 'app-site-footer',
   imports: [RouterLink, NgOptimizedImage],
   template: `
-    <footer class="site-footer brand brand--1 gutter">
+    <footer class="site-footer brand gutter">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
           @if (logoUrl(); as logo) {

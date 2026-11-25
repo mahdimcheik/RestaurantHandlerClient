@@ -1,4 +1,4 @@
-// Contenu fixe du carrousel d'accueil. Couleur unique : celle de `.brand` (parfum 1, `_tokens.scss`).
+// Contenu fixe du carrousel d'accueil. Couleur unique : celle de `.brand` (`--flavour-bg/ink`, `_tokens.scss`).
 
 export interface HeroFlavour {
   /** Libellé sur deux lignes. */

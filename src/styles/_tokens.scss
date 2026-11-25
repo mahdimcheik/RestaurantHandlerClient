@@ -88,31 +88,23 @@
   --ease: 150ms ease;
 }
 
-// Nouveau design — bloc d'accueil (carrousel de coupes). Couleurs propres au bloc, identiques
-// dans les deux thèmes : chaque paire fond / encre dépasse 4,5:1 (de 5,45 à 8,73), y compris
-// sur les lignes du fond `.waves` (de 4,78 à 7,47).
+// Nouveau design : une seule couleur pour toutes les pages et sections (fond pêche, encre brune),
+// identique dans les deux thèmes. Contraste encre / fond 7,89:1, et 5,85:1 sur les lignes
+// du fond `.waves`.
 :root {
   --font-display: 'Dela Gothic One', 'Arial Black', Impact, sans-serif;
   --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
 
-  --flavour-1-bg: #9c8fd0;
-  --flavour-1-ink: #281d3c;
-  --flavour-2-bg: #e8a0b4;
-  --flavour-2-ink: #4a1f33;
-  --flavour-3-bg: #f5d4ba;
-  --flavour-3-ink: #5a3216;
-  --flavour-4-bg: #c49a9a;
-  --flavour-4-ink: #3b2222;
-  --flavour-5-bg: #ebd98a;
-  --flavour-5-ink: #2d2f63;
+  --flavour-bg: #f5d4ba;
+  --flavour-ink: #5a3216;
 
-  --brand-shade: rgb(25 12 45 / 0.16);
-  --brand-shade-mid: rgb(25 12 45 / 0.22);
-  --brand-shade-strong: rgb(25 12 45 / 0.3);
-  --brand-shade-light: rgb(25 12 45 / 0.14);
-  --brand-vignette: rgb(20 10 40 / 0.22);
-  --brand-wave: rgb(30 20 50 / 0.16);
-  // Voile clair posé sur un parfum (cartes, panneaux) : éclaircit le fond, le contraste de l'encre
+  --brand-shade: rgb(45 25 12 / 0.16);
+  --brand-shade-mid: rgb(45 25 12 / 0.22);
+  --brand-shade-strong: rgb(45 25 12 / 0.3);
+  --brand-shade-light: rgb(45 25 12 / 0.14);
+  --brand-vignette: rgb(40 20 10 / 0.22);
+  --brand-wave: rgb(50 30 20 / 0.16);
+  // Voile clair posé sur la surface (cartes, panneaux) : éclaircit le fond, le contraste de l'encre
   // ne fait qu'augmenter.
   --brand-glaze: rgb(255 255 255 / 0.38);
   --brand-radius: 8px;

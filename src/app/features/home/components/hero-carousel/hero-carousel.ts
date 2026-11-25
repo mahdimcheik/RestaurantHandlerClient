@@ -36,7 +36,7 @@ const MAX_GAP = 250;
 const TITLE_RATIO_GUESS = 10.62;
 
 /**
- * Bloc d'accueil : coupes en carrousel sur un anneau qui tourne, fond et encre suivant le parfum,
+ * Bloc d'accueil : coupes en carrousel sur un anneau qui tourne, fond et encre de la surface,
  * titre géant (nom du restaurant) et accès à la carte. Le contenu projeté (barre du haut) est
  * superposé au bloc et en hérite les couleurs.
  */

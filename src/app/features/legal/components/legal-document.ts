@@ -9,14 +9,14 @@ export interface LegalSection {
 }
 
 /**
- * Coquille commune des pages légales (nouveau design, parfum 2) : barre du haut, titre, date de
+ * Coquille commune des pages légales (nouveau design) : barre du haut, titre, date de
  * mise à jour, introduction, sommaire à ancres, texte projeté, puis liens vers les autres pages.
  */
 @Component({
   selector: 'app-legal-document',
   imports: [RouterLink, SiteTopbar],
   template: `
-    <div class="brand brand--2 brand-ui brand-page">
+    <div class="brand brand-ui brand-page">
       <div class="waves" aria-hidden="true"></div>
       <app-site-topbar />
 
