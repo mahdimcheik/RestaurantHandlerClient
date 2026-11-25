@@ -36,6 +36,9 @@ describe('CheckoutPage', () => {
     http.expectOne('/restaurant/status').flush(envelope({ status, asapDelayMinutes: 15 }));
     http.expectOne('/restaurant/slots').flush(envelope(slots));
     http.expectOne('/orders/checkout-options').flush(envelope(options));
+    for (const request of http.match('/restaurant/info')) {
+      request.flush(envelope({}));
+    }
     await settle(310);
     http.expectOne('/orders/quote').flush(
       envelope({

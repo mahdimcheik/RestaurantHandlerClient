@@ -13,6 +13,8 @@ import { lineLabels } from '../../../../shared/ordering/cart';
 import { OpeningStateService } from '../../../../shared/services/opening-state.service';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { PublicService } from '../../../../shared/services/public.service';
+import { Icon } from '../../../../shared/ui/icon/icon';
+import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { TextareaField } from '../../../../shared/ui/textarea-field/textarea-field';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { isPaymentUrl } from '../../../../shared/utils/payment-url';
@@ -30,8 +32,7 @@ const ASAP = 'asap';
  */
 @Component({
   selector: 'app-checkout-page',
-  host: { class: 'shop' },
-  imports: [RouterLink, EurosPipe, TextareaField],
+  imports: [RouterLink, EurosPipe, Icon, SiteTopbar, TextareaField],
   templateUrl: './checkout-page.html',
 })
 export class CheckoutPage {
@@ -48,6 +49,7 @@ export class CheckoutPage {
   protected readonly labelsOf = lineLabels;
 
   protected readonly state = this.opening.state;
+  protected readonly status = computed(() => this.state()?.status);
   protected readonly openingText = computed(() => {
     const state = this.state();
     return state ? customerOpeningText(state) : '';

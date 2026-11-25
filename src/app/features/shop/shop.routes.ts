@@ -11,6 +11,7 @@ export const SHOP_ROUTES: Routes = [
     path: 'commander/valider',
     canActivate: [authGuard],
     title: 'Valider la commande',
+    data: { header: false },
     loadComponent: () => import('./pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
   },
   {

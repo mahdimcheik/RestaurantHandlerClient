@@ -682,6 +682,35 @@
   width: 100%;
 }
 
+// Validation de la commande : étapes (retrait, paiement, note) | récapitulatif collé à droite.
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-6);
+
+  @media (min-width: 64rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(21rem, 25rem);
+  }
+}
+
+.checkout-steps {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.checkout-summary {
+  @media (min-width: 64rem) {
+    position: sticky;
+    top: var(--space-3);
+  }
+
+  .note {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+}
+
 // Bandeau du bas (téléphone) : nombre d'articles et total, ouvre le détail.
 .order-bar {
   position: fixed;
