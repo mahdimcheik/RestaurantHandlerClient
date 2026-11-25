@@ -1,9 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { envelope } from '../../../../core/auth/testing';
+import { By } from '@angular/platform-browser';
+import { provideRouter, Router } from '@angular/router';
+import { envelope, loginData } from '../../../../core/auth/testing';
+import { GoogleIdentityService } from '../../../../core/auth/google-identity.service';
 import { fakeRealtime } from '../../../../core/realtime/testing';
+import { GoogleSignIn } from '../../components/google-sign-in';
 import { flushRestaurantInfo, submitForm, text, typeInto } from '../../testing';
 import { RegisterPage } from './register-page';
 
@@ -31,6 +34,10 @@ describe('RegisterPage', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         fakeRealtime().provider,
+        {
+          provide: GoogleIdentityService,
+          useValue: { enabled: true, renderButton: () => Promise.resolve() },
+        },
       ],
     });
     fixture = TestBed.createComponent(RegisterPage);
@@ -78,4 +85,33 @@ describe('RegisterPage', () => {
     expect(text(fixture)).toContain('Vérifiez vos e-mails');
     expect(text(fixture)).toContain('ana@b.fr');
   });
+
+  it('met Google en tête, avec la mention qui vaut acceptation', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const google = el.querySelector('app-google-sign-in');
+    expect(google?.compareDocumentPosition(el.querySelector('form')!)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(google?.textContent).toContain('En continuant avec Google, vous acceptez');
+  });
+
+  it('crée le compte Google sans case à cocher, consentements envoyés', async () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    googleButton().credential.emit('id-token');
+
+    const request = http.expectOne('/auth/google');
+    expect(request.request.body).toEqual({
+      idToken: 'id-token',
+      termsConsent: true,
+      privacyPolicyConsent: true,
+      dataProcessingConsent: true,
+    });
+    request.flush(envelope(loginData()));
+    await fixture.whenStable();
+
+    expect(navigate).toHaveBeenCalled();
+  });
+
+  const googleButton = () =>
+    fixture.debugElement.query(By.directive(GoogleSignIn)).componentInstance as GoogleSignIn;
 });

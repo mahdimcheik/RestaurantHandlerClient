@@ -176,8 +176,18 @@
   }
 }
 
+// Bouton Google, sa mention légale et le séparateur « ou ».
+.google-sign-in {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .google-button {
   min-height: var(--tap-min);
+}
+
+.google-consent-notice {
+  margin: 0;
 }
 
 // Bouton qui a l'apparence d'un lien (action dans une barre de navigation).

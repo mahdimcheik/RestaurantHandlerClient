@@ -17,11 +17,12 @@ import {
   newPasswordRules,
   PASSWORD_MIN_LENGTH,
 } from '../../auth-validation';
+import { GoogleConsentNotice } from '../../components/google-consent-notice';
 import { GoogleSignIn } from '../../components/google-sign-in';
 
 @Component({
   selector: 'app-register-page',
-  imports: [AuthLayout, TextField, CheckboxField, GoogleSignIn, RouterLink],
+  imports: [AuthLayout, TextField, CheckboxField, GoogleSignIn, GoogleConsentNotice, RouterLink],
   templateUrl: './register-page.html',
 })
 export class RegisterPage {
@@ -82,24 +83,19 @@ export class RegisterPage {
     });
   }
 
-  /** Un premier login Google crée le compte : l'API exige alors les trois consentements. */
+  /**
+   * Un premier login Google crée le compte : la mention affichée sous le bouton vaut
+   * acceptation, d'où les trois consentements envoyés à `true` sans case à cocher.
+   */
   protected onGoogle(idToken: string): void {
     this.error.set('');
-    const consents = [
-      this.form.termsConsent,
-      this.form.privacyPolicyConsent,
-      this.form.dataProcessingConsent,
-    ];
-    consents.forEach((consent) => consent().markAsTouched());
-    const missing = consents.find((consent) => consent().invalid());
-    if (missing) {
-      this.error.set('Cochez les trois consentements avant de continuer avec Google.');
-      missing().focusBoundControl();
-      return;
-    }
-    const { termsConsent, privacyPolicyConsent, dataProcessingConsent } = this.model();
     this.session
-      .loginWithGoogle({ idToken, termsConsent, privacyPolicyConsent, dataProcessingConsent })
+      .loginWithGoogle({
+        idToken,
+        termsConsent: true,
+        privacyPolicyConsent: true,
+        dataProcessingConsent: true,
+      })
       .subscribe({
         next: () => void this.router.navigateByUrl(safeReturnUrl(this.returnUrl())),
         error: (error: unknown) => this.error.set(apiErrorMessage(error)),

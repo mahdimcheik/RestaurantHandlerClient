@@ -1,35 +1,68 @@
 <app-auth-layout tagline="Bon retour parmi nous">
-  <h1 class="display-title display-title--md">Connexion</h1>
-  <p class="auth__lead">
-    Pas encore de compte ?
-    <a routerLink="/auth/inscription" [queryParams]="{ returnUrl: returnUrl() }">Créer un compte</a>
-  </p>
-
-  @if (error()) {
-    <p class="alert alert--error" role="alert">{{ error() }}</p>
-  }
-
-  <form class="form" novalidate (submit)="onSubmit($event)">
-    <app-text-field [field]="form.email" type="email" autocomplete="email" label="E-mail" />
-    <app-text-field
-      [field]="form.password"
-      type="password"
-      autocomplete="current-password"
-      label="Mot de passe"
-    />
-    <a class="form__link" routerLink="/auth/mot-de-passe-oublie"> Mot de passe oublié ? </a>
-    <button
-      type="submit"
-      class="btn-brand btn-brand--solid form__submit"
-      [disabled]="form().submitting()"
-    >
-      @if (form().submitting()) {
-        Connexion…
+  @if (pendingGoogle(); as pending) {
+    <h1 class="display-title display-title--md">Finaliser votre compte</h1>
+    <p class="auth__lead">
+      @if (pending.email) {
+        Aucun compte n'est encore associé à <strong>{{ pending.email }}</strong>.
       } @else {
-        Se connecter
+        Aucun compte n'est encore associé à ce compte Google.
+      }
+      Créez-le en un clic.
+    </p>
+
+    @if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    }
+
+    <app-google-consent-notice />
+    <button
+      type="button"
+      class="btn-brand btn-brand--solid form__submit"
+      [disabled]="creating()"
+      (click)="createGoogleAccount()"
+    >
+      @if (creating()) {
+        Création…
+      } @else {
+        Créer mon compte
       }
     </button>
-  </form>
+    <button type="button" class="btn-brand form__submit" (click)="cancelGoogle()">Annuler</button>
+  } @else {
+    <h1 class="display-title display-title--md">Connexion</h1>
+    <p class="auth__lead">
+      Pas encore de compte ?
+      <a routerLink="/auth/inscription" [queryParams]="{ returnUrl: returnUrl() }"
+        >Créer un compte</a
+      >
+    </p>
 
-  <app-google-sign-in (credential)="onGoogle($event)" />
+    @if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    }
+
+    <form class="form" novalidate (submit)="onSubmit($event)">
+      <app-text-field [field]="form.email" type="email" autocomplete="email" label="E-mail" />
+      <app-text-field
+        [field]="form.password"
+        type="password"
+        autocomplete="current-password"
+        label="Mot de passe"
+      />
+      <a class="form__link" routerLink="/auth/mot-de-passe-oublie"> Mot de passe oublié ? </a>
+      <button
+        type="submit"
+        class="btn-brand btn-brand--solid form__submit"
+        [disabled]="form().submitting()"
+      >
+        @if (form().submitting()) {
+          Connexion…
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <app-google-sign-in (credential)="onGoogle($event)" />
+  }
 </app-auth-layout>

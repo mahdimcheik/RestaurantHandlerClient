@@ -25,6 +25,18 @@ export function apiErrorMessage(error: unknown): string {
 }
 
 /**
+ * Code `status` de l'enveloppe `{ message, status }` du serveur, qui peut différer du statut
+ * HTTP (ex. 428 de `POST /auth/google` : compte Google inconnu, consentements à recueillir).
+ */
+export function apiErrorStatus(error: unknown): number | null {
+  if (!(error instanceof HttpErrorResponse)) return null;
+  const body: unknown = error.error;
+  return body && typeof body === 'object' && 'status' in body && typeof body.status === 'number'
+    ? body.status
+    : null;
+}
+
+/**
  * Lignes refusées d'un panier (409 `CartProblemDetails` de `POST /orders/quote` et `POST /orders`) ;
  * `lineIndex` -1 vise le panier entier. Tableau vide pour toute autre erreur.
  */
