@@ -13,7 +13,7 @@ import { ChoiceGroup, ChoiceOption } from './model';
 
 /**
  * Choix d'un groupe d'options dans ses bornes : tuiles (avec la photo du choix s'il en a une) pour
- * un choix unique, lignes à quantité sinon. L'état vit chez le parent (`[(state)]`).
+ * un choix unique, cartes en rangées avec leur compteur « − n + » en bas sinon. L'état vit chez le parent (`[(state)]`).
  */
 @Component({
   selector: 'app-option-group',
@@ -44,40 +44,46 @@ import { ChoiceGroup, ChoiceOption } from './model';
         }
       </div>
     } @else {
-      <ul class="picker__rows">
+      <ul class="choice-cards">
         @for (choice of current.choices; track choice.id) {
-          <li class="picker__row">
-            <span class="picker__name">
-              @if (choice.imageUrl) {
-                <img
-                  class="picker__image"
-                  [ngSrc]="choice.imageUrl"
-                  width="96"
-                  height="96"
-                  alt=""
-                />
-              }
-              {{ choice.name }}
-              @if (!choice.isAvailable) {
-                <span class="badge badge--danger">Rupture</span>
-              } @else if (choice.extraPriceCents > 0) {
-                <span class="picker__price">+ {{ choice.extraPriceCents | euros }}</span>
-              }
-            </span>
-            <span class="stepper">
+          <li
+            class="choice-card"
+            [class.choice-card--chosen]="quantityOf(choice) > 0"
+            [class.choice-card--out]="!choice.isAvailable"
+          >
+            @if (choice.imageUrl) {
+              <img
+                class="choice-card__image"
+                [ngSrc]="choice.imageUrl"
+                width="240"
+                height="180"
+                alt=""
+              />
+            }
+            <span class="choice-card__name">{{ choice.name }}</span>
+            @if (!choice.isAvailable) {
+              <span class="choice-card__meta">Rupture</span>
+            } @else if (choice.extraPriceCents > 0) {
+              <span class="choice-card__meta">+ {{ choice.extraPriceCents | euros }}</span>
+            }
+            <span
+              class="choice-card__counter"
+              role="group"
+              [attr.aria-label]="'Quantité : ' + choice.name"
+            >
               <button
                 type="button"
-                class="icon-button"
+                class="dish-counter__button"
                 [disabled]="quantityOf(choice) === 0"
                 (click)="step(choice, -1)"
               >
                 <app-icon name="minus" />
                 <span class="visually-hidden">Un de moins : {{ choice.name }}</span>
               </button>
-              <span class="stepper__value stepper__value--small">{{ quantityOf(choice) }}</span>
+              <span class="dish-counter__value" aria-live="polite">{{ quantityOf(choice) }}</span>
               <button
                 type="button"
-                class="icon-button"
+                class="dish-counter__button dish-counter__button--add"
                 [disabled]="!canAdd(choice)"
                 (click)="step(choice, 1)"
               >

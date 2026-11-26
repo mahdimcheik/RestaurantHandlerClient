@@ -629,6 +629,14 @@
     outline: 2px solid var(--brand-ink);
     outline-offset: 2px;
   }
+
+  &:disabled {
+    border-style: dashed;
+    background: var(--brand-bg);
+    color: var(--brand-ink);
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
 }
 
 .dish-counter__button--add {

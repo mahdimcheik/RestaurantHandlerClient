@@ -147,6 +147,67 @@
   font-variant-numeric: tabular-nums;
 }
 
+// Choix d'un groupe à plusieurs quantités : cartes en rangées qui passent à la ligne, compteur
+// « − n + » en bas de chaque carte (boutons `.dish-counter__button`).
+.choice-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.choice-card {
+  display: flex;
+  flex: 1 1 9rem;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 14rem;
+  padding: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-page);
+  color: var(--color-ink);
+}
+
+// Choix retenu : bord épais, en plus de la quantité affichée.
+.choice-card--chosen {
+  border: var(--border-strong);
+}
+
+.choice-card--out {
+  border-style: dashed;
+  background: var(--surface-sunken);
+}
+
+.choice-card__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.choice-card__name {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+}
+
+.choice-card__meta {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.choice-card__counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  margin-block-start: auto;
+}
+
 // Deux zones : contenu principal et panneau latéral (ticket), empilées sur petit écran.
 .split {
   display: grid;
@@ -396,13 +457,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-}
-
-.picker__image {
-  width: var(--tap-min);
-  height: var(--tap-min);
-  border-radius: var(--radius);
-  object-fit: cover;
 }
 
 .picker__chosen {
