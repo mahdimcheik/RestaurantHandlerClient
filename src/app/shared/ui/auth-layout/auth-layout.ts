@@ -12,7 +12,7 @@ import { SiteTopbar } from '../site-topbar/site-topbar';
   template: `
     <div class="brand brand-ui brand-page">
       <div class="waves" aria-hidden="true"></div>
-      <app-site-topbar />
+      <app-site-topbar [tabs]="false" />
       <div class="auth gutter">
         <div class="auth__aside">
           <p class="eyebrow">Espace client</p>

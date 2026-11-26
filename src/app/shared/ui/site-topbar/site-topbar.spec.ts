@@ -7,6 +7,7 @@ import { SessionService } from '../../../core/auth/session.service';
 import { fakeRealtime } from '../../../core/realtime/testing';
 import { envelope } from '../../testing';
 import { NotificationCenter } from '../../services/notification-center.service';
+import { TabBarState } from '../../services/tab-bar.service';
 import { SiteTopbar } from './site-topbar';
 
 describe('SiteTopbar', () => {
@@ -15,7 +16,7 @@ describe('SiteTopbar', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
-  async function setup(providers: Provider[] = []) {
+  async function setup(providers: Provider[] = [], tabs = true) {
     TestBed.configureTestingModule({
       imports: [SiteTopbar],
       providers: [
@@ -27,6 +28,7 @@ describe('SiteTopbar', () => {
       ],
     });
     const fixture = TestBed.createComponent(SiteTopbar);
+    fixture.componentRef.setInput('tabs', tabs);
     fixture.detectChanges();
     TestBed.inject(HttpTestingController)
       .expectOne('/restaurant/info')
@@ -51,6 +53,19 @@ describe('SiteTopbar', () => {
       'Commander',
     );
     expect(el.querySelector('a[href="/panier"]')?.getAttribute('aria-label')).toBe('Panier');
+  });
+
+  it('demande la barre d’onglets du bas et la rend en partant, sauf si la page la retire', async () => {
+    const { fixture } = await setup();
+    const state = TestBed.inject(TabBarState);
+    expect(state.visible()).toBe(true);
+    fixture.destroy();
+    expect(state.visible()).toBe(false);
+  });
+
+  it('ne demande pas la barre d’onglets quand la page la retire', async () => {
+    await setup([], false);
+    expect(TestBed.inject(TabBarState).visible()).toBe(false);
   });
 
   it('cache Commander et le panier au Manager', async () => {

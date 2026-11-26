@@ -379,6 +379,124 @@
   }
 }
 
+// Barre d'onglets du bas (téléphone et tablette) : la navigation et le compte à portée du pouce.
+// En haut ne restent que le logo et la cloche. Posée dans la coquille, hors des `.brand` qui
+// isolent leur empilement. Hauteur exposée par `--tabbar-space` sur la racine, pour que le pied
+// de page, le bandeau de commande et les toasts passent au-dessus.
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 64rem) {
+  :root:has(.tabbar) {
+    --tabbar-space: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  }
+
+  body {
+    padding-bottom: var(--tabbar-space, 0);
+  }
+
+  :root:has(.tabbar) .topbar {
+    .topbar__menu--nav,
+    .topbar__menu--account {
+      display: none;
+    }
+  }
+
+  .tabbar {
+    --brand-bg: var(--flavour-bg);
+    --brand-ink: var(--flavour-ink);
+
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 0 var(--space-1) env(safe-area-inset-bottom);
+    border-top: max(1px, 1.5px) solid var(--brand-ink);
+    background: var(--brand-bg);
+    color: var(--brand-ink);
+    font-family: var(--font-body);
+    box-shadow: 0 -8px 24px var(--brand-shade-light);
+    color-scheme: light;
+  }
+}
+
+:root {
+  --tabbar-h: calc(var(--tap-min) + var(--space-4));
+}
+
+.tabbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--tabbar-h);
+  padding: var(--space-1) 0;
+  border: 0;
+  border-top: 3px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: none;
+
+  .icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  &:hover {
+    background: var(--brand-shade-light);
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -4px;
+  }
+
+  // Onglet courant : trait au-dessus et libellé souligné, pas seulement une couleur.
+  &--active,
+  &[aria-expanded='true'] {
+    border-top-color: currentColor;
+
+    .tabbar__label {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.3em;
+    }
+  }
+}
+
+.tabbar__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabbar__panel {
+  position: fixed;
+  top: auto;
+  right: var(--space-3);
+  bottom: calc(var(--tabbar-space, var(--tabbar-h)) + var(--space-2));
+  left: auto;
+  box-shadow: 0 -12px 32px var(--brand-shade-strong);
+}
+
+@media print {
+  .tabbar {
+    display: none;
+  }
+}
+
 // Page du nouveau design : la barre du haut est posée en haut, le contenu commence dessous.
 .brand-page {
   min-height: 100svh;

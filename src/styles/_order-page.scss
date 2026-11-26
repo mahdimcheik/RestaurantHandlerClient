@@ -915,7 +915,7 @@
 .order-bar {
   position: fixed;
   right: 0;
-  bottom: 0;
+  bottom: var(--tabbar-space, 0);
   left: 0;
   z-index: 10;
   padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
