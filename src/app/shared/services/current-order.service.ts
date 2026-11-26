@@ -35,11 +35,7 @@ export class CurrentOrderService {
         this.realtime.start();
       }
     });
-    merge(
-      this.realtime.on('OrderStatusChanged'),
-      this.realtime.on('OrderUpdated'),
-      this.realtime.resync,
-    )
+    merge(this.realtime.on('OrderStatusChanged'), this.realtime.resync)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         if (this.customerId()) {

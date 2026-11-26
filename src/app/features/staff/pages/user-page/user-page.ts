@@ -10,7 +10,7 @@ import { UserManagementService } from '../../../../shared/services/user-manageme
 import { UsersService } from '../../../../shared/services/users.service';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { Icon } from '../../../../shared/ui/icon/icon';
-import { channelLabel, OrderStatusBadge } from '../../../../shared/ui/order-status/order-status';
+import { OrderStatusBadge } from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { RestaurantDateTimePipe } from '../../../../shared/utils/restaurant-time';
 import { ACCOUNT_STATUS_LABELS, roleNames, userName, userStatus } from '../../staff-format';
@@ -18,8 +18,7 @@ import { ACCOUNT_STATUS_LABELS, roleNames, userName, userStatus } from '../../st
 export const ORDERS_PAGE_SIZE = 10;
 
 /**
- * Fiche d'un compte (US-E10-1) : statut et bannissement (US-E10-3), compteur de non-venues et
- * levée du blocage du paiement au retrait (US-E10-4), commandes passées.
+ * Fiche d'un compte (US-E10-1) : statut et bannissement (US-E10-3), commandes passées.
  */
 @Component({
   selector: 'app-user-page',
@@ -72,30 +71,17 @@ export class UserPage {
   protected readonly statusLabels = ACCOUNT_STATUS_LABELS;
   protected readonly userName = userName;
   protected readonly roleNames = roleNames;
-  protected readonly channelLabel = channelLabel;
 
   private readonly banDialog = viewChild.required<ConfirmDialog>('banDialog');
-  private readonly resetDialog = viewChild.required<ConfirmDialog>('resetDialog');
 
   protected askBan(): void {
     this.banDialog().open();
-  }
-
-  protected askReset(): void {
-    this.resetDialog().open();
   }
 
   protected setStatus(status: AccountStatusEnum): void {
     this.run(
       this.management.setStatus(this.id(), status),
       `Statut du compte : ${ACCOUNT_STATUS_LABELS[status]}.`,
-    );
-  }
-
-  protected resetNoShows(): void {
-    this.run(
-      this.orders.resetCustomerNoShows(this.id()),
-      'Le paiement au retrait est de nouveau autorisé.',
     );
   }
 

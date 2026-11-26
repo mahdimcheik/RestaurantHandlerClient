@@ -40,43 +40,6 @@
       </li>
     </ul>
 
-    <ul class="stats">
-      <li class="stat">
-        <span class="stat__label">Comptoir</span>
-        <span class="stat__value">{{ stats.counter.revenueCents | euros }}</span>
-        <span class="stat__detail">
-          @if (stats.counter.orders === 0) {
-            Aucune commande
-          } @else if (stats.counter.orders === 1) {
-            1 commande
-          } @else {
-            {{ stats.counter.orders }} commandes
-          }
-        </span>
-      </li>
-      <li class="stat">
-        <span class="stat__label">En ligne</span>
-        <span class="stat__value">{{ stats.online.revenueCents | euros }}</span>
-        <span class="stat__detail">
-          @if (stats.online.orders === 0) {
-            Aucune commande
-          } @else if (stats.online.orders === 1) {
-            1 commande
-          } @else {
-            {{ stats.online.orders }} commandes
-          }
-        </span>
-      </li>
-      <li class="stat">
-        <span class="stat__label">Payé en ligne</span>
-        <span class="stat__value">{{ stats.paidOnlineCents | euros }}</span>
-      </li>
-      <li class="stat">
-        <span class="stat__label">Payé sur place</span>
-        <span class="stat__value">{{ stats.paidOnSiteCents | euros }}</span>
-      </li>
-    </ul>
-
     <h3 id="dashboard-steps">Commandes par étape</h3>
     <dl class="step-counts" aria-labelledby="dashboard-steps">
       @for (item of statusCounts(); track item.status) {

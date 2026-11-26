@@ -50,22 +50,6 @@
   }
 }
 
-// Commandes à payer au retrait en attente de validation, au-dessus des colonnes.
-.kds__approvals {
-  display: grid;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
-  padding: var(--space-4);
-  border: var(--border-width-strong) solid var(--color-warning);
-}
-
-.kds__approvals .kds__list {
-  @media (min-width: 56rem) {
-    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
-    align-items: start;
-  }
-}
-
 .kds__column {
   display: grid;
   gap: var(--space-4);
@@ -221,26 +205,6 @@
   }
 }
 
-// Total d'une commande à valider.
-.kds-ticket__total {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin: 0;
-  padding-top: var(--space-3);
-  border-top: var(--border-soft);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-}
-
-// Accepter / Refuser, côte à côte.
-.kds-ticket__decision {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-}
-
 // Le numéro du bon ouvre le détail avec les prix.
 .kds-ticket__open {
   display: inline-flex;
@@ -312,11 +276,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-// Reste à encaisser : signalé par le libellé et l'icône, la couleur ne fait que souligner.
-.kds-ready__pay--due {
-  color: var(--color-warning);
-}
-
 // Détail d'une commande, dans la fenêtre ouverte par-dessus l'écran.
 .kds-details {
   display: grid;
@@ -383,13 +342,6 @@
 .kds-details__row--total {
   font-size: var(--text-xl);
   font-weight: var(--weight-bold);
-}
-
-.kds-details__row--due {
-  font-weight: var(--weight-bold);
-  text-decoration: underline;
-  text-decoration-thickness: var(--border-width-strong);
-  text-underline-offset: 0.2em;
 }
 
 .kds-details__hint {

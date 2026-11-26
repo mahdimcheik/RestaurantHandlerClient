@@ -1,20 +1,21 @@
 import { OrderDetails, OrderItemDto, OrderStatus } from '../../core/api/generated';
 
-/** Statuts où le client peut encore annuler (avant préparation) : masquage, le serveur décide. */
-const CANCELLABLE: readonly OrderStatus[] = ['PendingPayment', 'AwaitingApproval', 'Confirmed'];
+/** Commande payée, pas encore remise : le client ne l'annule qu'en s'adressant au restaurant. */
+const CANCEL_BY_PHONE: readonly OrderStatus[] = ['Confirmed', 'InPreparation', 'Ready'];
 
-export function canCancel(order: OrderDetails): boolean {
-  return CANCELLABLE.includes(order.status);
+/** Afficher « pour annuler, appelez le restaurant… » (ADR-0013 : pas d'annulation en ligne). */
+export function showsCancelHelp(order: OrderDetails): boolean {
+  return CANCEL_BY_PHONE.includes(order.status);
 }
 
-/** Paiement en ligne non reçu : nouvel essai ou bascule au paiement au retrait. */
+/** Paiement en ligne non reçu : nouvel essai possible jusqu'à l'expiration. */
 export function awaitsOnlinePayment(order: OrderDetails): boolean {
-  return order.status === 'PendingPayment' && order.paymentChoice === 'Online';
+  return order.status === 'PendingPayment';
 }
 
-/** Motif d'un refus ou d'une annulation, tel que saisi (dernier dans l'historique). */
+/** Motif d'une annulation, tel que saisi (dernier dans l'historique). */
 export function closingReason(order: OrderDetails): string | null {
-  if (order.status !== 'Refused' && order.status !== 'Cancelled') {
+  if (order.status !== 'Cancelled') {
     return null;
   }
   const entry = [...order.history].reverse().find((h) => h.status === order.status && h.reason);
@@ -34,10 +35,7 @@ export function itemDetails(item: OrderItemDto): string[] {
   ];
 }
 
-/** Payée, à payer au retrait, ou paiement en ligne en attente. */
+/** Payée par carte, ou paiement en ligne en attente. */
 export function paymentText(order: OrderDetails): string {
-  if (order.isPaid) {
-    return 'Payée';
-  }
-  return order.paymentChoice === 'OnSite' ? 'À payer au retrait' : 'Paiement en ligne non reçu';
+  return order.isPaid ? 'Payée par carte' : 'Paiement en ligne non reçu';
 }

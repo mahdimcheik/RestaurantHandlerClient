@@ -3,14 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { fakeRealtime } from '../../../../core/realtime/testing';
-import {
-  clickButton,
-  envelope,
-  order,
-  polyfillDialog,
-  summary,
-  text,
-} from '../../../../shared/testing';
+import { envelope, order, polyfillDialog, summary, text } from '../../../../shared/testing';
 import { PAYMENT_POLL_MS, TrackingPage } from './tracking-page';
 
 const settle = async () => {
@@ -22,9 +15,7 @@ const settle = async () => {
 const online = order({
   id: 'o1',
   dailyNumber: 42,
-  channel: 'Online',
   status: 'Confirmed',
-  paymentChoice: 'Online',
   isPaid: true,
   items: [
     {
@@ -45,11 +36,11 @@ describe('TrackingPage', () => {
   let realtime: ReturnType<typeof fakeRealtime>;
   let vibrate: ReturnType<typeof vi.fn>;
 
-  const answer = async (value = online) => {
+  const answer = async (value = online, info: object = { phone: '01 23 45 67 89' }) => {
     TestBed.tick();
     http.expectOne('/orders/o1').flush(envelope(value));
     for (const request of http.match('/restaurant/info')) {
-      request.flush(envelope({}));
+      request.flush(envelope(info));
     }
     await settle();
   };
@@ -84,8 +75,17 @@ describe('TrackingPage', () => {
     expect(text(fixture)).toContain('N° 42');
     expect(text(fixture)).toContain('Confirmée');
     expect(text(fixture)).toContain('Sans oignons');
-    expect(text(fixture)).toContain('Payée');
-    expect(text(fixture)).toContain('Annuler la commande');
+    expect(text(fixture)).toContain('Payée par carte');
+  });
+
+  it('n’offre pas d’annulation : le client appelle le restaurant ou demande sur place', () => {
+    expect(text(fixture)).not.toContain('Annuler la commande');
+    expect(fixture.nativeElement.querySelector('dialog')).toBeNull();
+    const help = fixture.nativeElement.querySelector('.tracking__cancel-help') as HTMLElement;
+    expect(help.textContent?.replace(/\s+/g, ' ')).toContain(
+      'Pour annuler, appelez le restaurant par téléphone (01 23 45 67 89) ou demandez directement sur place.',
+    );
+    expect(help.querySelector('a')?.getAttribute('href')).toBe('tel:0123456789');
   });
 
   it('se met à jour sur l’événement de la commande et fait vibrer à « Prête »', async () => {
@@ -96,8 +96,7 @@ describe('TrackingPage', () => {
     expect(text(fixture)).toContain('Prête — venez la chercher');
     expect(fixture.nativeElement.querySelector('.tracking--ready')).not.toBeNull();
     expect(vibrate).toHaveBeenCalledOnce();
-    const actions = fixture.nativeElement.querySelector('.tracking > .form__actions');
-    expect(actions?.textContent).not.toContain('Annuler la commande');
+    expect(text(fixture)).toContain('Pour annuler, appelez le restaurant');
   });
 
   it('relit la commande à la resynchronisation', async () => {
@@ -110,6 +109,8 @@ describe('TrackingPage', () => {
     realtime.resync.next();
     await answer({ ...online, status: 'PendingPayment', isPaid: false });
     expect(text(fixture)).toContain('Nous attendons la confirmation de votre paiement');
+    expect(text(fixture)).not.toContain('Payer au retrait');
+    expect(text(fixture)).not.toContain('Pour annuler');
 
     vi.advanceTimersByTime(PAYMENT_POLL_MS);
     await answer({ ...online, status: 'Confirmed' });
@@ -118,40 +119,18 @@ describe('TrackingPage', () => {
     http.expectNone('/orders/o1');
   });
 
-  it('bascule au paiement au retrait', async () => {
+  it('affiche le motif d’une annulation faite par le restaurant', async () => {
     realtime.resync.next();
-    await answer({ ...online, status: 'PendingPayment', isPaid: false });
-    clickButton(fixture, 'Payer au retrait');
-    TestBed.tick();
-    http
-      .expectOne('/orders/o1/pay-on-site')
-      .flush(
-        envelope({ ...online, status: 'AwaitingApproval', paymentChoice: 'OnSite', isPaid: false }),
-      );
-    await settle();
-    expect(text(fixture)).toContain('En attente de validation par Greenadine');
-    expect(text(fixture)).toContain('À payer au retrait');
-  });
-
-  it('annule après confirmation et affiche le motif', async () => {
-    clickButton(fixture, 'Annuler la commande');
-    const dialogButton = fixture.nativeElement.querySelector(
-      'dialog .btn--danger',
-    ) as HTMLButtonElement;
-    dialogButton.click();
-    TestBed.tick();
-    http.expectOne('/orders/o1/cancel').flush(
-      envelope({
-        ...online,
-        status: 'Cancelled',
-        history: [
-          { status: 'Cancelled', changedAt: online.createdAt, reason: 'Annulée par le client' },
-        ],
-      }),
-    );
-    await settle();
+    await answer({
+      ...online,
+      status: 'Cancelled',
+      history: [
+        { status: 'Cancelled', changedAt: online.createdAt, reason: 'Demandé par téléphone' },
+      ],
+    });
     expect(text(fixture)).toContain('Annulée');
-    expect(text(fixture)).toContain('Annulée par le client');
+    expect(text(fixture)).toContain('Demandé par téléphone');
+    expect(text(fixture)).not.toContain('Pour annuler');
     expect(text(fixture)).toContain('Commander');
   });
 

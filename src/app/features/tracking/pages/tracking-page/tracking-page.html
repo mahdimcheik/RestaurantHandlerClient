@@ -65,8 +65,9 @@
           @if (awaitsPayment()) {
             <div class="alert" role="status">
               <p>
-                Nous attendons la confirmation de votre paiement. Si vous avez quitté la page de
-                paiement, vous pouvez réessayer ou payer au retrait.
+                Nous attendons la confirmation de votre paiement par carte. Si vous avez quitté la
+                page de paiement, vous pouvez réessayer.
+                Sans paiement, la commande est annulée automatiquement.
               </p>
               <div class="form__actions">
                 <button
@@ -77,20 +78,16 @@
                 >
                   <app-icon name="card" /><ng-container>Payer en ligne</ng-container>
                 </button>
-                <button
-                  type="button"
-                  class="btn btn--outline"
-                  [disabled]="busy()"
-                  (click)="switchToOnSite()"
-                >
-                  Payer au retrait
-                </button>
               </div>
             </div>
           }
-          @if (order.status === 'AwaitingApproval') {
-            <p class="note">
-              Greenadine va valider votre commande ; cette page se met à jour toute seule.
+          @if (cancelHelp()) {
+            <p class="note tracking__cancel-help">
+              Pour annuler, appelez le restaurant par téléphone
+              @if (phone(); as phone) {
+                (<a [href]="phoneHref()">{{ phone }}</a>)
+              }
+              ou demandez directement sur place.
             </p>
           }
 
@@ -127,17 +124,7 @@
         </section>
 
         <div class="form__actions">
-          @if (canCancel()) {
-            <button
-              type="button"
-              class="btn btn--outline"
-              [disabled]="busy()"
-              (click)="askCancel()"
-            >
-              Annuler la commande
-            </button>
-          }
-          @if (order.isPaid && order.paymentChoice === 'Online') {
+          @if (order.isPaid) {
             <a class="btn btn--outline" [routerLink]="['/commandes', order.id, 'recu']">Reçu</a>
           }
           @if (final()) {
@@ -155,14 +142,3 @@
   </div>
 </div>
 
-<app-confirm-dialog
-  #cancelDialog
-  title="Annuler la commande ?"
-  confirmLabel="Annuler la commande"
-  (confirmed)="cancel()"
->
-  <ng-container
-    >La commande ne sera pas préparée. Un paiement en ligne est remboursé
-    automatiquement.</ng-container
-  >
-</app-confirm-dialog>

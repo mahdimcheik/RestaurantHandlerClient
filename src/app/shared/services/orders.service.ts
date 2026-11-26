@@ -21,7 +21,7 @@ export class OrdersService {
     return this.api.ordersQuotePost({ body }).pipe(unwrap());
   }
 
-  /** Modes de paiement proposables au client connecté (indication : la validation revérifie). */
+  /** Paiement en ligne disponible ou non (indication : la validation revérifie). */
   checkoutOptions(): Observable<CheckoutOptions> {
     return this.api.ordersCheckoutOptionsGet().pipe(unwrap());
   }
@@ -32,10 +32,6 @@ export class OrdersService {
 
   pay(id: string): Observable<OrderDetails> {
     return this.api.ordersIdPaymentPost({ id }).pipe(unwrap());
-  }
-
-  payOnSite(id: string): Observable<OrderDetails> {
-    return this.api.ordersIdPayOnSitePost({ id }).pipe(unwrap());
   }
 
   receipt(id: string): Observable<OrderReceipt> {
@@ -52,9 +48,5 @@ export class OrdersService {
 
   get(id: string): Observable<OrderDetails> {
     return this.api.ordersIdGet({ id }).pipe(unwrap());
-  }
-
-  cancel(id: string): Observable<OrderDetails> {
-    return this.api.ordersIdCancelPost({ id }).pipe(unwrap());
   }
 }

@@ -7,8 +7,5 @@ import { PaymentMethod } from './payment-method';
  * Each possible value of `PaymentMethod`
  */
 export const PAYMENT_METHOD: PaymentMethod[] = [
-  'SumupOnline',
-  'OnSiteCard',
-  'OnSiteCash',
-  'OnSiteOther'
+  'SumupOnline'
 ];

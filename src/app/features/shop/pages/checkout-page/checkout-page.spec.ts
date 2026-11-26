@@ -69,12 +69,14 @@ describe('CheckoutPage', () => {
 
   afterEach(() => http.verify());
 
-  it('envoie une commande au retrait dès que possible et ouvre son suivi', async () => {
-    await open('Open', [SLOT], { onlinePaymentEnabled: false, canPayOnSite: true });
+  it('envoie une commande payée par carte, dès que possible, sans choix de paiement', async () => {
+    await open('Open', [SLOT], { onlinePaymentEnabled: true });
     expect(text(fixture)).toContain('Dès que possible (prête dans ~15 min)');
     expect(radio('asap')?.checked).toBe(true);
-    expect(radio('Online')?.disabled).toBe(true);
-    expect(radio('OnSite')?.checked).toBe(true);
+    expect(text(fixture)).toContain('Carte bancaire, en ligne');
+    expect(text(fixture)).not.toContain('Payer au retrait');
+    expect(radio('OnSite')).toBeNull();
+    expect(text(fixture)).toContain('pour annuler, appelez le restaurant');
     const key = cart.idempotencyKey();
 
     submitForm(fixture);
@@ -85,9 +87,10 @@ describe('CheckoutPage', () => {
       lines: [{ productId: 'cola', quantity: 1 }],
       pickupMode: 'Asap',
       slotStart: null,
-      paymentChoice: 'OnSite',
     });
-    request.flush(envelope(order({ id: 'o42', status: 'AwaitingApproval' })), {
+    expect(request.request.body).not.toHaveProperty('paymentChoice');
+    // Page SumUp pas encore créée : le suivi propose de réessayer le paiement.
+    request.flush(envelope(order({ id: 'o42', status: 'PendingPayment', isPaid: false })), {
       status: 201,
       statusText: 'Created',
     });
@@ -97,21 +100,23 @@ describe('CheckoutPage', () => {
     expect(TestBed.inject(Router).url).toBe('/commandes/o42');
   });
 
-  it('propose seulement les créneaux quand Greenadine est fermé, et montre le blocage du paiement au retrait', async () => {
-    await open('Closed', [SLOT], {
-      onlinePaymentEnabled: true,
-      canPayOnSite: false,
-      payOnSiteBlockedReason: 'Vous avez déjà une commande à payer au retrait en cours.',
-    });
+  it('bloque la validation quand le paiement en ligne est coupé', async () => {
+    await open('Open', [SLOT], { onlinePaymentEnabled: false });
+    expect(text(fixture)).toContain('Le paiement en ligne est indisponible pour le moment');
+    const submit = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button[type=submit]',
+    );
+    expect(submit?.disabled).toBe(true);
+  });
+
+  it('propose seulement les créneaux quand Greenadine est fermé', async () => {
+    await open('Closed', [SLOT], { onlinePaymentEnabled: true });
     expect(radio('asap')).toBeNull();
     expect(radio(SLOT.start)?.checked).toBe(true);
-    expect(radio('OnSite')?.disabled).toBe(true);
-    expect(text(fixture)).toContain('déjà une commande à payer au retrait');
-    expect(radio('Online')?.checked).toBe(true);
   });
 
   it('renvoie au panier avec les lignes refusées par le serveur', async () => {
-    await open('Open', [], { onlinePaymentEnabled: true, canPayOnSite: true });
+    await open('Open', [], { onlinePaymentEnabled: true });
     submitForm(fixture);
     await settle();
     http.expectOne('/orders').flush(
@@ -130,7 +135,7 @@ describe('CheckoutPage', () => {
   });
 
   it('annonce que la commande est impossible sans créneau, restaurant fermé', async () => {
-    await open('Closed', [], { onlinePaymentEnabled: true, canPayOnSite: true });
+    await open('Closed', [], { onlinePaymentEnabled: true });
     expect(text(fixture)).toContain('Plus aucun créneau de retrait');
     const submit = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
       'button[type=submit]',

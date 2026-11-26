@@ -50,7 +50,6 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
-      { path: 'comptoir', redirectTo: '/service/comptoir' },
       { path: 'commandes', redirectTo: '/service/commandes' },
       { path: 'commandes/:id', redirectTo: '/service/commandes/:id' },
       {

@@ -3,13 +3,11 @@
 
 export interface RestaurantSettingsDetails {
   address?: string | null;
-  approvalTimeoutMinutes?: number;
   asapDelayMinutes?: number;
   isPaused: boolean;
   legalName?: string | null;
   logoUrl?: string | null;
   minLeadMinutes?: number;
-  noShowThreshold?: number;
   onlinePaymentExpiryMinutes?: number;
   pausedUntil?: string | null;
   phone?: string | null;

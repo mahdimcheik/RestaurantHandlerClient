@@ -164,38 +164,6 @@
   }
 }
 
-// Nombre en attente sur un lien du menu (commandes à valider) : reste visible en rail d'icônes.
-// Pastille inversée par rapport au lien, lisible sur le lien actif comme sur le menu.
-.admin__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
-  margin-inline-start: auto;
-  padding: 0 var(--space-1);
-  border-radius: 999px;
-  background: var(--brand-ink);
-  color: var(--brand-bg);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: normal;
-
-  [aria-current='page'] > & {
-    background: var(--brand-bg);
-    color: var(--brand-ink);
-  }
-
-  @media (max-width: 63.99rem) {
-    position: absolute;
-    inset-block-start: -0.25rem;
-    inset-inline-end: -0.25rem;
-    min-width: 1.25rem;
-    height: 1.25rem;
-  }
-}
-
 .admin__label {
   @media (max-width: 63.99rem) {
     position: absolute;

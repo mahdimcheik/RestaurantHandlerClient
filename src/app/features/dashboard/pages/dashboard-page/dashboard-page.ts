@@ -20,11 +20,9 @@ import { EurosPipe } from '../../../../shared/utils/money';
 /** Compteurs opérationnels du jour, dans l'ordre du service. */
 const COUNTED_STATUSES: readonly OrderStatus[] = [
   'PendingPayment',
-  'AwaitingApproval',
   'Confirmed',
   'InPreparation',
   'Ready',
-  'Refused',
   'NoShow',
   'Cancelled',
 ];

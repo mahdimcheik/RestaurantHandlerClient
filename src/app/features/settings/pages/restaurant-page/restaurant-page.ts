@@ -29,9 +29,7 @@ interface SettingsModel {
   slotDurationMinutes: number;
   slotCapacityOrders: number;
   minLeadMinutes: number;
-  approvalTimeoutMinutes: number;
   pickupGraceMinutes: number;
-  noShowThreshold: number;
   onlinePaymentExpiryMinutes: number;
 }
 
@@ -47,9 +45,7 @@ const toModel = (settings: RestaurantSettingsDetails | null): SettingsModel => (
   slotDurationMinutes: settings?.slotDurationMinutes ?? 15,
   slotCapacityOrders: settings?.slotCapacityOrders ?? 5,
   minLeadMinutes: settings?.minLeadMinutes ?? 20,
-  approvalTimeoutMinutes: settings?.approvalTimeoutMinutes ?? 10,
   pickupGraceMinutes: settings?.pickupGraceMinutes ?? 30,
-  noShowThreshold: settings?.noShowThreshold ?? 2,
   onlinePaymentExpiryMinutes: settings?.onlinePaymentExpiryMinutes ?? 30,
 });
 
@@ -68,9 +64,7 @@ export function toSettingsWrite(model: SettingsModel): RestaurantSettingsWrite {
     slotDurationMinutes: model.slotDurationMinutes,
     slotCapacityOrders: model.slotCapacityOrders,
     minLeadMinutes: model.minLeadMinutes,
-    approvalTimeoutMinutes: model.approvalTimeoutMinutes,
     pickupGraceMinutes: model.pickupGraceMinutes,
-    noShowThreshold: model.noShowThreshold,
     onlinePaymentExpiryMinutes: model.onlinePaymentExpiryMinutes,
   };
 }
@@ -108,9 +102,7 @@ export class RestaurantPage {
     integerRange(path.slotDurationMinutes, 5, 120);
     integerRange(path.slotCapacityOrders, 1, 500);
     integerRange(path.minLeadMinutes, 0, 240);
-    integerRange(path.approvalTimeoutMinutes, 1, 120);
     integerRange(path.pickupGraceMinutes, 0, 240);
-    integerRange(path.noShowThreshold, 1, 20);
     integerRange(path.onlinePaymentExpiryMinutes, 5, 30);
   });
   protected readonly error = signal('');

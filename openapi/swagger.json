@@ -907,44 +907,6 @@
         }
       }
     },
-    "/manage/orders/counter": {
-      "post": {
-        "tags": [
-          "ManageOrders"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CounterOrderCreate"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CounterOrderCreate"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CounterOrderCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/manage/orders": {
       "get": {
         "tags": [
@@ -964,13 +926,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/OrderStatus"
-            }
-          },
-          {
-            "name": "Channel",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/OrderChannel"
             }
           },
           {
@@ -1040,85 +995,6 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/manage/orders/{id}/accept": {
-      "post": {
-        "tags": [
-          "ManageOrders"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/manage/orders/{id}/refuse": {
-      "post": {
-        "tags": [
-          "ManageOrders"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReasonRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReasonRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReasonRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -1362,55 +1238,6 @@
         }
       }
     },
-    "/manage/orders/{id}/payments": {
-      "post": {
-        "tags": [
-          "ManageOrders"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentDeclare"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentDeclare"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentDeclare"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/manage/customers/{userId}/orders": {
       "get": {
         "tags": [
@@ -1452,36 +1279,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OrderSummaryListResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/manage/customers/{userId}/no-shows/reset": {
-      "post": {
-        "tags": [
-          "ManageOrders"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectResponse"
                 }
               }
             }
@@ -2667,36 +2464,6 @@
         }
       }
     },
-    "/orders/{id}/pay-on-site": {
-      "post": {
-        "tags": [
-          "Orders"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/orders/{id}/receipt": {
       "get": {
         "tags": [
@@ -2787,36 +2554,6 @@
     },
     "/orders/{id}": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/orders/{id}/cancel": {
-      "post": {
         "tags": [
           "Orders"
         ],
@@ -4351,40 +4088,14 @@
         },
         "additionalProperties": false
       },
-      "ChannelStats": {
-        "required": [
-          "orders",
-          "revenueCents"
-        ],
-        "type": "object",
-        "properties": {
-          "orders": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "revenueCents": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
       "CheckoutOptions": {
         "required": [
-          "canPayOnSite",
           "onlinePaymentEnabled"
         ],
         "type": "object",
         "properties": {
           "onlinePaymentEnabled": {
             "type": "boolean"
-          },
-          "canPayOnSite": {
-            "type": "boolean"
-          },
-          "payOnSiteBlockedReason": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4593,49 +4304,13 @@
         },
         "additionalProperties": false
       },
-      "CounterOrderCreate": {
-        "required": [
-          "idempotencyKey",
-          "lines"
-        ],
-        "type": "object",
-        "properties": {
-          "lines": {
-            "maxItems": 50,
-            "minItems": 1,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CartLineDto"
-            }
-          },
-          "idempotencyKey": {
-            "maxLength": 64,
-            "minLength": 8,
-            "type": "string"
-          },
-          "customerFirstName": {
-            "maxLength": 64,
-            "type": "string",
-            "nullable": true
-          },
-          "customerNote": {
-            "maxLength": 500,
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "DashboardStats": {
         "required": [
           "averageBasketCents",
           "byStatus",
-          "counter",
           "date",
-          "online",
           "orders",
           "paidOnlineCents",
-          "paidOnSiteCents",
           "revenueCents",
           "vat"
         ],
@@ -4657,17 +4332,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "online": {
-            "$ref": "#/components/schemas/ChannelStats"
-          },
-          "counter": {
-            "$ref": "#/components/schemas/ChannelStats"
-          },
           "paidOnlineCents": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "paidOnSiteCents": {
             "type": "integer",
             "format": "int32"
           },
@@ -4681,10 +4346,6 @@
             "type": "object",
             "properties": {
               "PendingPayment": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "AwaitingApproval": {
                 "type": "integer",
                 "format": "int32"
               },
@@ -4705,10 +4366,6 @@
                 "format": "int32"
               },
               "NoShow": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "Refused": {
                 "type": "integer",
                 "format": "int32"
               },
@@ -5840,18 +5497,10 @@
         },
         "additionalProperties": false
       },
-      "OrderChannel": {
-        "enum": [
-          "Online",
-          "Counter"
-        ],
-        "type": "string"
-      },
       "OrderCreate": {
         "required": [
           "idempotencyKey",
           "lines",
-          "paymentChoice",
           "pickupMode"
         ],
         "type": "object",
@@ -5877,9 +5526,6 @@
             "format": "date-time",
             "nullable": true
           },
-          "paymentChoice": {
-            "$ref": "#/components/schemas/PaymentChoice"
-          },
           "customerNote": {
             "maxLength": 500,
             "type": "string",
@@ -5890,8 +5536,8 @@
       },
       "OrderDetails": {
         "required": [
-          "channel",
           "createdAt",
+          "customerId",
           "dailyNumber",
           "history",
           "id",
@@ -5899,7 +5545,6 @@
           "items",
           "orderNumber",
           "paidCents",
-          "paymentChoice",
           "payments",
           "pickupAt",
           "pickupMode",
@@ -5929,18 +5574,12 @@
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
           },
-          "channel": {
-            "$ref": "#/components/schemas/OrderChannel"
-          },
           "pickupMode": {
             "$ref": "#/components/schemas/PickupMode"
           },
           "pickupAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "paymentChoice": {
-            "$ref": "#/components/schemas/PaymentChoice"
           },
           "isPaid": {
             "type": "boolean"
@@ -5959,8 +5598,7 @@
           },
           "customerId": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           },
           "customerNote": {
             "type": "string",
@@ -5996,11 +5634,6 @@
           },
           "paymentIssue": {
             "type": "string",
-            "nullable": true
-          },
-          "customerNoShowCount": {
-            "type": "integer",
-            "format": "int32",
             "nullable": true
           },
           "items": {
@@ -6325,26 +5958,22 @@
       "OrderStatus": {
         "enum": [
           "PendingPayment",
-          "AwaitingApproval",
           "Confirmed",
           "InPreparation",
           "Ready",
           "Completed",
           "NoShow",
-          "Refused",
           "Cancelled"
         ],
         "type": "string"
       },
       "OrderSummary": {
         "required": [
-          "channel",
           "createdAt",
           "dailyNumber",
           "id",
           "isPaid",
           "orderNumber",
-          "paymentChoice",
           "pickupAt",
           "pickupMode",
           "serviceDate",
@@ -6372,18 +6001,12 @@
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
           },
-          "channel": {
-            "$ref": "#/components/schemas/OrderChannel"
-          },
           "pickupMode": {
             "$ref": "#/components/schemas/PickupMode"
           },
           "pickupAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "paymentChoice": {
-            "$ref": "#/components/schemas/PaymentChoice"
           },
           "isPaid": {
             "type": "boolean"
@@ -6521,38 +6144,9 @@
         },
         "additionalProperties": false
       },
-      "PaymentChoice": {
-        "enum": [
-          "Online",
-          "OnSite"
-        ],
-        "type": "string"
-      },
-      "PaymentDeclare": {
-        "required": [
-          "method"
-        ],
-        "type": "object",
-        "properties": {
-          "method": {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          "amountCents": {
-            "maximum": 10000000,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "PaymentMethod": {
         "enum": [
-          "SumupOnline",
-          "OnSiteCard",
-          "OnSiteCash",
-          "OnSiteOther"
+          "SumupOnline"
         ],
         "type": "string"
       },
@@ -7735,21 +7329,9 @@
             "type": "integer",
             "format": "int32"
           },
-          "approvalTimeoutMinutes": {
-            "maximum": 120,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          },
           "pickupGraceMinutes": {
             "maximum": 240,
             "minimum": 0,
-            "type": "integer",
-            "format": "int32"
-          },
-          "noShowThreshold": {
-            "maximum": 20,
-            "minimum": 1,
             "type": "integer",
             "format": "int32"
           },
@@ -7928,21 +7510,9 @@
             "type": "integer",
             "format": "int32"
           },
-          "approvalTimeoutMinutes": {
-            "maximum": 120,
-            "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          },
           "pickupGraceMinutes": {
             "maximum": 240,
             "minimum": 0,
-            "type": "integer",
-            "format": "int32"
-          },
-          "noShowThreshold": {
-            "maximum": 20,
-            "minimum": 1,
             "type": "integer",
             "format": "int32"
           },
@@ -8193,7 +7763,6 @@
           "firstName",
           "id",
           "lastName",
-          "noShowCount",
           "roles"
         ],
         "type": "object",
@@ -8241,10 +7810,6 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "noShowCount": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "additionalProperties": false

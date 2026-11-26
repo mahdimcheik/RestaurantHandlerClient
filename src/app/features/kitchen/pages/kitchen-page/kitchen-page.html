@@ -21,37 +21,11 @@
   @if (board.readyError()) {
     <p class="alert alert--error" role="alert">{{ board.readyError() }}</p>
   }
-  @if (board.approvalsError()) {
-    <p class="alert alert--error" role="alert">{{ board.approvalsError() }}</p>
-  }
   @if (board.loadError()) {
     <p class="alert alert--error" role="alert">{{ board.loadError() }}</p>
   }
   <p class="visually-hidden" aria-live="polite">{{ board.notice() }}</p>
 </div>
-
-@if (board.approvals().length > 0) {
-  <section class="kds__approvals gutter" aria-labelledby="kds-approval">
-    <h2 class="kds__heading" id="kds-approval">
-      <span>À valider</span>
-      <span class="kds__count">{{ board.approvals().length }}</span>
-    </h2>
-    <ol class="kds__list">
-      @for (order of board.approvals(); track order.id) {
-        <li>
-          <app-kitchen-ticket
-            mode="approval"
-            [order]="order"
-            [busy]="board.pending() === order.id"
-            (accept)="board.accept(order)"
-            (refuse)="askReason(order)"
-            (details)="board.openDetails(order.id)"
-          />
-        </li>
-      }
-    </ol>
-  </section>
-}
 
 @if (board.loading()) {
   <p class="kds__empty gutter">Chargement des commandes…</p>
@@ -119,14 +93,9 @@
                   <span>{{ order.customerLabel }}</span>
                 }
               </span>
-              <span class="kds-ready__pay" [class.kds-ready__pay--due]="!order.isPaid">
-                @if (order.isPaid) {
-                  <app-icon name="check" />
-                  <span>Payée</span>
-                } @else {
-                  <app-icon name="cash" />
-                  <span>À encaisser</span>
-                }
+              <span class="kds-ready__pay">
+                <app-icon name="check" />
+                <span>Payée</span>
                 <span>{{ order.totalCents | euros }}</span>
               </span>
             </button>
@@ -151,17 +120,6 @@
   </div>
 }
 
-<app-reason-dialog
-  #refuseDialog
-  title="Refuser la commande"
-  confirmLabel="Refuser"
-  (confirmed)="refuse($event)"
->
-  @if (refusing(); as order) {
-    Commande n° {{ order.dailyNumber }} : le client est prévenu et voit le motif.
-  }
-</app-reason-dialog>
-
 <app-modal-dialog
   #detailsDialog
   [wide]="true"
@@ -173,8 +131,6 @@
       [order]="order"
       [busy]="board.pending() === order.id"
       (complete)="complete(order)"
-      (paid)="board.paid($event)"
-      (conflict)="board.conflict()"
     />
   } @else if (board.detailError()) {
     <p class="alert alert--error" role="alert">{{ board.detailError() }}</p>

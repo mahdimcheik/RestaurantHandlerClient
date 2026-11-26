@@ -49,53 +49,39 @@ describe('OrderPage', () => {
 
   afterEach(() => http.verify());
 
-  it('propose accepter ou refuser une commande à valider', async () => {
-    await open(order({ status: 'AwaitingApproval', channel: 'Online', customerNoShowCount: 2 }));
-    expect(buttons()).toEqual(['Accepter', 'Refuser']);
-    expect(text(fixture)).toContain('2 non-venues');
-    expect(fixture.nativeElement.querySelector('app-payment-panel')).toBeNull();
-  });
-
-  it('accepte et affiche la commande renvoyée par le serveur', async () => {
-    await open(order({ status: 'AwaitingApproval' }));
-    clickButton(fixture, 'Accepter');
-    http.expectOne('/manage/orders/o1/accept').flush(envelope(order({ status: 'Confirmed' })));
-    await settle();
-
-    expect(text(fixture)).toContain('Commande acceptée');
+  it('montre une commande payée en ligne, sans validation ni encaissement', async () => {
+    await open(order({ status: 'Confirmed' }));
     expect(buttons()).toEqual(['Annuler la commande']);
-    expect(fixture.nativeElement.querySelector('app-payment-panel')).not.toBeNull();
+    expect(text(fixture)).toContain('Payée par carte en ligne');
+    expect(text(fixture)).not.toContain('Canal');
+    expect(text(fixture)).not.toContain('non-venue');
   });
 
-  it('refuse avec un motif obligatoire', async () => {
-    await open(order({ status: 'AwaitingApproval' }));
-    clickButton(fixture, 'Refuser');
+  it('annule à la demande du client, avec un motif obligatoire', async () => {
+    await open(order({ status: 'Confirmed' }));
+    clickButton(fixture, 'Annuler la commande');
     await settle();
     const dialog = fixture.nativeElement.querySelector('dialog[open]') as HTMLDialogElement;
+    expect(dialog.textContent).toContain('il ne peut pas annuler lui-même');
     dialog.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
     await settle();
-    http.expectNone('/manage/orders/o1/refuse');
+    http.expectNone('/manage/orders/o1/cancel');
 
     const reason = dialog.querySelector('textarea')!;
-    reason.value = 'Plus de pâte';
+    reason.value = 'Demandé par téléphone';
     reason.dispatchEvent(new Event('input'));
     dialog.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
     await settle();
-    const request = http.expectOne('/manage/orders/o1/refuse');
-    expect(request.request.body).toEqual({ reason: 'Plus de pâte' });
-    request.flush(envelope(order({ status: 'Refused' })));
+    const request = http.expectOne('/manage/orders/o1/cancel');
+    expect(request.request.body).toEqual({ reason: 'Demandé par téléphone' });
+    request.flush(envelope(order({ status: 'Cancelled' })));
     await settle();
+    expect(text(fixture)).toContain('Commande annulée');
     expect(buttons()).toEqual([]);
   });
 
-  it('demande d’encaisser une commande prête non payée avant de la remettre', async () => {
-    await open(order({ status: 'Ready', pickupAt: '2099-01-01T12:00:00+01:00' }));
-    expect(buttons()).toEqual(['Annuler la commande']);
-    expect(text(fixture)).toContain('À encaisser avant la remise');
-  });
-
-  it('remet une commande prête et payée', async () => {
-    await open(order({ status: 'Ready', isPaid: true, paidCents: 1850 }));
+  it('remet une commande prête', async () => {
+    await open(order({ status: 'Ready' }));
     clickButton(fixture, 'Remettre au client');
     http
       .expectOne('/manage/orders/o1/complete')
@@ -105,16 +91,16 @@ describe('OrderPage', () => {
   });
 
   it('relit la commande et prévient sur 409', async () => {
-    await open(order({ status: 'AwaitingApproval' }));
-    clickButton(fixture, 'Accepter');
+    await open(order({ status: 'Ready' }));
+    clickButton(fixture, 'Remettre au client');
     http
-      .expectOne('/manage/orders/o1/accept')
+      .expectOne('/manage/orders/o1/complete')
       .flush(
         { message: 'Transition refusée.', status: 409 },
         { status: 409, statusText: 'Conflict' },
       );
     await settle();
-    http.expectOne('/manage/orders/o1').flush(envelope(order({ status: 'Refused' })));
+    http.expectOne('/manage/orders/o1').flush(envelope(order({ status: 'Cancelled' })));
     await settle();
 
     expect(text(fixture)).toContain('La commande a changé entre-temps');

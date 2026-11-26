@@ -7,14 +7,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { OrderChannel } from '../../models/order-channel';
 import { OrderStatus } from '../../models/order-status';
 import { OrderSummaryListResponse } from '../../models/order-summary-list-response';
 
 export interface ManageOrdersGet$Params {
   Date?: string;
   Status?: OrderStatus;
-  Channel?: OrderChannel;
   IsPaid?: boolean;
   Number?: number;
 }
@@ -24,7 +22,6 @@ export function manageOrdersGet(http: HttpClient, rootUrl: string, params?: Mana
   if (params) {
     rb.query('Date', params.Date, {});
     rb.query('Status', params.Status, {});
-    rb.query('Channel', params.Channel, {});
     rb.query('IsPaid', params.IsPaid, {});
     rb.query('Number', params.Number, {});
   }

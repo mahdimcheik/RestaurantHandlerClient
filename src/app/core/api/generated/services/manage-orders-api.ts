@@ -10,16 +10,10 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { manageCustomersUserIdNoShowsResetPost } from '../fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
-import { ManageCustomersUserIdNoShowsResetPost$Params } from '../fn/manage-orders/manage-customers-user-id-no-shows-reset-post';
 import { manageCustomersUserIdOrdersGet } from '../fn/manage-orders/manage-customers-user-id-orders-get';
 import { ManageCustomersUserIdOrdersGet$Params } from '../fn/manage-orders/manage-customers-user-id-orders-get';
-import { manageOrdersCounterPost } from '../fn/manage-orders/manage-orders-counter-post';
-import { ManageOrdersCounterPost$Params } from '../fn/manage-orders/manage-orders-counter-post';
 import { manageOrdersGet } from '../fn/manage-orders/manage-orders-get';
 import { ManageOrdersGet$Params } from '../fn/manage-orders/manage-orders-get';
-import { manageOrdersIdAcceptPost } from '../fn/manage-orders/manage-orders-id-accept-post';
-import { ManageOrdersIdAcceptPost$Params } from '../fn/manage-orders/manage-orders-id-accept-post';
 import { manageOrdersIdCancelPost } from '../fn/manage-orders/manage-orders-id-cancel-post';
 import { ManageOrdersIdCancelPost$Params } from '../fn/manage-orders/manage-orders-id-cancel-post';
 import { manageOrdersIdCompletePost } from '../fn/manage-orders/manage-orders-id-complete-post';
@@ -28,21 +22,16 @@ import { manageOrdersIdGet } from '../fn/manage-orders/manage-orders-id-get';
 import { ManageOrdersIdGet$Params } from '../fn/manage-orders/manage-orders-id-get';
 import { manageOrdersIdNoShowPost } from '../fn/manage-orders/manage-orders-id-no-show-post';
 import { ManageOrdersIdNoShowPost$Params } from '../fn/manage-orders/manage-orders-id-no-show-post';
-import { manageOrdersIdPaymentsPost } from '../fn/manage-orders/manage-orders-id-payments-post';
-import { ManageOrdersIdPaymentsPost$Params } from '../fn/manage-orders/manage-orders-id-payments-post';
 import { manageOrdersIdReadyPost } from '../fn/manage-orders/manage-orders-id-ready-post';
 import { ManageOrdersIdReadyPost$Params } from '../fn/manage-orders/manage-orders-id-ready-post';
 import { manageOrdersIdRefundPost } from '../fn/manage-orders/manage-orders-id-refund-post';
 import { ManageOrdersIdRefundPost$Params } from '../fn/manage-orders/manage-orders-id-refund-post';
-import { manageOrdersIdRefusePost } from '../fn/manage-orders/manage-orders-id-refuse-post';
-import { ManageOrdersIdRefusePost$Params } from '../fn/manage-orders/manage-orders-id-refuse-post';
 import { manageOrdersIdStartPost } from '../fn/manage-orders/manage-orders-id-start-post';
 import { ManageOrdersIdStartPost$Params } from '../fn/manage-orders/manage-orders-id-start-post';
 import { manageOrdersIdUndoPost } from '../fn/manage-orders/manage-orders-id-undo-post';
 import { ManageOrdersIdUndoPost$Params } from '../fn/manage-orders/manage-orders-id-undo-post';
 import { manageOrdersKitchenGet } from '../fn/manage-orders/manage-orders-kitchen-get';
 import { ManageOrdersKitchenGet$Params } from '../fn/manage-orders/manage-orders-kitchen-get';
-import { ObjectResponse } from '../models/object-response';
 import { OrderDetailsListResponse } from '../models/order-details-list-response';
 import { OrderDetailsResponse } from '../models/order-details-response';
 import { OrderSummaryListResponse } from '../models/order-summary-list-response';
@@ -51,33 +40,6 @@ import { OrderSummaryListResponse } from '../models/order-summary-list-response'
 export class ManageOrdersApi extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
-  }
-
-  /** Path part for operation `manageOrdersCounterPost()` */
-  static readonly ManageOrdersCounterPostPath = '/manage/orders/counter';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `manageOrdersCounterPost()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersCounterPost$Response(params?: ManageOrdersCounterPost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = manageOrdersCounterPost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `manageOrdersCounterPost$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersCounterPost(params?: ManageOrdersCounterPost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.manageOrdersCounterPost$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
   }
 
   /** Path part for operation `manageOrdersGet()` */
@@ -156,60 +118,6 @@ export class ManageOrdersApi extends BaseService {
    */
   manageOrdersIdGet(params: ManageOrdersIdGet$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
     const resp = this.manageOrdersIdGet$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
-  }
-
-  /** Path part for operation `manageOrdersIdAcceptPost()` */
-  static readonly ManageOrdersIdAcceptPostPath = '/manage/orders/{id}/accept';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `manageOrdersIdAcceptPost()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  manageOrdersIdAcceptPost$Response(params: ManageOrdersIdAcceptPost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = manageOrdersIdAcceptPost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `manageOrdersIdAcceptPost$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  manageOrdersIdAcceptPost(params: ManageOrdersIdAcceptPost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.manageOrdersIdAcceptPost$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
-  }
-
-  /** Path part for operation `manageOrdersIdRefusePost()` */
-  static readonly ManageOrdersIdRefusePostPath = '/manage/orders/{id}/refuse';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `manageOrdersIdRefusePost()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersIdRefusePost$Response(params: ManageOrdersIdRefusePost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = manageOrdersIdRefusePost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `manageOrdersIdRefusePost$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersIdRefusePost(params: ManageOrdersIdRefusePost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.manageOrdersIdRefusePost$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
     );
@@ -404,33 +312,6 @@ export class ManageOrdersApi extends BaseService {
     );
   }
 
-  /** Path part for operation `manageOrdersIdPaymentsPost()` */
-  static readonly ManageOrdersIdPaymentsPostPath = '/manage/orders/{id}/payments';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `manageOrdersIdPaymentsPost()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersIdPaymentsPost$Response(params: ManageOrdersIdPaymentsPost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = manageOrdersIdPaymentsPost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `manageOrdersIdPaymentsPost$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  manageOrdersIdPaymentsPost(params: ManageOrdersIdPaymentsPost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.manageOrdersIdPaymentsPost$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
-  }
-
   /** Path part for operation `manageCustomersUserIdOrdersGet()` */
   static readonly ManageCustomersUserIdOrdersGetPath = '/manage/customers/{userId}/orders';
 
@@ -455,33 +336,6 @@ export class ManageOrdersApi extends BaseService {
     const resp = this.manageCustomersUserIdOrdersGet$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OrderSummaryListResponse>): OrderSummaryListResponse => r.body)
-    );
-  }
-
-  /** Path part for operation `manageCustomersUserIdNoShowsResetPost()` */
-  static readonly ManageCustomersUserIdNoShowsResetPostPath = '/manage/customers/{userId}/no-shows/reset';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `manageCustomersUserIdNoShowsResetPost()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  manageCustomersUserIdNoShowsResetPost$Response(params: ManageCustomersUserIdNoShowsResetPost$Params, context?: HttpContext): Observable<StrictHttpResponse<ObjectResponse>> {
-    const obs = manageCustomersUserIdNoShowsResetPost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `manageCustomersUserIdNoShowsResetPost$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  manageCustomersUserIdNoShowsResetPost(params: ManageCustomersUserIdNoShowsResetPost$Params, context?: HttpContext): Observable<ObjectResponse> {
-    const resp = this.manageCustomersUserIdNoShowsResetPost$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<ObjectResponse>): ObjectResponse => r.body)
     );
   }
 

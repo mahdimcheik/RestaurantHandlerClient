@@ -82,7 +82,7 @@ describe('RealtimeService', () => {
     const created = vi.fn();
     const updated = vi.fn();
     realtime.on('OrderCreated').subscribe(created);
-    realtime.on('OrderUpdated').subscribe(updated);
+    realtime.on('OrderStatusChanged').subscribe(updated);
     const connection = await started();
     connection.emit('OrderCreated', { id: 'o1' });
     expect(created).toHaveBeenCalledWith({ id: 'o1' });

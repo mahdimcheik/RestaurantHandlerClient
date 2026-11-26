@@ -34,7 +34,6 @@
     <button
       type="button"
       class="chip"
-      [class.chip--alert]="option.id === 'toApprove' && counts().toApprove > 0"
       [attr.aria-pressed]="filter() === option.id"
       (click)="filter.set(option.id)"
     >
@@ -56,14 +55,6 @@
       (input)="number.set(numberBox.value)"
     />
   </div>
-  <div class="field">
-    <label class="field__label" for="orders-channel">Canal</label>
-    <select #channelBox id="orders-channel" (change)="setChannel(channelBox.value)">
-      <option value="">Tous</option>
-      <option value="Counter">Comptoir</option>
-      <option value="Online">En ligne</option>
-    </select>
-  </div>
 </div>
 
 @if (loadError()) {
@@ -82,7 +73,6 @@
         <th scope="col">N°</th>
         <th scope="col">Retrait</th>
         <th scope="col">Client</th>
-        <th scope="col">Canal</th>
         <th scope="col">Statut</th>
         <th scope="col">Paiement</th>
         <th scope="col">Total</th>
@@ -90,7 +80,7 @@
     </thead>
     <tbody>
       @for (order of rows(); track order.id) {
-        <tr [class.data-table__row--alert]="order.status === 'AwaitingApproval'">
+        <tr>
           <td class="data-table__main data-table__num">
             <a [routerLink]="order.id">N° {{ order.dailyNumber }}</a>
           </td>
@@ -100,19 +90,14 @@
           <td data-label="Client">
             {{ order.customerLabel || '—' }}
           </td>
-          <td data-label="Canal">
-            {{ channelLabel(order.channel) }}
-          </td>
           <td data-label="Statut">
             <app-order-status [status]="order.status" />
           </td>
           <td data-label="Paiement">
             @if (order.isPaid) {
               <span class="badge badge--muted">Payée</span>
-            } @else if (order.paymentChoice === 'OnSite') {
-              <span class="badge">À encaisser</span>
             } @else {
-              <span class="badge badge--muted">En ligne, non payée</span>
+              <span class="badge badge--muted">Non payée</span>
             }
           </td>
           <td class="data-table__num" data-label="Total">

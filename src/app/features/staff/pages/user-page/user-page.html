@@ -66,28 +66,6 @@
       }
     </section>
 
-    <section class="sheet__section" aria-labelledby="user-no-shows">
-      <h2 id="user-no-shows">Non-venues</h2>
-      <p class="summary__strong">
-        @if (account.noShowCount === 0) {
-          Aucune non-venue
-        } @else if (account.noShowCount === 1) {
-          1 non-venue
-        } @else {
-          {{ account.noShowCount }} non-venues
-        }
-      </p>
-      @if (account.noShowCount > 0) {
-        <p class="sheet__lead">
-          Au-delà du seuil réglé pour Greenadine, le client ne peut plus choisir le paiement au
-          retrait.
-        </p>
-        <button type="button" class="btn btn--outline" [disabled]="busy()" (click)="askReset()">
-          Réautoriser le paiement au retrait
-        </button>
-      }
-    </section>
-
     <section class="sheet__section" aria-labelledby="user-orders">
       <h2 id="user-orders">Commandes</h2>
       @if (ordersError()) {
@@ -101,7 +79,6 @@
               <tr>
                 <th scope="col">N°</th>
                 <th scope="col">Retrait</th>
-                <th scope="col">Canal</th>
                 <th scope="col">Statut</th>
                 <th scope="col" class="data-table__num">Total</th>
               </tr>
@@ -116,9 +93,6 @@
                   </td>
                   <td data-label="Retrait">
                     {{ order.pickupAt | restaurantDateTime }}
-                  </td>
-                  <td data-label="Canal">
-                    {{ channelLabel(order.channel) }}
                   </td>
                   <td data-label="Statut">
                     <app-order-status [status]="order.status" />
@@ -172,14 +146,6 @@
       >{{ userName(account) }} ne pourra plus se connecter et ses sessions seront
       fermées.</ng-container
     >
-  </app-confirm-dialog>
-  <app-confirm-dialog
-    #resetDialog
-    title="Réautoriser le paiement au retrait ?"
-    confirmLabel="Réautoriser"
-    (confirmed)="resetNoShows()"
-  >
-    <ng-container>Le compteur de non-venues repasse à zéro. L'action est historisée.</ng-container>
   </app-confirm-dialog>
 } @else {
   <p role="status">Chargement…</p>

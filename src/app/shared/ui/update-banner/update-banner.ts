@@ -5,11 +5,11 @@ import { SwUpdate } from '@angular/service-worker';
 import { filter, map } from 'rxjs';
 
 /** Pages où un rechargement ferait perdre une saisie en cours : on attend d'en sortir. */
-const BUSY_PAGES = ['/commander/valider', '/service/comptoir'];
+const BUSY_PAGES = ['/commander/valider'];
 
 /**
  * Nouvelle version de l'application prête (service worker) : proposée, jamais imposée. Rien
- * n'apparaît pendant une validation de commande ou une saisie comptoir.
+ * n'apparaît pendant une validation de commande.
  */
 @Component({
   selector: 'app-update-banner',

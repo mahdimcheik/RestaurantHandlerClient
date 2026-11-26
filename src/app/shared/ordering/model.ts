@@ -9,8 +9,8 @@ import {
 } from '../../core/api/generated';
 
 /**
- * Modèle neutre d'un produit à personnaliser et d'un menu à composer, commun à la saisie comptoir
- * (carte de gestion) et à la commande en ligne (carte publique). Les bornes sont déjà résolues
+ * Modèle neutre d'un produit à personnaliser et d'un menu à composer, construit depuis la carte
+ * publique (commande en ligne) ou la carte de gestion. Les bornes sont déjà résolues
  * (règles propres au produit), les éléments archivés écartés et les listes triées.
  */
 

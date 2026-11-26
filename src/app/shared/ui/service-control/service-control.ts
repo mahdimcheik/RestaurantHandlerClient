@@ -87,7 +87,7 @@ const ASAP_MAX = 240;
           </fieldset>
         }
         <p class="sheet__lead">
-          La pause bloque seulement les commandes en ligne : la saisie au comptoir reste possible.
+          La pause bloque les nouvelles commandes ; celles déjà payées restent à préparer.
         </p>
 
         <fieldset class="form__group">

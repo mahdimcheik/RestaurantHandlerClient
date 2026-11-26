@@ -4,7 +4,6 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { form, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { filter, firstValueFrom, merge } from 'rxjs';
-import { PaymentChoice } from '../../../../core/api/generated';
 import { SessionService } from '../../../../core/auth/session.service';
 import { apiErrorMessage, cartIssues } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
@@ -73,22 +72,8 @@ export class CheckoutPage {
       return source.asap ? ASAP : (source.first ?? '');
     },
   });
-  protected readonly payment = linkedSignal<
-    { online: boolean; onSite: boolean },
-    PaymentChoice | ''
-  >({
-    source: () => ({
-      online: !!this.optionsValue()?.onlinePaymentEnabled,
-      onSite: !!this.optionsValue()?.canPayOnSite,
-    }),
-    computation: ({ online, onSite }, previous) => {
-      const kept = previous?.value;
-      if ((kept === 'Online' && online) || (kept === 'OnSite' && onSite)) {
-        return kept;
-      }
-      return online ? 'Online' : onSite ? 'OnSite' : '';
-    },
-  });
+  /** Seul moyen de paiement : la carte en ligne via SumUp (ADR-0013). */
+  protected readonly onlinePayment = computed(() => !!this.optionsValue()?.onlinePaymentEnabled);
 
   /** Ni « dès que possible » ni créneau : impossible de commander maintenant. */
   protected readonly impossible = computed(
@@ -130,8 +115,7 @@ export class CheckoutPage {
   protected async place(event: Event): Promise<void> {
     event.preventDefault();
     const pickup = this.pickup();
-    const payment = this.payment();
-    if (this.sending() || this.cart.isEmpty() || !pickup || !payment) {
+    if (this.sending() || this.cart.isEmpty() || !pickup || !this.onlinePayment()) {
       return;
     }
     await submit(this.detailsForm, {
@@ -143,14 +127,13 @@ export class CheckoutPage {
             this.orders.create({
               idempotencyKey: this.cart.idempotencyKey(),
               lines: this.cart.cartLines(),
-              paymentChoice: payment,
               pickupMode: pickup === ASAP ? 'Asap' : 'Slot',
               slotStart: pickup === ASAP ? null : pickup,
               customerNote: this.details().note.trim() || null,
             }),
           );
           this.cart.clear();
-          if (payment === 'Online' && isPaymentUrl(order.paymentUrl)) {
+          if (isPaymentUrl(order.paymentUrl)) {
             this.window?.location.assign(order.paymentUrl);
           } else {
             await this.router.navigate(['/commandes', order.id]);
@@ -175,7 +158,7 @@ export class CheckoutPage {
     }
     this.error.set(apiErrorMessage(error));
     if (error instanceof HttpErrorResponse && (error.status === 409 || error.status === 403)) {
-      // Créneau pris, pause, paiement au retrait bloqué : relire ce qui a pu changer.
+      // Créneau pris, pause, paiement en ligne coupé : relire ce qui a pu changer.
       this.slots.reload();
       this.options.reload();
       this.opening.reload();

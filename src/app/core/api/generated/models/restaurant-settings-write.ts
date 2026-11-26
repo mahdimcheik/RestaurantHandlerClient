@@ -3,11 +3,9 @@
 
 export interface RestaurantSettingsWrite {
   address?: string | null;
-  approvalTimeoutMinutes?: number;
   asapDelayMinutes?: number;
   legalName?: string | null;
   minLeadMinutes?: number;
-  noShowThreshold?: number;
   onlinePaymentExpiryMinutes?: number;
   phone?: string | null;
   pickupGraceMinutes?: number;

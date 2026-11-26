@@ -11,7 +11,6 @@ export interface UserAdminDetails {
   id: string;
   imgUrl?: string | null;
   lastName: string | null;
-  noShowCount: number;
   phoneNumber?: string | null;
   roles: Array<RoleDetails>;
   status?: StatusAccountDetails;

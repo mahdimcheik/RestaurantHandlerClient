@@ -16,7 +16,6 @@ export function account(extra: Partial<UserAdminDetails> = {}): UserAdminDetails
     roles: [ROLES[1]],
     status: { id: ACCOUNT_STATUS_IDS.Active, name: 'Active' },
     createdAt: '2026-11-01T10:00:00+01:00',
-    noShowCount: 0,
     ...extra,
   };
 }

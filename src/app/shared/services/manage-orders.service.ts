@@ -1,24 +1,18 @@
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  CounterOrderCreate,
   ManageOrdersApi,
   ManageOrdersGet$Params,
   OrderDetails,
   OrderSummary,
-  PaymentDeclare,
   ReasonRequest,
 } from '../../core/api/generated';
-import { Page, toVoid, unwrap, unwrapPage } from './api-operators';
+import { Page, unwrap, unwrapPage } from './api-operators';
 
-/** Commandes côté restaurant : comptoir, cuisine, encaissement. */
+/** Commandes côté restaurant : cuisine, remise, annulation, remboursement. */
 @Service()
 export class ManageOrdersService {
   private readonly api = inject(ManageOrdersApi);
-
-  createCounterOrder(body: CounterOrderCreate): Observable<OrderDetails> {
-    return this.api.manageOrdersCounterPost({ body }).pipe(unwrap());
-  }
 
   list(params?: ManageOrdersGet$Params): Observable<Page<OrderSummary>> {
     return this.api.manageOrdersGet(params).pipe(unwrapPage());
@@ -30,14 +24,6 @@ export class ManageOrdersService {
 
   get(id: string): Observable<OrderDetails> {
     return this.api.manageOrdersIdGet({ id }).pipe(unwrap());
-  }
-
-  accept(id: string): Observable<OrderDetails> {
-    return this.api.manageOrdersIdAcceptPost({ id }).pipe(unwrap());
-  }
-
-  refuse(id: string, body: ReasonRequest): Observable<OrderDetails> {
-    return this.api.manageOrdersIdRefusePost({ id, body }).pipe(unwrap());
   }
 
   start(id: string): Observable<OrderDetails> {
@@ -68,16 +54,8 @@ export class ManageOrdersService {
     return this.api.manageOrdersIdRefundPost({ id }).pipe(unwrap());
   }
 
-  declarePayment(id: string, body: PaymentDeclare): Observable<OrderDetails> {
-    return this.api.manageOrdersIdPaymentsPost({ id, body }).pipe(unwrap());
-  }
-
   /** Commandes d'un client, les plus récentes d'abord (pages à partir de 1). */
   customerOrders(userId: string, page = 1, pageSize = 20): Observable<Page<OrderSummary>> {
     return this.api.manageCustomersUserIdOrdersGet({ userId, page, pageSize }).pipe(unwrapPage());
-  }
-
-  resetCustomerNoShows(userId: string): Observable<void> {
-    return this.api.manageCustomersUserIdNoShowsResetPost({ userId }).pipe(toVoid());
   }
 }

@@ -12,7 +12,7 @@
     @if (isManager()) {
       <p class="alert alert--error" role="alert">
         Un compte du restaurant ne peut pas commander en ligne : connectez-vous avec un compte
-        client ou saisissez la commande au comptoir.
+        client.
       </p>
     } @else if (cart.isEmpty()) {
       <p class="empty">Votre panier est vide.</p>
@@ -76,52 +76,24 @@
               <span class="choice-list__step" aria-hidden="true">2</span>Paiement
             </legend>
             @if (optionsValue(); as options) {
-              <label
-                class="choice-list__option"
-                [class.choice-list__option--disabled]="!options.onlinePaymentEnabled"
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="Online"
-                  [disabled]="!options.onlinePaymentEnabled"
-                  [checked]="payment() === 'Online'"
-                  (change)="payment.set('Online')"
-                />
-                <span>
-                  <span>Payer en ligne par carte</span>
-                  @if (!options.onlinePaymentEnabled) {
-                    <span class="choice-list__hint">Indisponible pour le moment.</span>
-                  } @else {
+              @if (options.onlinePaymentEnabled) {
+                <p class="choice-list__option">
+                  <app-icon name="card" />
+                  <span>
+                    <span>Carte bancaire, en ligne</span>
                     <span class="choice-list__hint"
-                      >Paiement sécurisé chez SumUp, puis retour au suivi de votre commande.</span
+                      >Paiement sécurisé chez SumUp, puis retour au suivi de votre commande. Une
+                      commande payée ne s'annule pas en ligne : pour annuler, appelez le restaurant
+                      ou demandez sur place.</span
                     >
-                  }
-                </span>
-              </label>
-              <label
-                class="choice-list__option"
-                [class.choice-list__option--disabled]="!options.canPayOnSite"
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="OnSite"
-                  [disabled]="!options.canPayOnSite"
-                  [checked]="payment() === 'OnSite'"
-                  (change)="payment.set('OnSite')"
-                />
-                <span>
-                  <span>Payer au retrait</span>
-                  @if (options.payOnSiteBlockedReason) {
-                    <span class="choice-list__hint">{{ options.payOnSiteBlockedReason }}</span>
-                  } @else {
-                    <span class="choice-list__hint"
-                      >Greenadine valide d'abord votre commande ; vous payez sur place.</span
-                    >
-                  }
-                </span>
-              </label>
+                  </span>
+                </p>
+              } @else {
+                <p class="alert alert--error" role="alert">
+                  Le paiement en ligne est indisponible pour le moment : la commande ne peut pas
+                  être validée. Réessayez dans quelques minutes.
+                </p>
+              }
             } @else if (options.error()) {
               <p class="alert alert--error" role="alert">{{ apiError(options.error()) }}</p>
             } @else {
@@ -177,13 +149,9 @@
               <button
                 type="submit"
                 class="btn-brand btn-brand--solid ticket__send"
-                [disabled]="sending() || impossible() || !pickup() || !payment()"
+                [disabled]="sending() || impossible() || !pickup() || !onlinePayment()"
               >
-                @if (payment() === 'Online') {
-                  Commander et payer
-                } @else {
-                  Envoyer ma commande
-                }
+                Commander et payer
               </button>
               <p class="note">
                 En validant, vous acceptez les

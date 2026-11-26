@@ -10,7 +10,6 @@ import { ManageOrdersService } from '../../../../shared/services/manage-orders.s
 import { StoreService } from '../../../../shared/services/store.service';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import {
-  channelLabel,
   OrderStatusBadge,
   paymentMethodLabel,
   paymentStatusLabel,
@@ -21,15 +20,14 @@ import {
   RestaurantDateTimePipe,
   RestaurantTimePipe,
 } from '../../../../shared/utils/restaurant-time';
-import { PaymentPanel } from '../../../../shared/ordering/payment-panel';
 import { ReasonDialog } from '../../../../shared/ui/reason-dialog/reason-dialog';
 import { CONFLICT_MESSAGE, isConflict } from '../../../../shared/utils/conflict';
 import { availableActions } from '../../../../shared/ordering/order-actions';
 
 /**
- * Détail d'une commande et gestes du comptoir : valider ou refuser (US-E06-3), encaisser
- * (US-E05-3), remettre (US-E06-4), client non venu (US-E06-5), annuler (US-E06-6), rembourser
- * (US-E05-4). Les boutons suivent le statut ; le serveur tranche, un 409 relit la commande.
+ * Détail d'une commande et gestes du restaurant : remettre (US-E06-4), client non venu
+ * (US-E06-5), annuler à la demande du client (US-E06-6), rembourser (US-E05-4). Les boutons
+ * suivent le statut ; le serveur tranche, un 409 relit la commande.
  */
 @Component({
   selector: 'app-order-page',
@@ -41,7 +39,6 @@ import { availableActions } from '../../../../shared/ordering/order-actions';
     RatePipe,
     RestaurantTimePipe,
     RestaurantDateTimePipe,
-    PaymentPanel,
     ReasonDialog,
     ConfirmDialog,
   ],
@@ -78,7 +75,6 @@ export class OrderPage {
   protected readonly error = signal('');
   protected readonly notice = signal('');
 
-  protected readonly channelLabel = channelLabel;
   protected readonly methodLabel = paymentMethodLabel;
   protected readonly statusLabel = statusLabel;
   protected readonly paymentStatusLabel = paymentStatusLabel;
@@ -102,17 +98,6 @@ export class OrderPage {
     realtime.resync.pipe(takeUntilDestroyed()).subscribe(() => this.resource.reload());
   }
 
-  protected accept(): Promise<void> {
-    return this.run((id) => this.orders.accept(id), 'Commande acceptée : elle part en cuisine.');
-  }
-
-  protected refuse(reason: string): Promise<void> {
-    return this.run(
-      (id) => this.orders.refuse(id, { reason }),
-      'Commande refusée : le client est prévenu.',
-    );
-  }
-
   protected complete(): Promise<void> {
     return this.run((id) => this.orders.complete(id), 'Commande remise au client.');
   }
@@ -127,18 +112,6 @@ export class OrderPage {
 
   protected refund(): Promise<void> {
     return this.run((id) => this.orders.refund(id), 'Remboursement demandé.');
-  }
-
-  protected paid(order: OrderDetails): void {
-    this.order.set(order);
-    this.error.set('');
-    this.notice.set(order.isPaid ? 'Commande payée.' : 'Montant enregistré.');
-  }
-
-  protected conflict(): void {
-    this.resource.reload();
-    this.notice.set('');
-    this.error.set(CONFLICT_MESSAGE);
   }
 
   private async run(

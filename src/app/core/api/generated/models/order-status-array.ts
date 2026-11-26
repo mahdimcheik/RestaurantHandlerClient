@@ -8,12 +8,10 @@ import { OrderStatus } from './order-status';
  */
 export const ORDER_STATUS: OrderStatus[] = [
   'PendingPayment',
-  'AwaitingApproval',
   'Confirmed',
   'InPreparation',
   'Ready',
   'Completed',
   'NoShow',
-  'Refused',
   'Cancelled'
 ];

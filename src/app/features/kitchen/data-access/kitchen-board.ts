@@ -11,12 +11,11 @@ import {
   untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin, merge, Observable, of } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { OrderDetails, OrderStatus, OrderSummary } from '../../../core/api/generated';
 import { apiErrorMessage } from '../../../core/http/api-error';
 import { ORDER_EVENT_NAMES } from '../../../core/realtime/realtime-events';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
-import { ApprovalAlertService } from '../../../shared/services/approval-alert.service';
 import { ManageOrdersService } from '../../../shared/services/manage-orders.service';
 import { soundSetting, webAudioChime } from '../../../shared/utils/chime';
 import { byPickup, newcomers, splitColumns } from '../kitchen-format';
@@ -48,29 +47,21 @@ export interface LastGesture {
 /**
  * État de l'écran cuisine (US-E07-1 à 3) : file relue depuis l'API à chaque événement de
  * commande, à chaque `resync` et chaque minute ; gestes sans mise à jour optimiste ; dernier
- * geste annulable ; son à l'arrivée d'une commande. S'y ajoutent les commandes « à payer au
- * retrait » à valider (US-E06-3), acceptées ou refusées sans quitter l'écran ; leur liste et leur
- * son viennent d'`ApprovalAlertService`, partagé avec le back-office. Les commandes `Prêtes`
- * restent visibles jusqu'à leur remise, et chaque commande s'ouvre en détail (prix, reste à
- * encaisser) sans quitter l'écran. Fourni par la page.
+ * geste annulable ; son à l'arrivée d'une commande (toujours payée en ligne, ADR-0013). Les
+ * commandes `Prêtes` restent visibles jusqu'à leur remise, et chaque commande s'ouvre en détail
+ * (prix, paiement) sans quitter l'écran. Fourni par la page.
  */
 @Injectable()
 export class KitchenBoard {
   private readonly orders = inject(ManageOrdersService);
   private readonly sound = inject(KITCHEN_SOUND);
   private readonly setting = soundSetting(SOUND_KEY);
-  private readonly alerts = inject(ApprovalAlertService);
 
   private readonly queue = rxResource({ stream: () => this.orders.kitchen() });
   /** Dernière file connue : une relecture en échec n'efface pas l'écran. */
   private readonly list = linkedSignal<OrderDetails[] | undefined, OrderDetails[]>({
     source: () => (this.queue.hasValue() ? this.queue.value() : undefined),
     computation: (value, previous) => value ?? previous?.value ?? [],
-  });
-  private readonly toApprove = rxResource({
-    params: () => this.alerts.ids(),
-    stream: ({ params: ids }) =>
-      ids.length > 0 ? forkJoin(ids.map((id) => this.orders.get(id))) : of([]),
   });
   /** Commandes prêtes, en attente de leur client. */
   private readonly readyQueue = rxResource({
@@ -92,14 +83,6 @@ export class KitchenBoard {
     this.queue.error() ? apiErrorMessage(this.queue.error()) : '',
   );
   readonly columns = computed(() => splitColumns(this.list()));
-  /** Commandes à valider, détaillées ; la dernière liste connue reste si une relecture échoue. */
-  readonly approvals = linkedSignal<OrderDetails[] | undefined, OrderDetails[]>({
-    source: () => (this.toApprove.hasValue() ? this.toApprove.value() : undefined),
-    computation: (value, previous) => value ?? previous?.value ?? [],
-  });
-  readonly approvalsError = computed(() =>
-    this.toApprove.error() ? apiErrorMessage(this.toApprove.error()) : '',
-  );
   /** Prêtes, par heure de retrait ; la dernière liste connue reste si une relecture échoue. */
   readonly ready = linkedSignal<OrderSummary[] | undefined, OrderSummary[]>({
     source: () =>
@@ -111,7 +94,7 @@ export class KitchenBoard {
   );
   /**
    * Commande ouverte : la version relue, sinon celle déjà à l'écran (affichage immédiat, et
-   * consultable hors ligne pour la file et les commandes à valider).
+   * consultable hors ligne pour la file).
    */
   readonly detail = computed<OrderDetails | null>(() => {
     const id = this.detailId();
@@ -122,7 +105,7 @@ export class KitchenBoard {
     if (fresh?.id === id) {
       return fresh;
     }
-    return [...this.list(), ...this.approvals()].find((order) => order.id === id) ?? null;
+    return this.list().find((order) => order.id === id) ?? null;
   });
   /** Un détail est demandé : la page ouvre ou ferme sa fenêtre en conséquence. */
   readonly detailRequested = computed(() => this.detailId() !== null);
@@ -145,7 +128,6 @@ export class KitchenBoard {
   });
 
   constructor() {
-    this.alerts.start();
     const realtime = inject(RealtimeService);
     merge(...ORDER_EVENT_NAMES.map((name) => realtime.on(name)), realtime.resync)
       .pipe(takeUntilDestroyed())
@@ -199,22 +181,7 @@ export class KitchenBoard {
     );
   }
 
-  /** Accepte une commande à valider : elle part dans « À préparer », sans carillon. */
-  accept(order: OrderDetails): void {
-    this.send(order.id, this.orders.accept(order.id), (updated) => {
-      this.seen?.add(updated.id);
-      this.notice.set(`N° ${updated.dailyNumber} acceptée`);
-    });
-  }
-
-  /** Refuse une commande à valider ; le motif est communiqué au client. */
-  refuse(order: OrderDetails, reason: string): void {
-    this.send(order.id, this.orders.refuse(order.id, { reason }), (updated) =>
-      this.notice.set(`N° ${updated.dailyNumber} refusée`),
-    );
-  }
-
-  /** Ouvre le détail d'une commande (file, à valider ou prête). */
+  /** Ouvre le détail d'une commande (file ou prête). */
   openDetails(id: string): void {
     this.detailId.set(id);
   }
@@ -223,24 +190,12 @@ export class KitchenBoard {
     this.detailId.set(null);
   }
 
-  /** Remise au client d'une commande prête et payée ; le serveur refuse sinon. */
+  /** Remise au client d'une commande prête. */
   complete(order: OrderDetails, done: () => void): void {
     this.send(order.id, this.orders.complete(order.id), (updated) => {
       this.notice.set(`N° ${updated.dailyNumber} remise au client`);
       done();
     });
-  }
-
-  /** Encaissement enregistré depuis le détail : la version renvoyée s'affiche aussitôt. */
-  paid(order: OrderDetails): void {
-    this.detailResource.set(order);
-    this.notice.set(`N° ${order.dailyNumber} : encaissement enregistré`);
-    this.refresh();
-  }
-
-  /** L'encaissement a été refusé (409) : la commande a changé ailleurs, tout est relu. */
-  conflict(): void {
-    this.reload();
   }
 
   /** Revient sur le dernier geste (erreur de doigt) ; le serveur refuse après 10 s. */
@@ -272,19 +227,14 @@ export class KitchenBoard {
       next: (order) => {
         this.pending.set(null);
         done(order);
-        this.reload();
+        this.refresh();
       },
       error: (error: unknown) => {
         this.pending.set(null);
         this.message.set(gestureError(error, serverMessage));
-        this.reload();
+        this.refresh();
       },
     });
-  }
-
-  private reload(): void {
-    this.refresh();
-    this.alerts.reload();
   }
 
   private refresh(): void {

@@ -2,17 +2,13 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { merge } from 'rxjs';
-import { OrderChannel, OrderSummary } from '../../../../core/api/generated';
+import { OrderSummary } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { ORDER_EVENT_NAMES } from '../../../../core/realtime/realtime-events';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { ManageOrdersService } from '../../../../shared/services/manage-orders.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
-import {
-  channelLabel,
-  FINAL_STATUSES,
-  OrderStatusBadge,
-} from '../../../../shared/ui/order-status/order-status';
+import { FINAL_STATUSES, OrderStatusBadge } from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe } from '../../../../shared/utils/money';
 import {
   formatLocal,
@@ -22,20 +18,15 @@ import {
   RestaurantTimePipe,
 } from '../../../../shared/utils/restaurant-time';
 
-export type OrderFilter = 'all' | 'toApprove' | 'active' | 'ready' | 'toCollect' | 'closed';
+export type OrderFilter = 'all' | 'unpaid' | 'active' | 'ready' | 'closed';
 
 const isFinal = (order: OrderSummary) => FINAL_STATUSES.includes(order.status);
 
 const FILTERS: Record<OrderFilter, (order: OrderSummary) => boolean> = {
   all: () => true,
-  toApprove: (order) => order.status === 'AwaitingApproval',
+  unpaid: (order) => order.status === 'PendingPayment',
   active: (order) => order.status === 'Confirmed' || order.status === 'InPreparation',
   ready: (order) => order.status === 'Ready',
-  toCollect: (order) =>
-    order.paymentChoice === 'OnSite' &&
-    !order.isPaid &&
-    !isFinal(order) &&
-    order.status !== 'AwaitingApproval',
   closed: isFinal,
 };
 
@@ -46,8 +37,8 @@ interface Anomaly {
 }
 
 /**
- * Commandes du jour (US-E06-2) : filtres par étape, canal et numéro, mises à jour en temps
- * réel. Les commandes à valider (US-E06-3) restent en tête et sont signalées.
+ * Commandes du jour (US-E06-2) : filtres par étape et numéro, mises à jour en temps réel. Toutes
+ * sont passées en ligne et payées par carte (ADR-0013).
  */
 @Component({
   selector: 'app-orders-page',
@@ -62,7 +53,6 @@ export class OrdersPage {
   protected readonly day = signal(this.today);
   protected readonly dayLabel = computed(() => formatLocal(`${this.day()}T00:00:00`));
   protected readonly filter = signal<OrderFilter>('all');
-  protected readonly channel = signal<OrderChannel | null>(null);
   protected readonly number = signal('');
   protected readonly anomalies = signal<Anomaly[]>([]);
 
@@ -77,10 +67,9 @@ export class OrdersPage {
 
   protected readonly filters: readonly { id: OrderFilter; label: string }[] = [
     { id: 'all', label: 'Toutes' },
-    { id: 'toApprove', label: 'À valider' },
+    { id: 'unpaid', label: 'Paiement en cours' },
     { id: 'active', label: 'En cours' },
     { id: 'ready', label: 'Prêtes' },
-    { id: 'toCollect', label: 'À encaisser' },
     { id: 'closed', label: 'Closes' },
   ];
   protected readonly counts = computed(() => {
@@ -90,25 +79,20 @@ export class OrdersPage {
     ) as Record<OrderFilter, number>;
   });
 
-  /** À valider en tête, commandes closes en bas, sinon par heure de retrait. */
+  /** Commandes closes en bas, sinon par heure de retrait. */
   protected readonly rows = computed(() => {
     const matches = FILTERS[this.filter()];
-    const channel = this.channel();
     const number = this.number().trim();
     return this.all()
       .filter(matches)
-      .filter((order) => !channel || order.channel === channel)
       .filter((order) => !number || String(order.dailyNumber).startsWith(number))
       .sort(
         (a, b) =>
-          Number(b.status === 'AwaitingApproval') - Number(a.status === 'AwaitingApproval') ||
           Number(isFinal(a)) - Number(isFinal(b)) ||
           a.pickupAt.localeCompare(b.pickupAt) ||
           a.dailyNumber - b.dailyNumber,
       );
   });
-
-  protected readonly channelLabel = channelLabel;
 
   constructor() {
     const realtime = inject(RealtimeService);
@@ -137,9 +121,5 @@ export class OrdersPage {
 
   protected dismiss(orderId: string): void {
     this.anomalies.update((list) => list.filter((a) => a.orderId !== orderId));
-  }
-
-  protected setChannel(value: string): void {
-    this.channel.set(value === 'Counter' || value === 'Online' ? value : null);
   }
 }

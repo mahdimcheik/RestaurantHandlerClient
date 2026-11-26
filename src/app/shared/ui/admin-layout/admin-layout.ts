@@ -5,14 +5,12 @@ import {
   DestroyRef,
   ElementRef,
   inject,
-  linkedSignal,
   signal,
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
-import { ApprovalAlertService } from '../../services/approval-alert.service';
 import { ConnectionBanner, ConnectionStatus } from '../connection-status/connection-status';
 import { Icon, IconName } from '../icon/icon';
 import { ServiceControl } from '../service-control/service-control';
@@ -83,12 +81,6 @@ interface NavGroup {
                   >
                     <app-icon [name]="link.icon" />
                     <span class="admin__label">{{ link.label }}</span>
-                    @if (link.path === ordersPath && toApprove() > 0) {
-                      {{ ' '
-                      }}<span class="admin__count"
-                        >{{ toApprove() }} <span class="visually-hidden">à valider</span></span
-                      >
-                    }
                   </a>
                 </li>
               }
@@ -115,23 +107,12 @@ interface NavGroup {
       <div #bar class="admin__bar gutter">
         <app-service-control />
         <div class="admin__tools">
-          <button
-            type="button"
-            class="icon-button"
-            [attr.aria-pressed]="!approvals.muted()"
-            title="Son des commandes à valider"
-            (click)="approvals.toggleMuted()"
-          >
-            <app-icon [name]="approvals.muted() ? 'bellOff' : 'bell'" />
-            <span class="visually-hidden">Son des commandes à valider</span>
-          </button>
           <app-connection-status />
           <span class="admin__user">{{ session.user()?.firstName }}</span>
         </div>
       </div>
       <div id="contenu-gestion" class="admin__content gutter" tabindex="-1">
         <app-connection-banner />
-        <p class="visually-hidden" aria-live="polite">{{ approvalNotice() }}</p>
         <router-outlet />
       </div>
     </div>
@@ -139,22 +120,10 @@ interface NavGroup {
 })
 export class AdminLayout {
   protected readonly session = inject(SessionService);
-  protected readonly approvals = inject(ApprovalAlertService);
   private readonly router = inject(Router);
   private readonly store = inject(PublicStore);
 
   protected readonly name = computed(() => this.store.info.value()?.tradeName || 'Greenadine');
-
-  protected readonly ordersPath = '/service';
-  protected readonly toApprove = this.approvals.count;
-  /** Annonce aux lecteurs d'écran, seulement quand le nombre à valider augmente. */
-  protected readonly approvalNotice = linkedSignal<number, string>({
-    source: this.toApprove,
-    computation: (count, previous) =>
-      previous && count > previous.source
-        ? `Nouvelle commande à valider (${count} en attente).`
-        : (previous?.value ?? ''),
-  });
 
   /** Hauteur de la barre du haut, sous laquelle se collent les en-têtes de fiche. */
   protected readonly barHeight = signal(0);
@@ -164,7 +133,6 @@ export class AdminLayout {
     this.watchBarHeight();
     this.store.info.load();
     inject(RealtimeService).start();
-    this.approvals.start();
   }
 
   protected readonly groups: readonly NavGroup[] = [

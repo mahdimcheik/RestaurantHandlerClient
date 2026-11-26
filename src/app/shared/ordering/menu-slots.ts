@@ -54,8 +54,8 @@ export function prefilledChoices(menu: ComposableMenu): MenuChoice[] {
 }
 
 /**
- * Composition d'un menu, emplacement par emplacement (US-E04-2). Corps commun au dialogue du
- * comptoir et à la page menu en ligne ; les choix vivent chez le parent (`[(choices)]`), qui
+ * Composition d'un menu, emplacement par emplacement (US-E04-2), sur la page menu en ligne ;
+ * les choix vivent chez le parent (`[(choices)]`), qui
  * ouvre la personnalisation demandée par `customize`.
  */
 @Component({

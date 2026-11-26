@@ -2,25 +2,20 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { OrderDetails } from '../../../core/api/generated';
 import { availableActions } from '../../../shared/ordering/order-actions';
-import { PaymentPanel } from '../../../shared/ordering/payment-panel';
 import { Icon } from '../../../shared/ui/icon/icon';
-import {
-  channelLabel,
-  OrderStatusBadge,
-  paymentMethodLabel,
-} from '../../../shared/ui/order-status/order-status';
+import { OrderStatusBadge, paymentMethodLabel } from '../../../shared/ui/order-status/order-status';
 import { EurosPipe } from '../../../shared/utils/money';
 import { RestaurantTimePipe } from '../../../shared/utils/restaurant-time';
 import { modificationView } from '../kitchen-format';
 
 /**
  * Détail d'une commande consulté depuis l'écran cuisine, sans le quitter : lignes avec leurs
- * prix, suppléments chiffrés, note, total, déjà payé et reste à encaisser. Une commande acceptée
- * et non payée s'encaisse d'ici (déclaratif, ADR-0006) ; prête et payée, elle se remet d'ici.
+ * prix, suppléments chiffrés, note, total et paiement en ligne. Toute commande est payée par
+ * carte avant d'arriver en cuisine (ADR-0013) ; prête, elle se remet d'ici.
  */
 @Component({
   selector: 'app-kitchen-order-details',
-  imports: [NgTemplateOutlet, Icon, PaymentPanel, OrderStatusBadge, EurosPipe, RestaurantTimePipe],
+  imports: [NgTemplateOutlet, Icon, OrderStatusBadge, EurosPipe, RestaurantTimePipe],
   host: { class: 'kds-details' },
   template: `
     <p class="kds-details__meta">
@@ -31,7 +26,6 @@ import { modificationView } from '../kitchen-format';
           <span>dès que possible</span>
         }
       </span>
-      <span>{{ channel() }}</span>
       @if (order().customerLabel) {
         <span>{{ order().customerLabel }}</span>
       }
@@ -64,25 +58,7 @@ import { modificationView } from '../kitchen-format';
           <dd>{{ payment.amountCents | euros }}</dd>
         </div>
       }
-      <div class="kds-details__row" [class.kds-details__row--due]="due() > 0">
-        <dt>{{ due() > 0 ? 'Reste à encaisser' : 'Payée' }}</dt>
-        <dd>
-          @if (due() > 0) {
-            {{ due() | euros }}
-          } @else {
-            <app-icon name="check" />
-          }
-        </dd>
-      </div>
     </dl>
-
-    @if (actions().collect) {
-      <app-payment-panel
-        [order]="order()"
-        (paid)="paid.emit($event)"
-        (conflict)="conflict.emit()"
-      />
-    }
 
     @if (actions().complete) {
       <button
@@ -149,20 +125,12 @@ export class KitchenOrderDetails {
   readonly order = input.required<OrderDetails>();
   readonly busy = input(false);
   readonly complete = output<void>();
-  /** Commande à jour après un encaissement. */
-  readonly paid = output<OrderDetails>();
-  /** 409 à l'encaissement : la commande a changé, le parent la relit. */
-  readonly conflict = output<void>();
 
-  /** Seuls l'encaissement et la remise servent ici : ni l'heure ni le délai de grâce. */
+  /** Seule la remise sert ici : ni l'heure ni le délai de grâce. */
   protected readonly actions = computed(() => availableActions(this.order(), Date.now(), 0));
 
-  protected readonly channel = computed(() => channelLabel(this.order().channel));
   protected readonly payments = computed(() =>
     this.order().payments.filter((payment) => payment.status === 'Successful'),
-  );
-  protected readonly due = computed(() =>
-    Math.max(0, this.order().totalCents - this.order().paidCents),
   );
   protected readonly methodLabel = paymentMethodLabel;
   protected readonly modView = modificationView;

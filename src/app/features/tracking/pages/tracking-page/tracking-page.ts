@@ -8,16 +8,15 @@ import {
   input,
   signal,
   untracked,
-  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { firstValueFrom, merge } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { OrderDetails } from '../../../../core/api/generated';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { OrdersService } from '../../../../shared/services/orders.service';
-import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
+import { PublicStore } from '../../../../shared/services/public-store.service';
 import {
   ConnectionBanner,
   ConnectionStatus,
@@ -31,10 +30,10 @@ import { isPaymentUrl } from '../../../../shared/utils/payment-url';
 import { formatTime } from '../../../../shared/utils/restaurant-time';
 import {
   awaitsOnlinePayment,
-  canCancel,
   closingReason,
   itemDetails,
   paymentText,
+  showsCancelHelp,
 } from '../../order-format';
 
 /** Relecture tant que le paiement en ligne n'est pas confirmé (notification SumUp en retard). */
@@ -45,6 +44,7 @@ export const PAYMENT_POLL_MS = 5_000;
  * `OrderStatusChanged` de cette commande, à chaque resynchronisation (téléphone déverrouillé,
  * réseau retrouvé) et toutes les 5 s tant que le paiement en ligne est attendu : le retour du
  * navigateur ne prouve rien, seul le serveur confirme. « Prête » est annoncée et fait vibrer.
+ * Pas d'annulation en ligne (ADR-0013) : le client est invité à appeler le restaurant.
  */
 @Component({
   selector: 'app-tracking-page',
@@ -55,7 +55,6 @@ export const PAYMENT_POLL_MS = 5_000;
     EurosPipe,
     Icon,
     OrderStatusBadge,
-    ConfirmDialog,
     ConnectionBanner,
     ConnectionStatus,
   ],
@@ -64,10 +63,13 @@ export const PAYMENT_POLL_MS = 5_000;
 export class TrackingPage {
   private readonly orders = inject(OrdersService);
   private readonly window = inject(DOCUMENT).defaultView;
+  private readonly store = inject(PublicStore);
 
   readonly id = input.required<string>();
 
-  private readonly confirmCancel = viewChild.required<ConfirmDialog>('cancelDialog');
+  /** Téléphone du restaurant, facultatif dans les réglages. */
+  protected readonly phone = computed(() => this.store.info.value()?.phone?.trim() || null);
+  protected readonly phoneHref = computed(() => `tel:${(this.phone() ?? '').replace(/\s/g, '')}`);
 
   protected readonly order = signal<OrderDetails | null>(null);
   protected readonly loadError = signal('');
@@ -84,9 +86,9 @@ export class TrackingPage {
     const order = this.order();
     return order ? formatTime(order.pickupAt) : '';
   });
-  protected readonly canCancel = computed(() => {
+  protected readonly cancelHelp = computed(() => {
     const order = this.order();
-    return !!order && canCancel(order);
+    return !!order && showsCancelHelp(order);
   });
   protected readonly awaitsPayment = computed(() => {
     const order = this.order();
@@ -105,6 +107,7 @@ export class TrackingPage {
   constructor() {
     const realtime = inject(RealtimeService);
     realtime.start();
+    this.store.info.load();
 
     effect(() => {
       const id = this.id();
@@ -114,7 +117,8 @@ export class TrackingPage {
       });
     });
 
-    merge(realtime.on('OrderStatusChanged'), realtime.on('OrderUpdated'))
+    realtime
+      .on('OrderStatusChanged')
       .pipe(takeUntilDestroyed())
       .subscribe((summary) => {
         if (summary.id === this.id()) {
@@ -142,15 +146,6 @@ export class TrackingPage {
     });
   }
 
-  protected askCancel(): void {
-    this.error.set('');
-    this.confirmCancel().open();
-  }
-
-  protected async cancel(): Promise<void> {
-    await this.act(this.orders.cancel(this.id()));
-  }
-
   /** Nouvelle tentative de paiement en ligne : nouvelle page SumUp. */
   protected async retryPayment(): Promise<void> {
     const order = await this.act(this.orders.pay(this.id()));
@@ -159,13 +154,9 @@ export class TrackingPage {
       this.window?.location.assign(url);
     } else if (order) {
       this.error.set(
-        'Le paiement en ligne est indisponible pour le moment. Réessayez ou payez au retrait.',
+        'Le paiement en ligne est indisponible pour le moment. Réessayez dans quelques minutes.',
       );
     }
-  }
-
-  protected async switchToOnSite(): Promise<void> {
-    await this.act(this.orders.payOnSite(this.id()));
   }
 
   private async act(action: ReturnType<OrdersService['get']>): Promise<OrderDetails | null> {

@@ -14,9 +14,7 @@ const settings: RestaurantSettingsDetails = {
   slotDurationMinutes: 15,
   slotCapacityOrders: 5,
   minLeadMinutes: 20,
-  approvalTimeoutMinutes: 10,
   pickupGraceMinutes: 30,
-  noShowThreshold: 2,
   onlinePaymentExpiryMinutes: 30,
 };
 
@@ -74,9 +72,7 @@ describe('RestaurantPage', () => {
       slotDurationMinutes: 15,
       slotCapacityOrders: 8,
       minLeadMinutes: 20,
-      approvalTimeoutMinutes: 10,
       pickupGraceMinutes: 30,
-      noShowThreshold: 2,
       onlinePaymentExpiryMinutes: 30,
     });
     put.flush(envelope({ ...settings, slotCapacityOrders: 8 }));

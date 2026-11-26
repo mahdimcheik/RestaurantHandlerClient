@@ -23,8 +23,8 @@ describe('OrdersPage', () => {
     summary({
       id: 'b',
       dailyNumber: 14,
-      status: 'AwaitingApproval',
-      channel: 'Online',
+      status: 'PendingPayment',
+      isPaid: false,
       customerLabel: 'Léa',
       pickupAt: '2026-11-23T13:00:00+01:00',
     }),
@@ -63,14 +63,16 @@ describe('OrdersPage', () => {
 
   afterEach(() => http.verify());
 
-  it('liste les commandes du jour, celles à valider en tête', () => {
-    expect(numbers()).toEqual(['N° 14', 'N° 3', 'N° 15', 'N° 1']);
+  it('liste les commandes du jour par heure de retrait, closes en bas', () => {
+    expect(numbers()).toEqual(['N° 3', 'N° 15', 'N° 14', 'N° 1']);
     expect(text(fixture)).toContain('Léa');
-    expect(text(fixture)).toContain('À valider');
+    expect(text(fixture)).not.toContain('À valider');
+    expect(text(fixture)).not.toContain('Comptoir');
   });
 
   it('filtre par étape et compte chaque étape', async () => {
-    expect(text(fixture)).toContain('À encaisser 1');
+    expect(text(fixture)).not.toContain('À encaisser');
+    expect(text(fixture)).toContain('Paiement en cours 1');
     clickButton(fixture, 'En cours 1');
     await settle();
     expect(numbers()).toEqual(['N° 15']);
@@ -83,7 +85,7 @@ describe('OrdersPage', () => {
   it('retrouve une commande par son numéro du jour', async () => {
     fill(fixture, 'N° de commande', '1');
     await settle();
-    expect(numbers()).toEqual(['N° 14', 'N° 15', 'N° 1']);
+    expect(numbers()).toEqual(['N° 15', 'N° 14', 'N° 1']);
   });
 
   it('relit la liste à chaque événement de commande', async () => {

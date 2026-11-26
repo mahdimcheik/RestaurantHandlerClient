@@ -12,8 +12,8 @@ import { OptionGroup } from './option-group';
 
 /**
  * Réglages d'un produit : « Sans X », remplacement par un ingrédient proposé (ADR-0012), choix
- * d'options dans leurs bornes. Corps commun au dialogue du comptoir et à la fiche produit en
- * ligne ; l'état vit chez le parent (`[(state)]`).
+ * d'options dans leurs bornes, sur la fiche produit en ligne ; l'état vit chez le parent
+ * (`[(state)]`).
  */
 @Component({
   selector: 'app-product-options',
@@ -81,7 +81,7 @@ export class ProductOptions {
   readonly state = model.required<CustomizationState>();
   /** `false` : la composition seule, les groupes étant choisis ailleurs (assistant pas à pas). */
   readonly groups = input(true);
-  /** Un choix unique vient d'être fait (le comptoir valide alors en mode rapide). */
+  /** Un choix unique vient d'être fait. */
   readonly picked = output<void>();
 
   protected readonly removable = computed(() =>

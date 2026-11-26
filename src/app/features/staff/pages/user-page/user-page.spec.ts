@@ -107,18 +107,10 @@ describe('UserPage', () => {
     expect(text(fixture)).toContain("Impossible d'écarter le dernier Manager actif");
   });
 
-  it('lève le blocage du paiement au retrait', async () => {
-    await open(account({ noShowCount: 2 }));
-    expect(text(fixture)).toContain('2 non-venues');
-    clickButton(fixture, 'Réautoriser le paiement au retrait');
-    await settle();
-    confirm();
-    const request = http.expectOne('/manage/customers/u1/no-shows/reset');
-    expect(request.request.method).toBe('POST');
-    request.flush({ message: 'OK', status: 200 });
-    await answerUser(account({ noShowCount: 0 }));
-    expect(text(fixture)).toContain('Le paiement au retrait est de nouveau autorisé.');
-    expect(text(fixture)).toContain('Aucune non-venue');
+  it('ne propose plus de réautoriser le paiement au retrait', async () => {
+    await open(account());
+    expect(text(fixture)).not.toContain('non-venue');
+    expect(text(fixture)).not.toContain('Réautoriser');
   });
 
   it('n’offre pas d’action sur son propre compte', async () => {

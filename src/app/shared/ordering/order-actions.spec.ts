@@ -8,13 +8,9 @@ const actions = (extra: Partial<OrderDetails>, now = pickup) =>
   availableActions(order(extra), now, 15);
 
 describe('availableActions', () => {
-  it('propose accepter et refuser pour une commande à valider, sans encaissement ni annulation', () => {
-    expect(actions({ status: 'AwaitingApproval', channel: 'Online' })).toEqual({
-      accept: true,
-      refuse: true,
-      collect: false,
+  it("n'agit pas sur une commande en attente de paiement : elle expire seule", () => {
+    expect(actions({ status: 'PendingPayment', isPaid: false })).toEqual({
       complete: false,
-      collectBeforeHandover: false,
       noShow: false,
       cancel: false,
       refund: false,
@@ -22,30 +18,16 @@ describe('availableActions', () => {
   });
 
   it.each<OrderStatus>(['Confirmed', 'InPreparation'])(
-    'encaisse et annule une commande %s non payée',
+    'annule une commande %s sans la remettre',
     (status) => {
       const result = actions({ status });
-      expect(result.collect).toBe(true);
       expect(result.cancel).toBe(true);
       expect(result.complete).toBe(false);
     },
   );
 
-  it("ne propose pas d'encaissement pour une commande payée en ligne", () => {
-    expect(actions({ paymentChoice: 'Online', isPaid: true }).collect).toBe(false);
-  });
-
-  it('remet une commande prête et payée, sinon demande de l’encaisser', () => {
-    expect(actions({ status: 'Ready', isPaid: true })).toMatchObject({
-      complete: true,
-      collectBeforeHandover: false,
-      collect: false,
-    });
-    expect(actions({ status: 'Ready' })).toMatchObject({
-      complete: false,
-      collectBeforeHandover: true,
-      collect: true,
-    });
+  it('remet une commande prête', () => {
+    expect(actions({ status: 'Ready' })).toMatchObject({ complete: true, cancel: true });
   });
 
   it('propose « non venu » seulement après l’heure de retrait et le délai de grâce', () => {
@@ -54,17 +36,16 @@ describe('availableActions', () => {
     expect(actions({ status: 'Confirmed' }, pickup + 60 * 60_000).noShow).toBe(false);
   });
 
-  it.each<OrderStatus>(['Completed', 'NoShow', 'Refused', 'Cancelled'])(
+  it.each<OrderStatus>(['Completed', 'NoShow', 'Cancelled'])(
     'ne propose aucun geste de service sur une commande %s',
     (status) => {
       const result = actions({ status });
-      expect(result.collect || result.cancel || result.complete || result.accept).toBe(false);
+      expect(result.cancel || result.complete).toBe(false);
     },
   );
 
   it('rembourse une commande close payée en ligne, ou dont le remboursement a échoué', () => {
     const paid = {
-      paymentChoice: 'Online' as const,
       payments: [
         {
           id: 'p1',

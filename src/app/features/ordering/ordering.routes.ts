@@ -2,13 +2,8 @@ import { Routes } from '@angular/router';
 
 const suffix = ' — Service';
 
-/** Comptoir et commandes du jour, sous `/service`. */
+/** Commandes du jour, sous `/service`. */
 export const ORDERING_ROUTES: Routes = [
-  {
-    path: 'comptoir',
-    title: 'Comptoir' + suffix,
-    loadComponent: () => import('./pages/counter-page/counter-page').then((m) => m.CounterPage),
-  },
   {
     path: 'commandes',
     title: 'Commandes' + suffix,

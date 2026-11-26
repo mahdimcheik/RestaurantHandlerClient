@@ -4,7 +4,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { OrderDetails } from '../../../../core/api/generated';
 import { fakeRealtime } from '../../../../core/realtime/testing';
-import { APPROVAL_SOUND } from '../../../../shared/services/approval-alert.service';
 import { envelope, order, polyfillDialog, summary, text } from '../../../../shared/testing';
 import { KITCHEN_SOUND, UNDO_WINDOW_MS } from '../../data-access/kitchen-board';
 import { KitchenPage } from './kitchen-page';
@@ -59,23 +58,17 @@ const paidReady = order({
   id: 'r',
   dailyNumber: 7,
   status: 'Ready',
-  channel: 'Online',
-  paymentChoice: 'Online',
   customerLabel: 'Inès',
   isPaid: true,
   paidCents: 1850,
   payments: [{ id: 'p1', method: 'SumupOnline', status: 'Successful', amountCents: 1850 }],
 });
-const unpaidReady = order({ id: 's', dailyNumber: 8, status: 'Ready', totalCents: 1200 });
 
 describe('KitchenPage', () => {
   let fixture: ComponentFixture<KitchenPage>;
   let http: HttpTestingController;
   let realtime: ReturnType<typeof fakeRealtime>;
   let sound: ReturnType<typeof vi.fn>;
-  let approvalSound: ReturnType<typeof vi.fn>;
-  /** Commandes à valider renvoyées par l'API. */
-  let waiting: OrderDetails[];
   /** Commandes prêtes renvoyées par l'API. */
   let ready: OrderDetails[];
 
@@ -93,7 +86,6 @@ describe('KitchenPage', () => {
     }
     button.click();
   };
-  const band = () => root().querySelector('[aria-labelledby="kds-approval"]')?.textContent ?? '';
   const dialog = () => root().querySelector('dialog[open]') as HTMLDialogElement | null;
   const openDetails = (dailyNumber: number) => {
     const button = [...root().querySelectorAll('button')].find((b) =>
@@ -110,32 +102,18 @@ describe('KitchenPage', () => {
     http.expectOne(`/manage/orders/${details.id}`).flush(envelope(details));
     await settle();
   };
-  const answerApprovals = async () => {
+  const answerReady = async () => {
     TestBed.tick();
-    for (const request of http.match((r) => r.url === '/manage/orders')) {
-      const status = request.request.params.get('Status');
-      if (status === 'Ready') {
-        request.flush(envelope(ready.map((details) => summary(details))));
-      } else {
-        expect(status).toBe('AwaitingApproval');
-        request.flush(envelope(waiting.map(({ id, pickupAt }) => ({ id, pickupAt }))));
-      }
-    }
-    await settle();
-    for (const pending of waiting) {
-      for (const request of http.match(
-        (r) => r.method === 'GET' && r.url === `/manage/orders/${pending.id}`,
-      )) {
-        request.flush(envelope(pending));
-      }
-    }
+    const request = http.expectOne((r) => r.url === '/manage/orders');
+    expect(request.request.params.get('Status')).toBe('Ready');
+    request.flush(envelope(ready.map((details) => summary(details))));
     await settle();
   };
   const answer = async (queue: OrderDetails[]) => {
     TestBed.tick();
     http.expectOne('/manage/orders/kitchen').flush(envelope(queue));
     await settle();
-    await answerApprovals();
+    await answerReady();
   };
 
   beforeEach(async () => {
@@ -143,8 +121,6 @@ describe('KitchenPage', () => {
     vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] });
     realtime = fakeRealtime();
     sound = vi.fn();
-    approvalSound = vi.fn();
-    waiting = [];
     ready = [];
     TestBed.configureTestingModule({
       imports: [KitchenPage],
@@ -154,7 +130,6 @@ describe('KitchenPage', () => {
         provideRouter([]),
         realtime.provider,
         { provide: KITCHEN_SOUND, useValue: sound },
-        { provide: APPROVAL_SOUND, useValue: approvalSound },
       ],
     });
     fixture = TestBed.createComponent(KitchenPage);
@@ -259,78 +234,10 @@ describe('KitchenPage', () => {
     await answer([burger, pizza]);
   });
 
-  describe('commandes à valider', () => {
-    beforeEach(async () => {
-      expect(band()).toBe('');
-      waiting = [kebab];
-      realtime.emit('OrderAwaitingApproval', {});
-      await answer([burger, pizza]);
-    });
-
-    it('les montre au-dessus des colonnes, avec un carillon', () => {
-      expect(band()).toContain('À valider');
-      expect(band()).toContain('30');
-      expect(band()).toContain('1× Kebab');
-      expect(band()).toContain('À payer au retrait');
-      expect(band()).toMatch(/23,50\s€/);
-      expect(approvalSound).toHaveBeenCalledTimes(1);
-      expect(sound).not.toHaveBeenCalled();
-    });
-
-    it("accepte d'une touche : la commande passe à préparer sans carillon", async () => {
-      press('Accepter');
-      TestBed.tick();
-      const accept = http.expectOne('/manage/orders/d/accept');
-      expect(accept.request.method).toBe('POST');
-      waiting = [];
-      accept.flush(envelope({ ...kebab, status: 'Confirmed' }));
-      await answer([burger, pizza, { ...kebab, status: 'Confirmed' }]);
-
-      expect(band()).toBe('');
-      expect(column('kds-todo')).toContain('Kebab');
-      expect(text(fixture)).toContain('N° 30 acceptée');
-      expect(sound).not.toHaveBeenCalled();
-      expect(text(fixture)).not.toContain('Annuler (');
-    });
-
-    it('refuse avec un motif obligatoire', async () => {
-      press('Refuser');
-      await settle();
-      const dialog = root().querySelector('dialog[open]') as HTMLDialogElement;
-      expect(dialog.textContent).toContain('Commande n° 30');
-      dialog.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
-      await settle();
-      http.expectNone('/manage/orders/d/refuse');
-
-      const reason = dialog.querySelector('textarea')!;
-      reason.value = 'Plus de pâte';
-      reason.dispatchEvent(new Event('input'));
-      dialog.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }));
-      await settle();
-      const refuse = http.expectOne('/manage/orders/d/refuse');
-      expect(refuse.request.body).toEqual({ reason: 'Plus de pâte' });
-      waiting = [];
-      refuse.flush(envelope({ ...kebab, status: 'Refused' }));
-      await answer([burger, pizza]);
-
-      expect(band()).toBe('');
-      expect(text(fixture)).toContain('N° 30 refusée');
-    });
-
-    it('prévient si la commande a changé ailleurs', async () => {
-      press('Accepter');
-      TestBed.tick();
-      waiting = [];
-      http
-        .expectOne('/manage/orders/d/accept')
-        .flush(
-          { message: 'Transition non autorisée.', status: 409 },
-          { status: 409, statusText: 'Conflict' },
-        );
-      await answer([burger, pizza]);
-      expect(text(fixture)).toContain('La commande a changé sur un autre écran');
-      expect(band()).toBe('');
-    });
+  it('ne montre ni bande « À valider » ni encaissement : tout arrive payé en ligne', () => {
+    expect(root().querySelector('[aria-labelledby="kds-approval"]')).toBeNull();
+    expect(text(fixture)).not.toContain('À valider');
+    expect(text(fixture)).not.toContain('À encaisser');
   });
 
   describe('détail avec les prix', () => {
@@ -347,7 +254,8 @@ describe('KitchenPage', () => {
       expect(shown).toMatch(/Bacon ×2 \+ 3,00\s€/);
       expect(shown).toContain('Bien cuit');
       expect(shown).toMatch(/Total\s*18,50\s€/);
-      expect(shown).toMatch(/Reste à encaisser 18,50\s€/);
+      expect(shown).not.toContain('Reste à encaisser');
+      expect(shown).not.toContain('Encaissement');
       expect(shown).not.toContain('Remis au client');
       expect(column('kds-todo')).toContain('Burger');
 
@@ -368,29 +276,29 @@ describe('KitchenPage', () => {
 
   describe('commandes prêtes', () => {
     beforeEach(async () => {
-      ready = [paidReady, unpaidReady];
+      ready = [paidReady];
       realtime.emit('OrderStatusChanged', {});
       await answer([burger, pizza]);
     });
 
-    it('restent visibles avec leur état de paiement', () => {
+    it('restent visibles, payées en ligne', () => {
       const shown = column('kds-ready').replace(/\s+/g, ' ');
-      expect(shown).toMatch(/Prêtes\s*2/);
+      expect(shown).toMatch(/Prêtes\s*1/);
       expect(shown).toContain('Inès');
       expect(shown).toMatch(/Payée\s*18,50\s€/);
-      expect(shown).toMatch(/À encaisser\s*12,00\s€/);
+      expect(shown).not.toContain('À encaisser');
     });
 
-    it('se remettent au client depuis le détail quand elles sont payées', async () => {
+    it('se remettent au client depuis le détail', async () => {
       openDetails(7);
       await answerDetail(paidReady);
-      expect(dialog()?.textContent).toContain('En ligne');
+      expect(dialog()?.textContent).toContain('Carte en ligne');
 
       press('Remis au client');
       TestBed.tick();
       const complete = http.expectOne('/manage/orders/r/complete');
       expect(complete.request.method).toBe('POST');
-      ready = [unpaidReady];
+      ready = [];
       complete.flush(envelope({ ...paidReady, status: 'Completed' }));
       await answer([burger, pizza]);
 
@@ -399,42 +307,5 @@ describe('KitchenPage', () => {
       expect(column('kds-ready')).not.toContain('Inès');
     });
 
-    it("s'encaissent depuis le détail, puis se remettent au client", async () => {
-      openDetails(8);
-      await answerDetail(unpaidReady);
-      let shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
-      expect(shown).toMatch(/Reste à encaisser 12,00\s€/);
-      expect(shown).toContain('Encaissement');
-      expect(shown).not.toContain('Remis au client');
-
-      press('Espèces');
-      TestBed.tick();
-      const payment = http.expectOne('/manage/orders/s/payments');
-      expect(payment.request.body).toEqual({ method: 'OnSiteCash' });
-      const paidNow: OrderDetails = {
-        ...unpaidReady,
-        isPaid: true,
-        paidCents: 1200,
-        payments: [{ id: 'p2', method: 'OnSiteCash', status: 'Successful', amountCents: 1200 }],
-      };
-      ready = [paidReady, paidNow];
-      payment.flush(envelope(paidNow));
-      await settle();
-      TestBed.tick();
-      http.expectOne('/manage/orders/kitchen').flush(envelope([burger, pizza]));
-      await answerApprovals();
-      await answerDetail(paidNow);
-
-      shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
-      expect(shown).not.toContain('Encaissement');
-      expect(shown).toContain('Remis au client');
-      expect(column('kds-ready').replace(/\s+/g, ' ')).not.toContain('À encaisser');
-    });
-
-    it("ne propose pas l'encaissement d'une commande déjà payée", async () => {
-      openDetails(7);
-      await answerDetail(paidReady);
-      expect(dialog()?.textContent).not.toContain('Encaissement');
-    });
   });
 });

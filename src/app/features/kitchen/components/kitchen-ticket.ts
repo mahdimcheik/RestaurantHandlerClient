@@ -2,8 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { OrderDetails, OrderItemDto } from '../../../core/api/generated';
 import { Icon } from '../../../shared/ui/icon/icon';
-import { channelLabel, OrderStatusBadge } from '../../../shared/ui/order-status/order-status';
-import { EurosPipe } from '../../../shared/utils/money';
+import { OrderStatusBadge } from '../../../shared/ui/order-status/order-status';
 import { RestaurantTimePipe } from '../../../shared/utils/restaurant-time';
 import { modificationView, ModificationView } from '../kitchen-format';
 
@@ -26,13 +25,12 @@ function line(item: OrderItemDto): LineView {
 }
 
 /**
- * Bon de cuisine : numéro, heure, canal, lignes et personnalisations mises en évidence. En mode
- * `approval`, une commande à payer au retrait : total et touches Accepter / Refuser. Le numéro
- * ouvre le détail avec les prix.
+ * Bon de cuisine : numéro, heure, client, lignes et personnalisations mises en évidence. Le
+ * numéro ouvre le détail avec les prix.
  */
 @Component({
   selector: 'app-kitchen-ticket',
-  imports: [NgTemplateOutlet, Icon, OrderStatusBadge, EurosPipe, RestaurantTimePipe],
+  imports: [NgTemplateOutlet, Icon, OrderStatusBadge, RestaurantTimePipe],
   host: { class: 'kds-ticket' },
   template: `
     <div class="kds-ticket__head">
@@ -51,7 +49,6 @@ function line(item: OrderItemDto): LineView {
             <span>dès que possible</span>
           }
         </span>
-        <span>{{ channel() }}</span>
         @if (order().customerLabel) {
           <span>{{ order().customerLabel }}</span>
         }
@@ -74,53 +71,22 @@ function line(item: OrderItemDto): LineView {
       </p>
     }
 
-    @if (mode() === 'approval') {
-      <p class="kds-ticket__total">
-        <span>À payer au retrait</span>
-        <span>{{ order().totalCents | euros }}</span>
-      </p>
-      <div class="kds-ticket__decision">
-        <button
-          type="button"
-          class="btn kds-ticket__action"
-          [disabled]="busy()"
-          [attr.aria-busy]="busy()"
-          (click)="accept.emit()"
-        >
-          <app-icon name="check" />
-          <span>Accepter</span>
-          <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
-        </button>
-        <button
-          type="button"
-          class="btn btn--danger kds-ticket__action"
-          [disabled]="busy()"
-          [attr.aria-busy]="busy()"
-          (click)="refuse.emit()"
-        >
-          <app-icon name="remove" />
-          <span>Refuser</span>
-          <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
-        </button>
-      </div>
-    } @else {
-      <button
-        type="button"
-        class="btn kds-ticket__action"
-        [disabled]="busy()"
-        [attr.aria-busy]="busy()"
-        (click)="advance.emit()"
-      >
-        @if (order().status === 'Confirmed') {
-          <app-icon name="flame" />
-          <span>Commencer</span>
-        } @else {
-          <app-icon name="bell" />
-          <span>Prête</span>
-        }
-        <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
-      </button>
-    }
+    <button
+      type="button"
+      class="btn kds-ticket__action"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy()"
+      (click)="advance.emit()"
+    >
+      @if (order().status === 'Confirmed') {
+        <app-icon name="flame" />
+        <span>Commencer</span>
+      } @else {
+        <app-icon name="bell" />
+        <span>Prête</span>
+      }
+      <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
+    </button>
 
     <ng-template #lineView let-item>
       <span class="kds-ticket__item">
@@ -153,13 +119,9 @@ function line(item: OrderItemDto): LineView {
 export class KitchenTicket {
   readonly order = input.required<OrderDetails>();
   readonly busy = input(false);
-  readonly mode = input<'kitchen' | 'approval'>('kitchen');
   readonly advance = output<void>();
-  readonly accept = output<void>();
-  readonly refuse = output<void>();
   /** Ouvre le détail avec les prix, sans quitter l'écran. */
   readonly details = output<void>();
 
-  protected readonly channel = computed(() => channelLabel(this.order().channel));
   protected readonly lines = computed(() => this.order().items.map(line));
 }

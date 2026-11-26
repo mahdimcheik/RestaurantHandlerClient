@@ -28,9 +28,7 @@ export function settingsWrite(settings: RestaurantSettingsDetails): RestaurantSe
     slotDurationMinutes: settings.slotDurationMinutes,
     slotCapacityOrders: settings.slotCapacityOrders,
     minLeadMinutes: settings.minLeadMinutes,
-    approvalTimeoutMinutes: settings.approvalTimeoutMinutes,
     pickupGraceMinutes: settings.pickupGraceMinutes,
-    noShowThreshold: settings.noShowThreshold,
     onlinePaymentExpiryMinutes: settings.onlinePaymentExpiryMinutes,
   };
 }

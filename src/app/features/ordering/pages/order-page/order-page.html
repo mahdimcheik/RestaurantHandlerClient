@@ -12,10 +12,6 @@
 
   <dl class="summary">
     <div>
-      <dt>Canal</dt>
-      <dd>{{ channelLabel(order.channel) }}</dd>
-    </div>
-    <div>
       <dt>Retrait</dt>
       <dd>
         {{ order.pickupAt | restaurantTime }}
@@ -28,26 +24,15 @@
       <dt>Client</dt>
       <dd>
         {{ order.customerLabel || '—' }}
-        @if (order.customerNoShowCount) {
-          <span class="badge badge--danger">
-            @if (order.customerNoShowCount === 1) {
-              1 non-venue
-            } @else {
-              {{ order.customerNoShowCount }} non-venues
-            }
-          </span>
-        }
       </dd>
     </div>
     <div>
       <dt>Paiement</dt>
       <dd>
         @if (order.isPaid) {
-          Payée
-        } @else if (order.paymentChoice === 'OnSite') {
-          Au retrait, à encaisser
+          Payée par carte en ligne
         } @else {
-          En ligne, non payée
+          En attente du paiement en ligne
         }
       </dd>
     </div>
@@ -72,19 +57,6 @@
 
   @if (actions(); as actions) {
     <div class="action-bar">
-      @if (actions.accept) {
-        <button type="button" class="btn" [disabled]="busy()" (click)="accept()">Accepter</button>
-      }
-      @if (actions.refuse) {
-        <button
-          type="button"
-          class="btn btn--danger"
-          [disabled]="busy()"
-          (click)="refuseDialog.open()"
-        >
-          Refuser
-        </button>
-      }
       @if (actions.complete) {
         <button type="button" class="btn" [disabled]="busy()" (click)="complete()">
           Remettre au client
@@ -121,13 +93,6 @@
         </button>
       }
     </div>
-
-    @if (actions.collectBeforeHandover) {
-      <p class="alert">À encaisser avant la remise au client.</p>
-    }
-    @if (actions.collect) {
-      <app-payment-panel [order]="order" (paid)="paid($event)" (conflict)="conflict()" />
-    }
   }
 
   <section class="sheet__section" aria-labelledby="order-lines">
@@ -210,20 +175,13 @@
   </section>
 
   <app-reason-dialog
-    #refuseDialog
-    title="Refuser la commande"
-    confirmLabel="Refuser"
-    (confirmed)="refuse($event)"
-  >
-    <ng-container>Le client verra ce motif sur sa page de suivi.</ng-container>
-  </app-reason-dialog>
-  <app-reason-dialog
     #cancelDialog
     title="Annuler la commande"
     confirmLabel="Annuler la commande"
     (confirmed)="cancel($event)"
   >
-    Une commande payée en ligne est remboursée automatiquement. Le client est prévenu.
+    À faire à la demande du client (téléphone ou sur place) : il ne peut pas annuler lui-même.
+    Le paiement en ligne est remboursé automatiquement et le client voit le motif.
   </app-reason-dialog>
   <app-confirm-dialog
     #noShowDialog
@@ -231,8 +189,7 @@
     confirmLabel="Déclarer non venu"
     (confirmed)="noShow()"
   >
-    La commande est close et compte comme une non-venue du client. Un paiement en ligne n'est pas
-    remboursé automatiquement.
+    La commande est close. Le paiement en ligne n'est pas remboursé automatiquement.
   </app-confirm-dialog>
   <app-confirm-dialog
     #refundDialog

@@ -15,14 +15,10 @@ import { OrderDetailsResponse } from '../models/order-details-response';
 import { OrderReceiptResponse } from '../models/order-receipt-response';
 import { ordersCheckoutOptionsGet } from '../fn/orders/orders-checkout-options-get';
 import { OrdersCheckoutOptionsGet$Params } from '../fn/orders/orders-checkout-options-get';
-import { ordersIdCancelPost } from '../fn/orders/orders-id-cancel-post';
-import { OrdersIdCancelPost$Params } from '../fn/orders/orders-id-cancel-post';
 import { ordersIdGet } from '../fn/orders/orders-id-get';
 import { OrdersIdGet$Params } from '../fn/orders/orders-id-get';
 import { ordersIdPaymentPost } from '../fn/orders/orders-id-payment-post';
 import { OrdersIdPaymentPost$Params } from '../fn/orders/orders-id-payment-post';
-import { ordersIdPayOnSitePost } from '../fn/orders/orders-id-pay-on-site-post';
-import { OrdersIdPayOnSitePost$Params } from '../fn/orders/orders-id-pay-on-site-post';
 import { ordersIdReceiptGet } from '../fn/orders/orders-id-receipt-get';
 import { OrdersIdReceiptGet$Params } from '../fn/orders/orders-id-receipt-get';
 import { ordersMineCurrentGet } from '../fn/orders/orders-mine-current-get';
@@ -150,33 +146,6 @@ export class OrdersApi extends BaseService {
     );
   }
 
-  /** Path part for operation `ordersIdPayOnSitePost()` */
-  static readonly OrdersIdPayOnSitePostPath = '/orders/{id}/pay-on-site';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `ordersIdPayOnSitePost()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  ordersIdPayOnSitePost$Response(params: OrdersIdPayOnSitePost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = ordersIdPayOnSitePost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `ordersIdPayOnSitePost$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  ordersIdPayOnSitePost(params: OrdersIdPayOnSitePost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.ordersIdPayOnSitePost$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
-  }
-
   /** Path part for operation `ordersIdReceiptGet()` */
   static readonly OrdersIdReceiptGetPath = '/orders/{id}/receipt';
 
@@ -280,33 +249,6 @@ export class OrdersApi extends BaseService {
    */
   ordersIdGet(params: OrdersIdGet$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
     const resp = this.ordersIdGet$Response(params, context);
-    return resp.pipe(
-      map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
-    );
-  }
-
-  /** Path part for operation `ordersIdCancelPost()` */
-  static readonly OrdersIdCancelPostPath = '/orders/{id}/cancel';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `ordersIdCancelPost()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  ordersIdCancelPost$Response(params: OrdersIdCancelPost$Params, context?: HttpContext): Observable<StrictHttpResponse<OrderDetailsResponse>> {
-    const obs = ordersIdCancelPost(this.http, this.rootUrl, params, context);
-    return obs;
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `ordersIdCancelPost$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  ordersIdCancelPost(params: OrdersIdCancelPost$Params, context?: HttpContext): Observable<OrderDetailsResponse> {
-    const resp = this.ordersIdCancelPost$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<OrderDetailsResponse>): OrderDetailsResponse => r.body)
     );

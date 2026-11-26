@@ -20,11 +20,8 @@ const TODAY: DashboardStats = {
   orders: 3,
   revenueCents: 4560,
   averageBasketCents: 1520,
-  counter: { orders: 2, revenueCents: 2200 },
-  online: { orders: 1, revenueCents: 2360 },
-  paidOnlineCents: 2360,
-  paidOnSiteCents: 2200,
-  byStatus: { AwaitingApproval: 1, InPreparation: 2, Cancelled: 1 },
+  paidOnlineCents: 4560,
+  byStatus: { PendingPayment: 1, InPreparation: 2, Cancelled: 1 },
   vat: [{ rate: 5.5, netCents: 237, vatCents: 13, grossCents: 250 }],
 };
 
@@ -71,12 +68,11 @@ describe('DashboardPage', () => {
     const page = text(fixture).replace(/\s/g, '');
     expect(page).toContain('45,60');
     expect(page).toContain('15,20');
-    expect(page).toContain('Comptoir22,00€2commandes');
-    expect(page).toContain('Enligne23,60€1commande');
-    expect(page).toContain('Payésurplace22,00€');
-    expect(page).toContain('Àvalider1');
+    expect(page).not.toContain('Comptoir');
+    expect(page).not.toContain('Payésurplace');
+    expect(page).toContain('Paiementencours1');
     expect(page).toContain('Annulée1');
-    expect(page).toContain('Refusée0');
+    expect(page).toContain('Nonvenu0');
     expect(page).toContain('5,5%2,37€0,13€2,50€');
   });
 

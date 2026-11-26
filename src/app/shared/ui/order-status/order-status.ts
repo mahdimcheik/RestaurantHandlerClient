@@ -1,6 +1,5 @@
 import { Component, computed, input } from '@angular/core';
 import {
-  OrderChannel,
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
@@ -15,11 +14,6 @@ const STATUS: Record<OrderStatus, { label: string; icon: IconName; tone: Tone }>
     icon: 'card',
     tone: 'muted',
   },
-  AwaitingApproval: {
-    label: 'À valider',
-    icon: 'alert',
-    tone: 'warning',
-  },
   Confirmed: { label: 'Confirmée', icon: 'check', tone: 'info' },
   InPreparation: {
     label: 'En préparation',
@@ -29,7 +23,6 @@ const STATUS: Record<OrderStatus, { label: string; icon: IconName; tone: Tone }>
   Ready: { label: 'Prête', icon: 'bell', tone: 'success' },
   Completed: { label: 'Retirée', icon: 'done', tone: 'muted' },
   NoShow: { label: 'Non venu', icon: 'noShow', tone: 'muted' },
-  Refused: { label: 'Refusée', icon: 'remove', tone: 'muted' },
   Cancelled: { label: 'Annulée', icon: 'remove', tone: 'muted' },
 };
 
@@ -37,7 +30,6 @@ const STATUS: Record<OrderStatus, { label: string; icon: IconName; tone: Tone }>
 export const FINAL_STATUSES: readonly OrderStatus[] = [
   'Completed',
   'NoShow',
-  'Refused',
   'Cancelled',
 ];
 
@@ -47,13 +39,11 @@ export function statusLabel(status: OrderStatus): string {
 
 const CUSTOMER_STATUS: Record<OrderStatus, string> = {
   PendingPayment: 'Paiement en attente',
-  AwaitingApproval: 'En attente de validation par Greenadine',
   Confirmed: 'Confirmée',
   InPreparation: 'En préparation',
   Ready: 'Prête — venez la chercher',
   Completed: 'Retirée',
   NoShow: 'Non retirée',
-  Refused: 'Refusée par Greenadine',
   Cancelled: 'Annulée',
 };
 
@@ -62,15 +52,8 @@ export function customerStatusLabel(status: OrderStatus): string {
   return CUSTOMER_STATUS[status];
 }
 
-export function channelLabel(channel: OrderChannel): string {
-  return channel === 'Counter' ? 'Comptoir' : 'En ligne';
-}
-
 const METHODS: Record<PaymentMethod, string> = {
-  SumupOnline: 'En ligne',
-  OnSiteCard: 'Carte',
-  OnSiteCash: 'Espèces',
-  OnSiteOther: 'Autre',
+  SumupOnline: 'Carte en ligne',
 };
 
 export function paymentMethodLabel(method: PaymentMethod): string {
@@ -98,7 +81,7 @@ export function paymentStatusLabel(status: PaymentStatus): string {
 })
 export class OrderStatusBadge {
   readonly status = input.required<OrderStatus>();
-  /** Libellé côté client (« En attente de validation par Greenadine »…). */
+  /** Libellé côté client (« Prête — venez la chercher »…). */
   readonly customer = input(false);
   protected readonly info = computed(() => STATUS[this.status()]);
   protected readonly label = computed(() =>

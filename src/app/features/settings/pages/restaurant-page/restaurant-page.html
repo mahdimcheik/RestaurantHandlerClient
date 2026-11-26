@@ -86,21 +86,9 @@
         </div>
         <div class="form__row">
           <app-number-field
-            [field]="form.approvalTimeoutMinutes"
-            label="Délai de validation par le Manager"
-            hint="Commandes à payer au retrait, de 1 à 120 min."
-          />
-          <app-number-field
             [field]="form.pickupGraceMinutes"
             label="Délai de grâce au retrait"
-            hint="Avant de compter une non-venue, de 0 à 240 min."
-          />
-        </div>
-        <div class="form__row">
-          <app-number-field
-            [field]="form.noShowThreshold"
-            label="Seuil de non-venues"
-            hint="De 1 à 20."
+            hint="Avant de déclarer un client non venu, de 0 à 240 min."
           />
           <app-number-field
             [field]="form.onlinePaymentExpiryMinutes"
