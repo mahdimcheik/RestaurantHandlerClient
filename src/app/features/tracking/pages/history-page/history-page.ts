@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { OrderStatusBadge } from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { RestaurantDateTimePipe } from '../../../../shared/utils/restaurant-time';
@@ -14,7 +15,7 @@ export const HISTORY_PAGE_SIZE = 20;
 @Component({
   selector: 'app-history-page',
   host: { class: 'shop' },
-  imports: [RouterLink, EurosPipe, RestaurantDateTimePipe, OrderStatusBadge, Icon],
+  imports: [RouterLink, SiteTopbar, EurosPipe, RestaurantDateTimePipe, OrderStatusBadge, Icon],
   templateUrl: './history-page.html',
 })
 export class HistoryPage {

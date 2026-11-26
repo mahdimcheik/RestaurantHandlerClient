@@ -1,91 +1,100 @@
-<div class="gutter shop__page shop__page--narrow">
-  <a class="link-button shop__back no-print" [routerLink]="['/commandes', id()]">
-    <app-icon name="back" />Retour à la commande
-  </a>
+<div class="brand brand-ui brand-page">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar class="no-print" />
 
-  @if (value(); as receipt) {
-    <article class="receipt" aria-labelledby="receipt-title">
-      <header class="receipt__head">
-        <h1 id="receipt-title" class="receipt__title">Reçu</h1>
-        <p class="receipt__seller">
-          <strong>{{ receipt.tradeName }}</strong>
-          @if (receipt.legalName && receipt.legalName !== receipt.tradeName) {
-            <br />{{ receipt.legalName }}
-          }
-          @if (receipt.address) {
-            <br />{{ receipt.address }}
-          }
-          @if (receipt.siret) {
-            <br />SIRET {{ receipt.siret }}
-          }
-          @if (receipt.vatNumber) {
-            <br /><ng-container>N° TVA {{ receipt.vatNumber }}</ng-container>
-          }
-        </p>
-        <p class="receipt__meta">
-          <ng-container
-            >Commande {{ receipt.orderNumber }} (n° du jour {{ receipt.dailyNumber }})</ng-container
-          >
-          <br /><ng-container>Payée le {{ receipt.paidAt | restaurantDateTime }}</ng-container>
-        </p>
-      </header>
+  <div class="order-page order-page--narrow gutter">
+    <header class="order-page__head no-print">
+      <a class="link-button" [routerLink]="['/commandes', id()]">
+        <app-icon name="back" />Retour à la commande
+      </a>
+      <p class="eyebrow">Commande</p>
+    </header>
 
-      <ul class="ticket__lines">
-        @for (item of receipt.items; track item.id) {
-          <li class="ticket__line">
-            <div class="ticket__main">
-              <span class="ticket__name">{{ item.quantity }} × {{ item.name }}</span>
-              <span class="ticket__amount">{{ item.lineTotalCents | euros }}</span>
-            </div>
-            @if (itemDetails(item).length > 0) {
-              <ul class="ticket__mods">
-                @for (detail of itemDetails(item); track $index) {
-                  <li>{{ detail }}</li>
-                }
-              </ul>
+    @if (value(); as receipt) {
+      <article class="receipt order-panel" aria-labelledby="receipt-title">
+        <header class="receipt__head">
+          <h1 id="receipt-title" class="display-title display-title--md receipt__title">Reçu</h1>
+          <p class="receipt__seller">
+            <strong>{{ receipt.tradeName }}</strong>
+            @if (receipt.legalName && receipt.legalName !== receipt.tradeName) {
+              <br />{{ receipt.legalName }}
             }
-          </li>
-        }
-      </ul>
-
-      <dl class="ticket__vat">
-        <div>
-          <dt>Total HT</dt>
-          <dd>{{ netCents() | euros }}</dd>
-        </div>
-        @for (vat of receipt.vat; track vat.rate) {
-          <div>
-            <dt>TVA {{ vat.rate | rate }} % sur {{ vat.netCents | euros }}</dt>
-            <dd>{{ vat.vatCents | euros }}</dd>
-          </div>
-        }
-      </dl>
-      <p class="ticket__total">
-        <span>Total TTC</span>
-        <span class="ticket__total-value">{{ receipt.totalCents | euros }}</span>
-      </p>
-
-      <ul class="receipt__payments">
-        @for (payment of payments(); track payment.id) {
-          <li>
+            @if (receipt.address) {
+              <br />{{ receipt.address }}
+            }
+            @if (receipt.siret) {
+              <br />SIRET {{ receipt.siret }}
+            }
+            @if (receipt.vatNumber) {
+              <br /><ng-container>N° TVA {{ receipt.vatNumber }}</ng-container>
+            }
+          </p>
+          <p class="receipt__meta">
             <ng-container
-              >Réglé : {{ methodLabel(payment.method) }},
-              {{ payment.amountCents | euros }}</ng-container
+              >Commande {{ receipt.orderNumber }} (n° du jour
+              {{ receipt.dailyNumber }})</ng-container
             >
-          </li>
-        }
-      </ul>
-      <p class="note">
-        Justificatif de paiement en ligne. Le ticket de caisse est disponible sur demande au
-        comptoir.
-      </p>
-    </article>
-    <button type="button" class="btn no-print" (click)="print()">
-      Imprimer ou enregistrer en PDF
-    </button>
-  } @else if (error()) {
-    <p class="alert alert--error" role="alert">{{ error() }}</p>
-  } @else {
-    <p role="status">Chargement…</p>
-  }
+            <br /><ng-container>Payée le {{ receipt.paidAt | restaurantDateTime }}</ng-container>
+          </p>
+        </header>
+
+        <ul class="ticket__lines">
+          @for (item of receipt.items; track item.id) {
+            <li class="ticket__line">
+              <div class="ticket__main">
+                <span class="ticket__name">{{ item.quantity }} × {{ item.name }}</span>
+                <span class="ticket__amount">{{ item.lineTotalCents | euros }}</span>
+              </div>
+              @if (itemDetails(item).length > 0) {
+                <ul class="ticket__mods">
+                  @for (detail of itemDetails(item); track $index) {
+                    <li>{{ detail }}</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+
+        <dl class="ticket__vat">
+          <div>
+            <dt>Total HT</dt>
+            <dd>{{ netCents() | euros }}</dd>
+          </div>
+          @for (vat of receipt.vat; track vat.rate) {
+            <div>
+              <dt>TVA {{ vat.rate | rate }} % sur {{ vat.netCents | euros }}</dt>
+              <dd>{{ vat.vatCents | euros }}</dd>
+            </div>
+          }
+        </dl>
+        <p class="ticket__total">
+          <span>Total TTC</span>
+          <span class="ticket__total-value">{{ receipt.totalCents | euros }}</span>
+        </p>
+
+        <ul class="receipt__payments">
+          @for (payment of payments(); track payment.id) {
+            <li>
+              <ng-container
+                >Réglé : {{ methodLabel(payment.method) }},
+                {{ payment.amountCents | euros }}</ng-container
+              >
+            </li>
+          }
+        </ul>
+        <p class="note">
+          Justificatif de paiement en ligne. Le ticket de caisse est disponible sur demande au
+          comptoir.
+        </p>
+      </article>
+      <button type="button" class="btn-brand no-print" (click)="print()">
+        Imprimer ou enregistrer en PDF
+      </button>
+    } @else if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    } @else {
+      <p role="status">Chargement…</p>
+    }
+  </div>
 </div>

@@ -19,6 +19,9 @@ describe('HistoryPage', () => {
       TestBed.tick();
     };
     await settle();
+    for (const request of http.match('/restaurant/info')) {
+      request.flush(envelope({}));
+    }
     http
       .expectOne((r) => r.url === '/orders/mine' && r.params.get('page') === '1')
       .flush({

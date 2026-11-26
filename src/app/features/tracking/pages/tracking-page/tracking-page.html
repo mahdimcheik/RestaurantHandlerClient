@@ -1,136 +1,158 @@
-<div class="gutter shop__page shop__page--narrow">
-  <div class="tracking__bar">
-    <h1>Suivi de commande</h1>
-    <app-connection-status />
-  </div>
-  <app-connection-banner />
+<div class="brand brand-ui brand-page">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar />
 
-  @if (order(); as order) {
-    <section
-      class="tracking"
-      [class.tracking--ready]="ready()"
-      [class.tracking--closed]="final()"
-      aria-labelledby="tracking-number"
-    >
-      <p class="order-number">
-        <span class="order-number__label">Votre numéro</span>
-        <span id="tracking-number" class="order-number__value">N° {{ order.dailyNumber }}</span>
-      </p>
-      <p class="tracking__status" role="status" aria-live="polite">
-        <app-order-status [status]="order.status" [customer]="true" />
-      </p>
-      @if (ready()) {
-        <p class="tracking__ready">Votre commande vous attend au comptoir : donnez votre numéro.</p>
-      }
-      @if (reason(); as reason) {
-        <p class="note">Motif : {{ reason }}</p>
-      }
+  <div class="order-page order-page--narrow gutter">
+    <header class="order-page__head">
+      <a class="link-button" routerLink="/commandes">Toutes mes commandes</a>
+      <p class="eyebrow">Commande</p>
+      <div class="tracking__bar">
+        <h1 class="display-title display-title--md">Suivi de commande</h1>
+        <app-connection-status />
+      </div>
+    </header>
+    <app-connection-banner />
 
-      <dl class="facts">
-        @if (!final()) {
-          <div>
-            <dt>Retrait</dt>
-            <dd>
-              @if (order.pickupMode === 'Asap') {
-                Vers {{ pickupTime() }}
-              } @else {
-                À {{ pickupTime() }}
-              }
-            </dd>
-          </div>
-        }
-        <div>
-          <dt>Total</dt>
-          <dd>{{ order.totalCents | euros }}</dd>
-        </div>
-        @if (order.isPaid || !final()) {
-          <div>
-            <dt>Paiement</dt>
-            <dd>{{ payment() }}</dd>
-          </div>
-        }
-      </dl>
-
-      @if (awaitsPayment()) {
-        <div class="alert" role="status">
-          <p>
-            Nous attendons la confirmation de votre paiement. Si vous avez quitté la page de
-            paiement, vous pouvez réessayer ou payer au retrait.
+    @if (order(); as order) {
+      <section
+        class="tracking"
+        [class.tracking--ready]="ready()"
+        [class.tracking--closed]="final()"
+        aria-labelledby="tracking-number"
+      >
+        <div class="order-panel">
+          <p class="order-number">
+            <span class="order-number__label">Votre numéro</span>
+            <span id="tracking-number" class="order-number__value">N° {{ order.dailyNumber }}</span>
           </p>
-          <div class="form__actions">
-            <button type="button" class="btn" [disabled]="busy()" (click)="retryPayment()">
-              <app-icon name="card" /><ng-container>Payer en ligne</ng-container>
-            </button>
+          <p class="tracking__status" role="status" aria-live="polite">
+            <app-order-status [status]="order.status" [customer]="true" />
+          </p>
+          @if (ready()) {
+            <p class="tracking__ready">
+              Votre commande vous attend au comptoir : donnez votre numéro.
+            </p>
+          }
+          @if (reason(); as reason) {
+            <p class="note">Motif : {{ reason }}</p>
+          }
+
+          <dl class="facts">
+            @if (!final()) {
+              <div>
+                <dt>Retrait</dt>
+                <dd>
+                  @if (order.pickupMode === 'Asap') {
+                    Vers {{ pickupTime() }}
+                  } @else {
+                    À {{ pickupTime() }}
+                  }
+                </dd>
+              </div>
+            }
+            <div>
+              <dt>Total</dt>
+              <dd>{{ order.totalCents | euros }}</dd>
+            </div>
+            @if (order.isPaid || !final()) {
+              <div>
+                <dt>Paiement</dt>
+                <dd>{{ payment() }}</dd>
+              </div>
+            }
+          </dl>
+
+          @if (awaitsPayment()) {
+            <div class="alert" role="status">
+              <p>
+                Nous attendons la confirmation de votre paiement. Si vous avez quitté la page de
+                paiement, vous pouvez réessayer ou payer au retrait.
+              </p>
+              <div class="form__actions">
+                <button
+                  type="button"
+                  class="btn-brand btn-brand--solid"
+                  [disabled]="busy()"
+                  (click)="retryPayment()"
+                >
+                  <app-icon name="card" /><ng-container>Payer en ligne</ng-container>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--outline"
+                  [disabled]="busy()"
+                  (click)="switchToOnSite()"
+                >
+                  Payer au retrait
+                </button>
+              </div>
+            </div>
+          }
+          @if (order.status === 'AwaitingApproval') {
+            <p class="note">
+              Greenadine va valider votre commande ; cette page se met à jour toute seule.
+            </p>
+          }
+
+          @if (error()) {
+            <p class="alert alert--error" role="alert">{{ error() }}</p>
+          }
+        </div>
+
+        <section class="ticket order-panel" aria-labelledby="tracking-items">
+          <h2 id="tracking-items" class="ticket__title">Votre commande</h2>
+          <ul class="ticket__lines">
+            @for (item of order.items; track item.id) {
+              <li class="ticket__line">
+                <div class="ticket__main">
+                  <span class="ticket__name">{{ item.quantity }} × {{ item.name }}</span>
+                  <span class="ticket__amount">{{ item.lineTotalCents | euros }}</span>
+                </div>
+                @if (itemDetails(item).length > 0) {
+                  <ul class="ticket__mods">
+                    @for (detail of itemDetails(item); track $index) {
+                      <li>{{ detail }}</li>
+                    }
+                  </ul>
+                }
+              </li>
+            }
+          </ul>
+          @if (order.customerNote) {
+            <p class="note">
+              Votre note :
+              {{ order.customerNote }}
+            </p>
+          }
+        </section>
+
+        <div class="form__actions">
+          @if (canCancel()) {
             <button
               type="button"
               class="btn btn--outline"
               [disabled]="busy()"
-              (click)="switchToOnSite()"
+              (click)="askCancel()"
             >
-              Payer au retrait
+              Annuler la commande
             </button>
-          </div>
-        </div>
-      }
-      @if (order.status === 'AwaitingApproval') {
-        <p class="note">
-          Greenadine va valider votre commande ; cette page se met à jour toute seule.
-        </p>
-      }
-
-      @if (error()) {
-        <p class="alert alert--error" role="alert">{{ error() }}</p>
-      }
-
-      <section class="ticket" aria-labelledby="tracking-items">
-        <h2 id="tracking-items" class="ticket__title">Votre commande</h2>
-        <ul class="ticket__lines">
-          @for (item of order.items; track item.id) {
-            <li class="ticket__line">
-              <div class="ticket__main">
-                <span class="ticket__name">{{ item.quantity }} × {{ item.name }}</span>
-                <span class="ticket__amount">{{ item.lineTotalCents | euros }}</span>
-              </div>
-              @if (itemDetails(item).length > 0) {
-                <ul class="ticket__mods">
-                  @for (detail of itemDetails(item); track $index) {
-                    <li>{{ detail }}</li>
-                  }
-                </ul>
-              }
-            </li>
           }
-        </ul>
-        @if (order.customerNote) {
-          <p class="note">
-            Votre note :
-            {{ order.customerNote }}
-          </p>
-        }
+          @if (order.isPaid && order.paymentChoice === 'Online') {
+            <a class="btn btn--outline" [routerLink]="['/commandes', order.id, 'recu']">Reçu</a>
+          }
+          @if (final()) {
+            <a class="btn-brand btn-brand--solid" routerLink="/commander">Commander</a>
+          }
+        </div>
       </section>
-
-      <div class="form__actions">
-        @if (canCancel()) {
-          <button type="button" class="btn btn--outline" [disabled]="busy()" (click)="askCancel()">
-            Annuler la commande
-          </button>
-        }
-        @if (order.isPaid && order.paymentChoice === 'Online') {
-          <a class="btn btn--outline" [routerLink]="['/commandes', order.id, 'recu']">Reçu</a>
-        }
-        @if (final()) {
-          <a class="btn" routerLink="/commander">Commander</a>
-        }
-        <a class="link-button" routerLink="/commandes">Toutes mes commandes</a>
-      </div>
-    </section>
-  } @else if (notFound()) {
-    <p class="alert alert--error" role="alert">Commande introuvable sur ce compte.</p>
-  } @else if (loadError()) {
-    <p class="alert alert--error" role="alert">{{ loadError() }}</p>
-  } @else {
-    <p role="status">Chargement…</p>
-  }
+    } @else if (notFound()) {
+      <p class="alert alert--error" role="alert">Commande introuvable sur ce compte.</p>
+    } @else if (loadError()) {
+      <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+    } @else {
+      <p role="status">Chargement…</p>
+    }
+  </div>
 </div>
 
 <app-confirm-dialog

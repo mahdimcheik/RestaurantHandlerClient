@@ -43,7 +43,11 @@ describe('ReceiptPage', () => {
     const fixture = TestBed.createComponent(ReceiptPage);
     fixture.componentRef.setInput('id', 'o1');
     TestBed.tick();
-    TestBed.inject(HttpTestingController).expectOne('/orders/o1/receipt').flush(envelope(receipt));
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/orders/o1/receipt').flush(envelope(receipt));
+    for (const request of http.match('/restaurant/info')) {
+      request.flush(envelope({}));
+    }
     await fixture.whenStable();
     const content = text(fixture).replace(/\s+/g, ' ');
     expect(content).toContain('Nino SAS');

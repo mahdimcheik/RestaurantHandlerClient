@@ -6,7 +6,6 @@ import { ActivationBanner } from './shared/ui/activation-banner/activation-banne
 import { CurrentOrderBanner } from './shared/ui/current-order-banner/current-order-banner';
 import { UpdateBanner } from './shared/ui/update-banner/update-banner';
 import { SiteFooter } from './shared/ui/site-footer/site-footer';
-import { SiteHeader } from './shared/ui/site-header/site-header';
 
 /** Valeur de `data[key]` pour la route la plus profonde de la chaîne affichée qui la définit. */
 function routeFlag(route: ActivatedRouteSnapshot, key: string): unknown {
@@ -20,14 +19,7 @@ function routeFlag(route: ActivatedRouteSnapshot, key: string): unknown {
 }
 
 @Component({
-  imports: [
-    RouterOutlet,
-    SiteHeader,
-    SiteFooter,
-    ActivationBanner,
-    CurrentOrderBanner,
-    UpdateBanner,
-  ],
+  imports: [RouterOutlet, SiteFooter, ActivationBanner, CurrentOrderBanner, UpdateBanner],
   selector: 'app-root',
   templateUrl: './app.html',
 })
@@ -42,12 +34,6 @@ export class App {
   /** Page sans en-tête ni pied de page (`data.bare`). */
   protected readonly bare = toSignal(
     this.navigated.pipe(map((root) => routeFlag(root, 'bare') === true)),
-    { initialValue: false },
-  );
-
-  /** Page qui porte sa propre barre du haut (`data.header: false`). */
-  protected readonly noHeader = toSignal(
-    this.navigated.pipe(map((root) => routeFlag(root, 'header') === false)),
     { initialValue: false },
   );
 }

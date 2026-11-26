@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
         <p class="banner__text">
           Votre compte n'est pas encore activé : ouvrez le lien reçu par e-mail.
         </p>
-        <button type="button" class="btn btn--outline" [disabled]="sending()" (click)="resend()">
+        <button type="button" class="btn-brand" [disabled]="sending()" (click)="resend()">
           Renvoyer le lien
         </button>
         <p class="banner__status" role="status">{{ status() }}</p>

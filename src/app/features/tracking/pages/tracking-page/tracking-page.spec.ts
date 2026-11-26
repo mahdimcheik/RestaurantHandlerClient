@@ -48,6 +48,9 @@ describe('TrackingPage', () => {
   const answer = async (value = online) => {
     TestBed.tick();
     http.expectOne('/orders/o1').flush(envelope(value));
+    for (const request of http.match('/restaurant/info')) {
+      request.flush(envelope({}));
+    }
     await settle();
   };
 

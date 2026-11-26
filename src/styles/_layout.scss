@@ -38,21 +38,6 @@ main {
   }
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding-block: var(--space-3);
-  border-bottom: var(--border-soft);
-}
-
-.site-header__brand {
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  text-decoration: none;
-}
-
 .site-footer {
   display: grid;
   gap: var(--space-6);
@@ -156,19 +141,21 @@ main {
   }
 }
 
-.site-header__user {
-  color: var(--color-muted);
-}
-
-// Bandeau d'information sous l'en-tête (compte non activé…).
+// Bandeau d'information en haut de page (compte non activé, nouvelle version…) : encre et fond de
+// la surface du nouveau design, déclarés ici car le bandeau est hors de `.brand`.
 .banner {
+  --brand-bg: var(--flavour-bg);
+  --brand-ink: var(--flavour-ink);
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3) var(--space-5);
   padding-block: var(--space-3);
-  border-bottom: var(--border);
-  background: var(--color-warning-bg);
+  border-bottom: var(--border-width) solid var(--brand-ink);
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+  color-scheme: light;
 }
 
 .banner__text {

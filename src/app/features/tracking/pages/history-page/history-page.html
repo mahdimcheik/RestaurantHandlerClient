@@ -1,55 +1,63 @@
-<div class="gutter shop__page shop__page--narrow">
-  <h1>Mes commandes</h1>
+<div class="brand brand-ui brand-page">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar />
 
-  @if (error()) {
-    <p class="alert alert--error" role="alert">{{ error() }}</p>
-  } @else if (result.isLoading() && items().length === 0) {
-    <p role="status">Chargement…</p>
-  } @else {
-    <ul class="history-list">
-      @for (order of items(); track order.id) {
-        <li>
-          <a class="history-list__item" [routerLink]="['/commandes', order.id]">
-            <span class="history-list__main">
-              <span class="history-list__number">N° {{ order.dailyNumber }}</span>
-              <span class="history-list__date">{{ order.createdAt | restaurantDateTime }}</span>
-            </span>
-            <span class="history-list__side">
-              <app-order-status [status]="order.status" [customer]="true" />
-              <span class="history-list__total">{{ order.totalCents | euros }}</span>
-            </span>
-          </a>
-        </li>
-      } @empty {
-        <li class="empty">Vous n'avez pas encore passé de commande.</li>
-      }
-    </ul>
+  <section class="order-page order-page--narrow gutter" aria-labelledby="history-title">
+    <p class="eyebrow">Compte</p>
+    <h1 id="history-title" class="display-title display-title--md">Mes commandes</h1>
 
-    @if (pages() > 1) {
-      <nav class="day-stepper" aria-label="Pages">
-        <button
-          type="button"
-          class="icon-button"
-          [disabled]="page() <= 1"
-          (click)="page.set(page() - 1)"
-        >
-          <app-icon name="back" />
-          <span class="visually-hidden">Page précédente</span>
-        </button>
-        <span class="day-stepper__value" aria-live="polite"
-          >Page {{ page() }} sur {{ pages() }}</span
-        >
-        <button
-          type="button"
-          class="icon-button"
-          [disabled]="page() >= pages()"
-          (click)="page.set(page() + 1)"
-        >
-          <app-icon name="forward" />
-          <span class="visually-hidden">Page suivante</span>
-        </button>
-      </nav>
+    @if (error()) {
+      <p class="alert alert--error" role="alert">{{ error() }}</p>
+    } @else if (result.isLoading() && items().length === 0) {
+      <p role="status">Chargement…</p>
+    } @else {
+      <div class="order-panel">
+        <ul class="history-list">
+          @for (order of items(); track order.id) {
+            <li>
+              <a class="history-list__item" [routerLink]="['/commandes', order.id]">
+                <span class="history-list__main">
+                  <span class="history-list__number">N° {{ order.dailyNumber }}</span>
+                  <span class="history-list__date">{{ order.createdAt | restaurantDateTime }}</span>
+                </span>
+                <span class="history-list__side">
+                  <app-order-status [status]="order.status" [customer]="true" />
+                  <span class="history-list__total">{{ order.totalCents | euros }}</span>
+                </span>
+              </a>
+            </li>
+          } @empty {
+            <li class="empty">Vous n'avez pas encore passé de commande.</li>
+          }
+        </ul>
+
+        @if (pages() > 1) {
+          <nav class="day-stepper" aria-label="Pages">
+            <button
+              type="button"
+              class="icon-button"
+              [disabled]="page() <= 1"
+              (click)="page.set(page() - 1)"
+            >
+              <app-icon name="back" />
+              <span class="visually-hidden">Page précédente</span>
+            </button>
+            <span class="day-stepper__value" aria-live="polite"
+              >Page {{ page() }} sur {{ pages() }}</span
+            >
+            <button
+              type="button"
+              class="icon-button"
+              [disabled]="page() >= pages()"
+              (click)="page.set(page() + 1)"
+            >
+              <app-icon name="forward" />
+              <span class="visually-hidden">Page suivante</span>
+            </button>
+          </nav>
+        }
+      </div>
     }
-  }
-  <a class="btn" routerLink="/commander">Commander</a>
+    <a class="btn-brand" routerLink="/commander">Commander</a>
+  </section>
 </div>

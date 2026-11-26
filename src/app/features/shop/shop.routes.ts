@@ -11,13 +11,11 @@ export const SHOP_ROUTES: Routes = [
     path: 'commander/valider',
     canActivate: [authGuard],
     title: 'Valider la commande',
-    data: { header: false },
     loadComponent: () => import('./pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
   },
   {
     path: 'commander',
     title: 'La carte',
-    data: { header: false },
     loadComponent: () => import('./pages/card-page/card-page').then((m) => m.CardPage),
     children: [
       {
@@ -35,14 +33,12 @@ export const SHOP_ROUTES: Routes = [
   {
     path: 'carte',
     title: 'La carte',
-    data: { header: false },
     loadComponent: () =>
       import('./pages/menu-board-page/menu-board-page').then((m) => m.MenuBoardPage),
   },
   {
     path: 'panier',
     title: 'Panier',
-    data: { header: false },
     loadComponent: () => import('./pages/cart-page/cart-page').then((m) => m.CartPage),
   },
 ];

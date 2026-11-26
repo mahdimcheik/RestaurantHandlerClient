@@ -23,6 +23,7 @@ import {
   ConnectionStatus,
 } from '../../../../shared/ui/connection-status/connection-status';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { FINAL_STATUSES, OrderStatusBadge } from '../../../../shared/ui/order-status/order-status';
 import { CONFLICT_MESSAGE, isConflict } from '../../../../shared/utils/conflict';
 import { EurosPipe } from '../../../../shared/utils/money';
@@ -50,6 +51,7 @@ export const PAYMENT_POLL_MS = 5_000;
   host: { class: 'shop' },
   imports: [
     RouterLink,
+    SiteTopbar,
     EurosPipe,
     Icon,
     OrderStatusBadge,

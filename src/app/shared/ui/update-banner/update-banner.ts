@@ -17,7 +17,9 @@ const BUSY_PAGES = ['/commander/valider', '/gestion/comptoir'];
     @if (visible()) {
       <div class="banner gutter" role="status">
         <p class="banner__text">Une nouvelle version est disponible.</p>
-        <button type="button" class="btn" (click)="reload()">Recharger</button>
+        <button type="button" class="btn-brand btn-brand--solid" (click)="reload()">
+          Recharger
+        </button>
       </div>
     }
   `,

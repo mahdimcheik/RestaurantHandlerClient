@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { paymentMethodLabel } from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe, RatePipe } from '../../../../shared/utils/money';
 import { RestaurantDateTimePipe } from '../../../../shared/utils/restaurant-time';
@@ -18,7 +19,7 @@ import { itemDetails } from '../../order-format';
 @Component({
   selector: 'app-receipt-page',
   host: { class: 'shop' },
-  imports: [RouterLink, EurosPipe, RatePipe, RestaurantDateTimePipe, Icon],
+  imports: [RouterLink, SiteTopbar, EurosPipe, RatePipe, RestaurantDateTimePipe, Icon],
   templateUrl: './receipt-page.html',
 })
 export class ReceiptPage {

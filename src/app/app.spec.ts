@@ -24,7 +24,7 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render header, main and footer', async () => {
+  it('should render main and footer', async () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     // Le pied de page charge le nom et les coordonnées du restaurant.
@@ -35,7 +35,6 @@ describe('App', () => {
       );
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('app-site-header header')).toBeTruthy();
     expect(el.querySelector('main#contenu')).toBeTruthy();
     expect(el.querySelector('app-site-footer footer')?.textContent).toContain('Chez Nino');
     expect(el.querySelector('app-site-footer app-theme-switcher')).toBeNull();
