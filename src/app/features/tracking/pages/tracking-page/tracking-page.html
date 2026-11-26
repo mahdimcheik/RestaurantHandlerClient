@@ -66,8 +66,8 @@
             <div class="alert" role="status">
               <p>
                 Nous attendons la confirmation de votre paiement par carte. Si vous avez quitté la
-                page de paiement, vous pouvez réessayer.
-                Sans paiement, la commande est annulée automatiquement.
+                page de paiement, vous pouvez réessayer. Sans paiement, la commande est annulée
+                automatiquement.
               </p>
               <div class="form__actions">
                 <button
@@ -85,7 +85,8 @@
             <p class="note tracking__cancel-help">
               Pour annuler, appelez le restaurant par téléphone
               @if (phone(); as phone) {
-                (<a [href]="phoneHref()">{{ phone }}</a>)
+                (<a [href]="phoneHref()">{{ phone }}</a
+                >)
               }
               ou demandez directement sur place.
             </p>
@@ -111,6 +112,9 @@
                       <li>{{ detail }}</li>
                     }
                   </ul>
+                }
+                @if (item.note) {
+                  <p class="ticket__note">Note : {{ item.note }}</p>
                 }
               </li>
             }
@@ -141,4 +145,3 @@
     }
   </div>
 </div>
-

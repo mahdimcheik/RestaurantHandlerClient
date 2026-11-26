@@ -24,7 +24,14 @@ interface BaseLine {
   key: string;
   name: string;
   quantity: number;
+  /** Précision du client pour la cuisine (« bien cuite »), sans effet sur le prix. */
+  note?: string;
 }
+
+/** Longueur maximale d'une note d'article (`CartPolicy.MaxNoteLength` côté API). */
+export const MAX_LINE_NOTE_LENGTH = 200;
+
+const cleanNote = (note: string | undefined) => note?.trim() || undefined;
 
 export interface ProductLine extends BaseLine {
   kind: 'product';
@@ -52,6 +59,7 @@ export function toCartLines(lines: readonly OrderLine[]): CartLineDto[] {
           quantity: line.quantity,
           modifications: line.customization.modifications,
           optionChoices: line.customization.optionChoices,
+          note: line.note,
         }
       : {
           menuId: line.menuId,
@@ -62,6 +70,7 @@ export function toCartLines(lines: readonly OrderLine[]): CartLineDto[] {
             modifications: choice.customization.modifications,
             optionChoices: choice.customization.optionChoices,
           })),
+          note: line.note,
         },
   );
 }
@@ -92,18 +101,24 @@ export class Cart {
   /** Lignes au format de l'API, recalculées à chaque changement (devis). */
   readonly cartLines = computed(() => toCartLines(this.items()));
 
-  /** Un produit sans personnalisation déjà présent voit sa quantité augmenter. */
+  /** Un produit sans personnalisation ni note déjà présent voit sa quantité augmenter. */
   addProduct(
     product: { id: string; name: string },
     customization: Customization = NO_CUSTOMIZATION,
     quantity = 1,
+    note?: string,
   ): void {
-    const same = isPlain(customization)
-      ? this.items().find(
-          (line) =>
-            line.kind === 'product' && line.productId === product.id && isPlain(line.customization),
-        )
-      : undefined;
+    note = cleanNote(note);
+    const same =
+      isPlain(customization) && !note
+        ? this.items().find(
+            (line) =>
+              line.kind === 'product' &&
+              line.productId === product.id &&
+              isPlain(line.customization) &&
+              !line.note,
+          )
+        : undefined;
     if (same) {
       this.setQuantity(same.key, same.quantity + quantity);
       return;
@@ -115,10 +130,16 @@ export class Cart {
       name: product.name,
       quantity,
       customization,
+      note,
     });
   }
 
-  addMenu(menu: { id: string; name: string }, choices: MenuChoice[], quantity = 1): void {
+  addMenu(
+    menu: { id: string; name: string },
+    choices: MenuChoice[],
+    quantity = 1,
+    note?: string,
+  ): void {
     this.append({
       kind: 'menu',
       key: crypto.randomUUID(),
@@ -126,7 +147,15 @@ export class Cart {
       name: menu.name,
       quantity,
       choices,
+      note: cleanNote(note),
     });
+  }
+
+  setNote(key: string, note: string | undefined): void {
+    this.items.update((lines) =>
+      lines.map((line) => (line.key === key ? { ...line, note: cleanNote(note) } : line)),
+    );
+    this.changed();
   }
 
   /** Quantité nulle : la ligne est retirée. */

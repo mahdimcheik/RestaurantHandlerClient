@@ -11,6 +11,7 @@ interface LineView {
   quantity: number;
   name: string;
   modifications: ModificationView[];
+  note?: string | null;
   components: LineView[];
 }
 
@@ -20,6 +21,7 @@ function line(item: OrderItemDto): LineView {
     quantity: item.quantity,
     name: item.name,
     modifications: item.modifications.map(modificationView),
+    note: item.note,
     components: item.components.map(line),
   };
 }
@@ -103,6 +105,12 @@ function line(item: OrderItemDto): LineView {
             </li>
           }
         </ul>
+      }
+      @if (item.note) {
+        <p class="kds-ticket__note kds-ticket__note--item">
+          <app-icon name="alert" />
+          <span><span class="kds-ticket__note-label">Note :</span> {{ item.note }}</span>
+        </p>
       }
       @if (item.components.length > 0) {
         <ul class="kds-ticket__components">

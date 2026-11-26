@@ -52,6 +52,9 @@
                   }
                 </ul>
               }
+              @if (item.note) {
+                <p class="ticket__note">Note : {{ item.note }}</p>
+              }
             </li>
           }
         </ul>

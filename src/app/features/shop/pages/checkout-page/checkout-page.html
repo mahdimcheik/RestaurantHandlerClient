@@ -107,7 +107,7 @@
             </h2>
             <app-textarea-field
               [field]="detailsForm.note"
-              label="Note pour Greenadine (facultative)"
+              label="Note pour toute la commande (facultative)"
             />
           </div>
         </div>
@@ -128,6 +128,9 @@
                         <li>{{ label }}</li>
                       }
                     </ul>
+                  }
+                  @if (line.note) {
+                    <p class="ticket__note">Note : {{ line.note }}</p>
                   }
                 </li>
               }

@@ -46,6 +46,7 @@
             <app-options-wizard
               [product]="editing.product"
               [(state)]="editState"
+              [withNote]="false"
               submitLabel="Valider ces choix"
               (submit)="applyCustomization()"
               (back)="onWizardClosed()"
@@ -82,6 +83,7 @@
             [(choices)]="choices"
             (customize)="customize($event)"
           />
+          <app-line-note [(note)]="note" />
           <div class="sheet__order">
             <button
               type="button"

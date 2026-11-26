@@ -80,6 +80,24 @@ describe('Cart', () => {
     expect(cart.lines()[0]).toMatchObject({ kind: 'product', customization: withoutOnion });
   });
 
+  it('envoie la note d’une ligne et ne cumule pas un produit annoté', () => {
+    cart.addProduct({ id: 'p1', name: 'Pizza' });
+    cart.addProduct({ id: 'p1', name: 'Pizza' }, undefined, 1, '  Bien cuite ');
+    cart.addProduct({ id: 'p1', name: 'Pizza' }, undefined, 1, '   ');
+    cart.addMenu({ id: 'm1', name: 'Menu midi' }, [], 1, 'Sauce à part');
+
+    expect(cart.lines().map((line) => [line.quantity, line.note])).toEqual([
+      [2, undefined],
+      [1, 'Bien cuite'],
+      [1, 'Sauce à part'],
+    ]);
+    expect(cart.cartLines()[1].note).toBe('Bien cuite');
+    expect(cart.cartLines()[2].note).toBe('Sauce à part');
+
+    cart.setNote(cart.lines()[1].key, '');
+    expect(cart.lines()[1].note).toBeUndefined();
+  });
+
   it('garde la clé d’idempotence tant que le panier n’est pas vidé', () => {
     const key = cart.idempotencyKey();
     cart.addProduct({ id: 'p1', name: 'Burger' });

@@ -26,6 +26,7 @@ import {
   MenuSlots,
   prefilledChoices,
 } from '../../../../shared/ordering/menu-slots';
+import { LineNote } from '../../../../shared/ordering/line-note';
 import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
@@ -41,7 +42,15 @@ import { quoteOf } from '../../data-access/quote';
  */
 @Component({
   selector: 'app-menu-page',
-  imports: [NgOptimizedImage, EurosPipe, MenuSlots, ProductOptions, OptionsWizard, OrderDialog],
+  imports: [
+    NgOptimizedImage,
+    EurosPipe,
+    MenuSlots,
+    ProductOptions,
+    OptionsWizard,
+    LineNote,
+    OrderDialog,
+  ],
   templateUrl: './menu-page.html',
 })
 export class MenuPage {
@@ -74,6 +83,11 @@ export class MenuPage {
       const menu = untracked(this.menu);
       return line ? line.choices : menu ? prefilledChoices(menu) : [];
     },
+  });
+  /** Précision pour la cuisine sur tout le menu, reprise d'une ligne modifiée. */
+  protected readonly note = linkedSignal<string, string>({
+    source: () => `${this.id()}|${this.ligne() ?? ''}`,
+    computation: () => untracked(this.line)?.note ?? '',
   });
   /** Une portion par ligne (petites commandes) ; une ligne modifiée garde sa quantité. */
   private readonly quantity = computed(() => this.line()?.quantity ?? 1);
@@ -166,10 +180,11 @@ export class MenuPage {
     const line = this.line();
     if (line) {
       this.cart.replaceMenuChoices(line.key, this.choices());
+      this.cart.setNote(line.key, this.note());
       await this.close();
       return;
     }
-    this.cart.addMenu(menu, this.choices(), this.quantity());
+    this.cart.addMenu(menu, this.choices(), this.quantity(), this.note());
     await this.close();
   }
 

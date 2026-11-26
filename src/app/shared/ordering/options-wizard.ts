@@ -19,6 +19,7 @@ import {
   ruleText,
 } from './customization';
 import { ChoiceGroup, CustomizableProduct } from './model';
+import { LineNote } from './line-note';
 import { OptionGroup } from './option-group';
 
 /**
@@ -29,7 +30,7 @@ import { OptionGroup } from './option-group';
  */
 @Component({
   selector: 'app-options-wizard',
-  imports: [OptionGroup, EurosPipe],
+  imports: [OptionGroup, LineNote, EurosPipe],
   template: `
     <section class="wizard" aria-labelledby="wizard-title">
       <p class="wizard__progress">
@@ -98,6 +99,9 @@ import { OptionGroup } from './option-group';
             </div>
           }
         </dl>
+        @if (withNote()) {
+          <app-line-note [(note)]="note" />
+        }
         @if (issue()) {
           <p class="alert alert--error" role="alert">{{ issue() }}</p>
         }
@@ -122,6 +126,9 @@ import { OptionGroup } from './option-group';
 export class OptionsWizard {
   readonly product = input.required<CustomizableProduct>();
   readonly state = model.required<CustomizationState>();
+  /** Note de l'article, saisie au récapitulatif ; absente pour un produit choisi dans un menu. */
+  readonly withNote = input(true);
+  readonly note = model('');
   /** Prix de la ligne selon le devis du serveur, `null` tant qu'il n'est pas connu. */
   readonly total = input<number | null>(null);
   readonly submitLabel = input('Ajouter au panier');

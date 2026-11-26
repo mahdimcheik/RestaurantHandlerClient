@@ -9,6 +9,7 @@ export interface OrderItemDto {
   menuId?: string | null;
   modifications: Array<OrderModificationDto>;
   name: string;
+  note?: string | null;
   productId?: string | null;
   quantity: number;
   unitPriceCents: number;

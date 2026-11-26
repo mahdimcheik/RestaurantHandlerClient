@@ -3851,6 +3851,11 @@
               "$ref": "#/components/schemas/CartOptionChoiceDto"
             },
             "nullable": true
+          },
+          "note": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -5076,7 +5081,8 @@
       },
       "NotificationTypeEnum": {
         "enum": [
-          "Account"
+          "Account",
+          "Order"
         ],
         "type": "string"
       },
@@ -5791,6 +5797,10 @@
             "items": {
               "$ref": "#/components/schemas/OrderModificationDto"
             }
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
           },
           "components": {
             "type": "array",

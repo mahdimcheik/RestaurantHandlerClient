@@ -220,6 +220,14 @@
   font-size: var(--text-sm);
 }
 
+.ticket__note {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  font-size: var(--text-sm);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
 .ticket__tools {
   display: flex;
   flex-wrap: wrap;

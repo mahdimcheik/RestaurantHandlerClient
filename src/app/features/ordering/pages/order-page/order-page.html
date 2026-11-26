@@ -119,6 +119,9 @@
               }
             </ul>
           }
+          @if (item.note) {
+            <p class="ticket__note">Note : {{ item.note }}</p>
+          }
         </li>
       }
     </ul>
@@ -180,8 +183,8 @@
     confirmLabel="Annuler la commande"
     (confirmed)="cancel($event)"
   >
-    À faire à la demande du client (téléphone ou sur place) : il ne peut pas annuler lui-même.
-    Le paiement en ligne est remboursé automatiquement et le client voit le motif.
+    À faire à la demande du client (téléphone ou sur place) : il ne peut pas annuler lui-même. Le
+    paiement en ligne est remboursé automatiquement et le client voit le motif.
   </app-reason-dialog>
   <app-confirm-dialog
     #noShowDialog

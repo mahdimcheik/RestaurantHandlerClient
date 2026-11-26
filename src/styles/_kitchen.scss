@@ -190,6 +190,12 @@
   font-weight: var(--weight-medium);
 }
 
+.kds-ticket__note--item {
+  margin-block-start: var(--space-2);
+  padding: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
 .kds-ticket__note-label {
   font-weight: var(--weight-bold);
 }

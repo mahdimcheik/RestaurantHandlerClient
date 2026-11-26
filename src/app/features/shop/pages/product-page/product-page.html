@@ -32,6 +32,9 @@
           [(state)]="state"
         />
 
+        @if (product.groups.length === 0) {
+          <app-line-note [(note)]="note" />
+        }
         <div class="sheet__order">
           @if (product.groups.length > 0) {
             <button
@@ -73,6 +76,7 @@
             <app-options-wizard
               [product]="product"
               [(state)]="state"
+              [(note)]="note"
               [total]="quote.total()"
               [issue]="issue()"
               [submitLabel]="line() ? 'Mettre à jour' : 'Ajouter au panier'"

@@ -89,11 +89,24 @@ describe('ProductPage', () => {
     expect(addButton().textContent).toContain('12,00');
     expect(fixture.nativeElement.querySelector('.wizard')).not.toBeNull();
 
+    const note = (fixture.nativeElement as HTMLElement).querySelector<HTMLTextAreaElement>(
+      '.wizard textarea',
+    )!;
+    note.value = 'Bien cuit';
+    note.dispatchEvent(new Event('input'));
+    await settle();
+    expect(text(fixture)).toContain('191 caractères restants');
+
     addButton().click();
     await settle();
     const cart = TestBed.inject(CartStore);
     expect(cart.lines()).toHaveLength(1);
-    expect(cart.lines()[0]).toMatchObject({ kind: 'product', productId: 'burger', quantity: 1 });
+    expect(cart.lines()[0]).toMatchObject({
+      kind: 'product',
+      productId: 'burger',
+      quantity: 1,
+      note: 'Bien cuit',
+    });
     expect(TestBed.inject(Router).url).toBe('/commander');
   });
 

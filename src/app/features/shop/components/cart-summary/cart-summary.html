@@ -17,6 +17,9 @@
                 }
               </ul>
             }
+            @if (line.note) {
+              <p class="ticket__note">Note : {{ line.note }}</p>
+            }
             @for (message of lineIssues().get(index); track $index) {
               <p class="ticket__issue">
                 <app-icon name="alert" /><span>{{ message }}</span>

@@ -8,6 +8,7 @@ export interface CartLineDto {
   choices?: Array<CartMenuChoiceDto> | null;
   menuId?: string | null;
   modifications?: Array<CartModificationDto> | null;
+  note?: string | null;
   optionChoices?: Array<CartOptionChoiceDto> | null;
   productId?: string | null;
   quantity?: number;

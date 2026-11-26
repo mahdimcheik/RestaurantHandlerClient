@@ -7,5 +7,6 @@ import { NotificationTypeEnum } from './notification-type-enum';
  * Each possible value of `NotificationTypeEnum`
  */
 export const NOTIFICATION_TYPE_ENUM: NotificationTypeEnum[] = [
-  'Account'
+  'Account',
+  'Order'
 ];

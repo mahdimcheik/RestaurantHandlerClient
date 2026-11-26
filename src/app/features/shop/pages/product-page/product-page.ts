@@ -10,6 +10,7 @@ import {
   stateOf,
   toCustomization,
 } from '../../../../shared/ordering/customization';
+import { LineNote } from '../../../../shared/ordering/line-note';
 import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
@@ -26,7 +27,15 @@ import { quoteOf } from '../../data-access/quote';
  */
 @Component({
   selector: 'app-product-page',
-  imports: [RouterLink, NgOptimizedImage, EurosPipe, ProductOptions, OptionsWizard, OrderDialog],
+  imports: [
+    RouterLink,
+    NgOptimizedImage,
+    EurosPipe,
+    ProductOptions,
+    OptionsWizard,
+    LineNote,
+    OrderDialog,
+  ],
   templateUrl: './product-page.html',
 })
 export class ProductPage {
@@ -56,6 +65,11 @@ export class ProductPage {
       const line = untracked(this.line);
       return line ? stateOf(line.customization) : EMPTY_STATE;
     },
+  });
+  /** Précision pour la cuisine, reprise d'une ligne modifiée. */
+  protected readonly note = linkedSignal<string, string>({
+    source: () => `${this.id()}|${this.ligne() ?? ''}`,
+    computation: () => untracked(this.line)?.note ?? '',
   });
   /** Une portion par ligne (petites commandes) ; une ligne modifiée garde sa quantité. */
   private readonly quantity = computed(() => this.line()?.quantity ?? 1);
@@ -111,10 +125,11 @@ export class ProductPage {
     const line = this.line();
     if (line) {
       this.cart.customize(line.key, this.customization());
+      this.cart.setNote(line.key, this.note());
       await this.close();
       return;
     }
-    this.cart.addProduct(product, this.customization(), this.quantity());
+    this.cart.addProduct(product, this.customization(), this.quantity(), this.note());
     await this.close();
   }
 
