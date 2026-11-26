@@ -110,6 +110,22 @@
               label="Note pour toute la commande (facultative)"
             />
           </div>
+
+          @if (businessProfile(); as profile) {
+            <div class="choice-list">
+              <h2 class="choice-list__legend">
+                <span class="choice-list__step" aria-hidden="true">4</span>Facture
+              </h2>
+              <app-checkbox-field [field]="detailsForm.invoice">
+                Je souhaite une facture au nom de {{ profile.legalName }} (SIREN
+                {{ profile.siren }})
+              </app-checkbox-field>
+              <p class="choice-list__hint">
+                Elle est établie une fois la commande payée.
+                <a routerLink="/compte/professionnel">Modifier mes informations</a>
+              </p>
+            </div>
+          }
         </div>
 
         <aside class="order-panel checkout-summary" aria-labelledby="summary-title">

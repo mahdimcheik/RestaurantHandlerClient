@@ -380,6 +380,68 @@
         }
       }
     },
+    "/users/me/business-profile": {
+      "get": {
+        "tags": [
+          "BusinessProfile"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessProfileDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "BusinessProfile"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessProfileUpsert"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessProfileDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BusinessProfile"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/manage/categories": {
       "get": {
         "tags": [
@@ -900,6 +962,114 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/IngredientDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{orderId}/invoice-request": {
+      "get": {
+        "tags": [
+          "InvoiceRequests"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRequestDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/invoice-requests": {
+      "get": {
+        "tags": [
+          "InvoiceRequests"
+        ],
+        "parameters": [
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/InvoiceRequestStatus"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRequestDetailsListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/invoice-requests/{id}/retry": {
+      "post": {
+        "tags": [
+          "InvoiceRequests"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRequestDetailsResponse"
                 }
               }
             }
@@ -3794,6 +3964,145 @@
         },
         "additionalProperties": false
       },
+      "BusinessProfileDetails": {
+        "required": [
+          "addressLine1",
+          "city",
+          "countryCode",
+          "createdAt",
+          "legalName",
+          "postalCode",
+          "siren"
+        ],
+        "type": "object",
+        "properties": {
+          "siren": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "siret": {
+            "type": "string",
+            "nullable": true
+          },
+          "legalName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressLine1": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "city": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "countryCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessProfileDetailsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BusinessProfileDetails"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessProfileUpsert": {
+        "required": [
+          "addressLine1",
+          "city",
+          "legalName",
+          "postalCode",
+          "siren"
+        ],
+        "type": "object",
+        "properties": {
+          "siren": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          },
+          "siret": {
+            "maxLength": 20,
+            "type": "string",
+            "nullable": true
+          },
+          "legalName": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "vatNumber": {
+            "maxLength": 20,
+            "type": "string",
+            "nullable": true
+          },
+          "addressLine1": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "addressLine2": {
+            "maxLength": 200,
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "minLength": 1,
+            "pattern": "^\\d{5}$",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "CartIssueDto": {
         "required": [
           "lineIndex",
@@ -4696,6 +5005,136 @@
         },
         "additionalProperties": false
       },
+      "InvoiceRequestDetails": {
+        "required": [
+          "attempts",
+          "buyerLegalName",
+          "buyerSiren",
+          "createdAt",
+          "id",
+          "orderId",
+          "orderNumber",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InvoiceRequestStatus"
+          },
+          "buyerSiren": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "buyerLegalName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceRequestDetailsListResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceRequestDetails"
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceRequestDetailsResponse": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvoiceRequestDetails"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceRequestStatus": {
+        "enum": [
+          "Pending",
+          "Submitted",
+          "Accepted",
+          "Rejected",
+          "Failed"
+        ],
+        "type": "string"
+      },
       "Login": {
         "required": [
           "refreshToken",
@@ -5536,6 +5975,9 @@
             "maxLength": 500,
             "type": "string",
             "nullable": true
+          },
+          "requestInvoice": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -5547,6 +5989,7 @@
           "dailyNumber",
           "history",
           "id",
+          "invoiceRequested",
           "isPaid",
           "items",
           "orderNumber",
@@ -5641,6 +6084,9 @@
           "paymentIssue": {
             "type": "string",
             "nullable": true
+          },
+          "invoiceRequested": {
+            "type": "boolean"
           },
           "items": {
             "type": "array",

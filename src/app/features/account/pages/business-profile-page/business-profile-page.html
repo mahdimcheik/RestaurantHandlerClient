@@ -1,0 +1,84 @@
+<div class="brand brand-ui brand-page">
+  <div class="waves" aria-hidden="true"></div>
+  <app-site-topbar />
+
+  <section class="order-page order-page--narrow gutter" aria-labelledby="business-title">
+    <p class="eyebrow">Compte</p>
+    <h1 id="business-title" class="display-title display-title--md">Compte professionnel</h1>
+
+    @if (loadError()) {
+      <p class="alert alert--error" role="alert">{{ loadError() }}</p>
+    } @else if (profile.isLoading() && current() === undefined) {
+      <p role="status">Chargement…</p>
+    } @else {
+      <p class="lead">
+        @if (isBusiness()) {
+          Vous êtes client professionnel : au moment de commander, cochez « Je souhaite une facture
+          » pour la recevoir au nom de votre entreprise.
+        } @else {
+          Vous commandez pour votre entreprise ? Renseignez ses informations pour demander une
+          facture lors de vos commandes.
+        }
+      </p>
+
+      @if (error()) {
+        <p class="alert alert--error" role="alert">{{ error() }}</p>
+      }
+      <p role="status" [class.alert]="notice() !== ''" [class.alert--success]="notice() !== ''">
+        {{ notice() }}
+      </p>
+
+      <form class="order-panel form" novalidate (submit)="onSubmit($event)">
+        <div class="form__row">
+          <app-text-field
+            [field]="form.siren"
+            label="SIREN"
+            inputmode="numeric"
+            hint="9 chiffres, sur votre extrait Kbis ou avis de situation."
+          />
+          <app-text-field [field]="form.siret" label="SIRET (facultatif)" inputmode="numeric" />
+        </div>
+        <app-text-field
+          [field]="form.legalName"
+          label="Raison sociale"
+          autocomplete="organization"
+        />
+        <app-text-field
+          [field]="form.vatNumber"
+          label="N° de TVA intracommunautaire (facultatif)"
+          hint="Calculé depuis le SIREN s'il est laissé vide."
+        />
+        <app-text-field
+          [field]="form.addressLine1"
+          label="Adresse de facturation"
+          autocomplete="address-line1"
+        />
+        <app-text-field
+          [field]="form.addressLine2"
+          label="Complément d'adresse (facultatif)"
+          autocomplete="address-line2"
+        />
+        <div class="form__row">
+          <app-text-field
+            [field]="form.postalCode"
+            label="Code postal"
+            inputmode="numeric"
+            autocomplete="postal-code"
+          />
+          <app-text-field [field]="form.city" label="Ville" autocomplete="address-level2" />
+        </div>
+
+        <div class="form__actions">
+          <button type="submit" class="btn-brand btn-brand--solid" [disabled]="sending()">
+            {{ isBusiness() ? 'Enregistrer' : 'Devenir client professionnel' }}
+          </button>
+          @if (isBusiness()) {
+            <button type="button" class="btn-brand" [disabled]="sending()" (click)="remove()">
+              Redevenir particulier
+            </button>
+          }
+        </div>
+      </form>
+    }
+  </section>
+</div>

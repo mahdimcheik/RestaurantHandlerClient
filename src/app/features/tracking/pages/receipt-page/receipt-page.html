@@ -86,6 +86,14 @@
             </li>
           }
         </ul>
+        @if (invoiceValue(); as invoice) {
+          <p class="receipt__invoice" role="status">
+            {{ invoiceLabel(invoice.status) }}
+            <br /><ng-container
+              >{{ invoice.buyerLegalName }}, SIREN {{ invoice.buyerSiren }}</ng-container
+            >
+          </p>
+        }
         <p class="note">
           Justificatif de paiement en ligne. Le ticket de caisse est disponible sur demande au
           comptoir.

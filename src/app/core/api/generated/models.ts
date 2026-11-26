@@ -3,6 +3,9 @@
 
 export type { AccountStatusEnum } from './models/account-status-enum';
 export type { AvailabilityUpdate } from './models/availability-update';
+export type { BusinessProfileDetails } from './models/business-profile-details';
+export type { BusinessProfileDetailsResponse } from './models/business-profile-details-response';
+export type { BusinessProfileUpsert } from './models/business-profile-upsert';
 export type { CartIssueDto } from './models/cart-issue-dto';
 export type { CartLineDto } from './models/cart-line-dto';
 export type { CartMenuChoiceDto } from './models/cart-menu-choice-dto';
@@ -37,6 +40,10 @@ export type { IngredientDetails } from './models/ingredient-details';
 export type { IngredientDetailsListResponse } from './models/ingredient-details-list-response';
 export type { IngredientDetailsResponse } from './models/ingredient-details-response';
 export type { IngredientWrite } from './models/ingredient-write';
+export type { InvoiceRequestDetails } from './models/invoice-request-details';
+export type { InvoiceRequestDetailsListResponse } from './models/invoice-request-details-list-response';
+export type { InvoiceRequestDetailsResponse } from './models/invoice-request-details-response';
+export type { InvoiceRequestStatus } from './models/invoice-request-status';
 export type { Login } from './models/login';
 export type { LoginResponse } from './models/login-response';
 export type { MenuDetails } from './models/menu-details';

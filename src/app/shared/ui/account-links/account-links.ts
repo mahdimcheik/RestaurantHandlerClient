@@ -3,8 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 
 /**
- * Contenu du panneau Compte (barre du haut et onglet Compte du bas) : prénom, Mes commandes ou
- * Gestion, Déconnexion ; Connexion et Créer un compte pour un visiteur. `chosen` prévient le
+ * Contenu du panneau Compte (barre du haut et onglet Compte du bas) : prénom, Mes commandes et
+ * Compte professionnel ou Gestion, Déconnexion ; Connexion et Créer un compte pour un visiteur. `chosen` prévient le
  * panneau qu'il doit se fermer.
  */
 @Component({
@@ -18,6 +18,9 @@ import { SessionService } from '../../../core/auth/session.service';
           <li><a routerLink="/gestion" (click)="chosen.emit()">Gestion</a></li>
         } @else {
           <li><a routerLink="/commandes" (click)="chosen.emit()">Mes commandes</a></li>
+          <li>
+            <a routerLink="/compte/professionnel" (click)="chosen.emit()">Compte professionnel</a>
+          </li>
           @if (withAbout()) {
             <li><a routerLink="/a-propos" (click)="chosen.emit()">À propos</a></li>
           }

@@ -31,6 +31,12 @@ export type { AuthUploadAvatarPost$FormData$Params as AuthUploadAvatarPost$FormD
 export { authUploadAvatarPost$FormData as authUploadAvatarPost$FormData } from './fn/auth/auth-upload-avatar-post-form-data';
 export type { AuthUploadAvatarPost$Params as AuthUploadAvatarPost$Params } from './fn/auth/auth-upload-avatar-post';
 export { authUploadAvatarPost as authUploadAvatarPost } from './fn/auth/auth-upload-avatar-post';
+export type { UsersMeBusinessProfileGet$Params as UsersMeBusinessProfileGet$Params } from './fn/business-profile/users-me-business-profile-get';
+export { usersMeBusinessProfileGet as usersMeBusinessProfileGet } from './fn/business-profile/users-me-business-profile-get';
+export type { UsersMeBusinessProfilePut$Params as UsersMeBusinessProfilePut$Params } from './fn/business-profile/users-me-business-profile-put';
+export { usersMeBusinessProfilePut as usersMeBusinessProfilePut } from './fn/business-profile/users-me-business-profile-put';
+export type { UsersMeBusinessProfileDelete$Params as UsersMeBusinessProfileDelete$Params } from './fn/business-profile/users-me-business-profile-delete';
+export { usersMeBusinessProfileDelete as usersMeBusinessProfileDelete } from './fn/business-profile/users-me-business-profile-delete';
 export type { ManageCategoriesGet$Params as ManageCategoriesGet$Params } from './fn/categories/manage-categories-get';
 export { manageCategoriesGet as manageCategoriesGet } from './fn/categories/manage-categories-get';
 export type { ManageCategoriesPost$Params as ManageCategoriesPost$Params } from './fn/categories/manage-categories-post';
@@ -59,6 +65,12 @@ export type { ManageIngredientsIdImagePost$Params as ManageIngredientsIdImagePos
 export { manageIngredientsIdImagePost as manageIngredientsIdImagePost } from './fn/ingredients/manage-ingredients-id-image-post';
 export type { ManageIngredientsIdImageDelete$Params as ManageIngredientsIdImageDelete$Params } from './fn/ingredients/manage-ingredients-id-image-delete';
 export { manageIngredientsIdImageDelete as manageIngredientsIdImageDelete } from './fn/ingredients/manage-ingredients-id-image-delete';
+export type { OrdersOrderIdInvoiceRequestGet$Params as OrdersOrderIdInvoiceRequestGet$Params } from './fn/invoice-requests/orders-order-id-invoice-request-get';
+export { ordersOrderIdInvoiceRequestGet as ordersOrderIdInvoiceRequestGet } from './fn/invoice-requests/orders-order-id-invoice-request-get';
+export type { ManageInvoiceRequestsGet$Params as ManageInvoiceRequestsGet$Params } from './fn/invoice-requests/manage-invoice-requests-get';
+export { manageInvoiceRequestsGet as manageInvoiceRequestsGet } from './fn/invoice-requests/manage-invoice-requests-get';
+export type { ManageInvoiceRequestsIdRetryPost$Params as ManageInvoiceRequestsIdRetryPost$Params } from './fn/invoice-requests/manage-invoice-requests-id-retry-post';
+export { manageInvoiceRequestsIdRetryPost as manageInvoiceRequestsIdRetryPost } from './fn/invoice-requests/manage-invoice-requests-id-retry-post';
 export type { ManageOrdersGet$Params as ManageOrdersGet$Params } from './fn/manage-orders/manage-orders-get';
 export { manageOrdersGet as manageOrdersGet } from './fn/manage-orders/manage-orders-get';
 export type { ManageOrdersKitchenGet$Params as ManageOrdersKitchenGet$Params } from './fn/manage-orders/manage-orders-kitchen-get';

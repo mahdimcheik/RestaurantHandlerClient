@@ -8,5 +8,6 @@ export interface OrderCreate {
   idempotencyKey: string;
   lines: Array<CartLineDto>;
   pickupMode: PickupMode;
+  requestInvoice?: boolean;
   slotStart?: string | null;
 }

@@ -8,10 +8,12 @@ import { SessionService } from '../../../../core/auth/session.service';
 import { apiErrorMessage, cartIssues } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { focusFirstInvalid, lengthRule } from '../../../../shared/forms/validation';
+import { BusinessProfileService } from '../../../../shared/services/business-profile.service';
 import { lineLabels } from '../../../../shared/ordering/cart';
 import { OpeningStateService } from '../../../../shared/services/opening-state.service';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { PublicService } from '../../../../shared/services/public.service';
+import { CheckboxField } from '../../../../shared/ui/checkbox-field/checkbox-field';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { TextareaField } from '../../../../shared/ui/textarea-field/textarea-field';
@@ -25,13 +27,13 @@ import { customerOpeningText } from '../../opening-text';
 const ASAP = 'asap';
 
 /**
- * Validation de la commande (US-E04-3, US-E04-4, US-E04-5, US-E05-1) : moment du retrait,
- * mode de paiement, note. Le serveur revérifie tout ; un panier refusé renvoie au panier avec
+ * Validation de la commande (US-E04-3, US-E04-4, US-E04-5, US-E05-1, US-E05-6) : moment du
+ * retrait, mode de paiement, note, facture pour un client professionnel. Le serveur revérifie tout ; un panier refusé renvoie au panier avec
  * les lignes en cause. Paiement en ligne : redirection vers SumUp, puis retour sur le suivi.
  */
 @Component({
   selector: 'app-checkout-page',
-  imports: [RouterLink, EurosPipe, Icon, SiteTopbar, TextareaField],
+  imports: [RouterLink, CheckboxField, EurosPipe, Icon, SiteTopbar, TextareaField],
   templateUrl: './checkout-page.html',
 })
 export class CheckoutPage {
@@ -39,6 +41,7 @@ export class CheckoutPage {
   private readonly publicApi = inject(PublicService);
   private readonly opening = inject(OpeningStateService);
   private readonly session = inject(SessionService);
+  private readonly businessProfiles = inject(BusinessProfileService);
   private readonly router = inject(Router);
   private readonly window = inject(DOCUMENT).defaultView;
   protected readonly cart = inject(CartStore);
@@ -85,7 +88,23 @@ export class CheckoutPage {
   );
   protected readonly quote = quoteOf(() => this.cart.cartLines());
 
-  private readonly details = signal({ note: '' });
+  /** Profil professionnel du client : la case « facture » n'apparaît que s'il existe. */
+  protected readonly business = rxResource({
+    params: () => (this.isManager() ? undefined : true),
+    stream: () => this.businessProfiles.mine(),
+  });
+  protected readonly businessProfile = computed(() =>
+    this.business.hasValue() ? this.business.value() : null,
+  );
+
+  /** Facture cochée par défaut pour un client professionnel ; la note déjà saisie est gardée. */
+  private readonly details = linkedSignal<boolean, { note: string; invoice: boolean }>({
+    source: () => !!this.businessProfile(),
+    computation: (isBusiness, previous) => ({
+      note: previous?.value.note ?? '',
+      invoice: isBusiness,
+    }),
+  });
   protected readonly detailsForm = form(this.details, (path) => lengthRule(path.note, 500));
   protected readonly sending = signal(false);
   protected readonly error = signal('');
@@ -130,6 +149,7 @@ export class CheckoutPage {
               pickupMode: pickup === ASAP ? 'Asap' : 'Slot',
               slotStart: pickup === ASAP ? null : pickup,
               customerNote: this.details().note.trim() || null,
+              requestInvoice: !!this.businessProfile() && this.details().invoice,
             }),
           );
           this.cart.clear();

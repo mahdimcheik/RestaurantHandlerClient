@@ -3,6 +3,8 @@ import { Component, computed, DOCUMENT, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
+import { InvoiceRequestStatus } from '../../../../core/api/generated';
+import { InvoiceRequestsService } from '../../../../shared/services/invoice-requests.service';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
@@ -15,6 +17,7 @@ import { itemDetails } from '../../order-format';
  * Justificatif d'une commande payée (US-E05-5) : restaurant (raison sociale, adresse, SIRET,
  * TVA), date, numéro, lignes, TVA par taux, total, moyen de paiement. Contenu provisoire, à
  * valider avec l'expert-comptable (question ouverte n° 2) ; ce n'est pas un ticket de caisse.
+ * Pour un client professionnel, indique où en est la facture électronique demandée (US-E05-6).
  */
 @Component({
   selector: 'app-receipt-page',
@@ -24,6 +27,7 @@ import { itemDetails } from '../../order-format';
 })
 export class ReceiptPage {
   private readonly orders = inject(OrdersService);
+  private readonly invoices = inject(InvoiceRequestsService);
   private readonly window = inject(DOCUMENT).defaultView;
 
   readonly id = input.required<string>();
@@ -44,6 +48,14 @@ export class ReceiptPage {
       ? 'Commande introuvable sur ce compte.'
       : apiErrorMessage(error);
   });
+  protected readonly invoice = rxResource({
+    params: () => this.id(),
+    stream: ({ params }) => this.invoices.forOrder(params),
+  });
+  protected readonly invoiceValue = computed(() =>
+    this.invoice.hasValue() ? this.invoice.value() : null,
+  );
+  protected readonly invoiceLabel = invoiceStatusLabel;
   protected readonly netCents = computed(
     () => this.value()?.vat.reduce((sum, line) => sum + line.netCents, 0) ?? 0,
   );
@@ -56,4 +68,17 @@ export class ReceiptPage {
   protected print(): void {
     this.window?.print();
   }
+}
+
+const INVOICE_STATUS_LABELS: Record<InvoiceRequestStatus, string> = {
+  Pending: 'Facture demandée : en cours de préparation.',
+  Submitted: 'Facture transmise à votre entreprise.',
+  Accepted: 'Facture reçue par votre entreprise.',
+  Rejected: 'Facture refusée : contactez le restaurant.',
+  Failed: 'Facture demandée : en cours de préparation.',
+};
+
+/** Le client ne voit pas d'échec technique : l'envoi est retenté. */
+export function invoiceStatusLabel(status: InvoiceRequestStatus): string {
+  return INVOICE_STATUS_LABELS[status];
 }

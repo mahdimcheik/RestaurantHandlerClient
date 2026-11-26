@@ -17,6 +17,7 @@ export interface OrderDetails {
   dailyNumber: number;
   history: Array<OrderHistoryDto>;
   id: string;
+  invoiceRequested: boolean;
   isPaid: boolean;
   items: Array<OrderItemDto>;
   orderNumber: number;

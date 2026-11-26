@@ -2,12 +2,28 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { CheckoutOptions, OpeningStateDto, PickupSlotDto } from '../../../../core/api/generated';
+import {
+  BusinessProfileDetails,
+  CheckoutOptions,
+  OpeningStateDto,
+  PickupSlotDto,
+} from '../../../../core/api/generated';
 import { fakeRealtime } from '../../../../core/realtime/testing';
 import { envelope, order, submitForm, text } from '../../../../shared/testing';
 import { CartStore } from '../../data-access/cart.store';
 import { EmptyPage, settle } from '../../testing';
 import { CheckoutPage } from './checkout-page';
+
+const BUSINESS: BusinessProfileDetails = {
+  siren: '404833048',
+  legalName: 'Burgers & Co',
+  vatNumber: 'FR83404833048',
+  addressLine1: '1 rue de la Paix',
+  postalCode: '75002',
+  city: 'Paris',
+  countryCode: 'FR',
+  createdAt: '2026-11-20T10:00:00Z',
+};
 
 const SLOT: PickupSlotDto = {
   start: '2026-11-23T12:15:00+01:00',
@@ -29,6 +45,7 @@ describe('CheckoutPage', () => {
     status: OpeningStateDto['status'],
     slots: PickupSlotDto[],
     options: CheckoutOptions,
+    business: BusinessProfileDetails | null = null,
   ): Promise<void> {
     fixture = TestBed.createComponent(CheckoutPage);
     http = TestBed.inject(HttpTestingController);
@@ -36,6 +53,7 @@ describe('CheckoutPage', () => {
     http.expectOne('/restaurant/status').flush(envelope({ status, asapDelayMinutes: 15 }));
     http.expectOne('/restaurant/slots').flush(envelope(slots));
     http.expectOne('/orders/checkout-options').flush(envelope(options));
+    http.expectOne('/users/me/business-profile').flush(envelope(business));
     for (const request of http.match('/restaurant/info')) {
       request.flush(envelope({}));
     }
@@ -87,8 +105,10 @@ describe('CheckoutPage', () => {
       lines: [{ productId: 'cola', quantity: 1 }],
       pickupMode: 'Asap',
       slotStart: null,
+      requestInvoice: false,
     });
     expect(request.request.body).not.toHaveProperty('paymentChoice');
+    expect(text(fixture)).not.toContain('Je souhaite une facture');
     // Page SumUp pas encore créée : le suivi propose de réessayer le paiement.
     request.flush(envelope(order({ id: 'o42', status: 'PendingPayment', isPaid: false })), {
       status: 201,
@@ -98,6 +118,43 @@ describe('CheckoutPage', () => {
 
     expect(cart.isEmpty()).toBe(true);
     expect(TestBed.inject(Router).url).toBe('/commandes/o42');
+  });
+
+  it('propose la facture à un client professionnel, cochée par défaut', async () => {
+    await open('Open', [SLOT], { onlinePaymentEnabled: true }, BUSINESS);
+    expect(text(fixture)).toContain(
+      'Je souhaite une facture au nom de Burgers & Co (SIREN 404833048)',
+    );
+    const box = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(
+      'input[type=checkbox]',
+    );
+    expect(box?.checked).toBe(true);
+
+    submitForm(fixture);
+    await settle();
+    const request = http.expectOne('/orders');
+    expect(request.request.body).toMatchObject({ requestInvoice: true });
+    request.flush(envelope(order({ id: 'o43', invoiceRequested: true })), {
+      status: 201,
+      statusText: 'Created',
+    });
+    await settle();
+  });
+
+  it('le client professionnel peut renoncer à la facture', async () => {
+    await open('Open', [SLOT], { onlinePaymentEnabled: true }, BUSINESS);
+    const box = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(
+      'input[type=checkbox]',
+    )!;
+    box.click();
+    await settle();
+
+    submitForm(fixture);
+    await settle();
+    const request = http.expectOne('/orders');
+    expect(request.request.body).toMatchObject({ requestInvoice: false });
+    request.flush(envelope(order({ id: 'o44' })), { status: 201, statusText: 'Created' });
+    await settle();
   });
 
   it('bloque la validation quand le paiement en ligne est coupé', async () => {

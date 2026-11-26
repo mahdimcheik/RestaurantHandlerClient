@@ -78,6 +78,7 @@ export function order(extra: Partial<OrderDetails> = {}): OrderDetails {
   return {
     id: 'o1',
     orderNumber: 1042,
+    invoiceRequested: false,
     dailyNumber: 12,
     status: 'Confirmed',
     pickupMode: 'Asap',
