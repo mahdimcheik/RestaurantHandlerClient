@@ -35,25 +35,6 @@ const burger = order({
   ],
 });
 const pizza = order({ id: 'b', dailyNumber: 9, status: 'InPreparation' });
-const kebab = order({
-  id: 'd',
-  dailyNumber: 30,
-  status: 'AwaitingApproval',
-  paymentChoice: 'OnSite',
-  totalCents: 2350,
-  items: [
-    {
-      id: 'i2',
-      name: 'Kebab',
-      quantity: 1,
-      unitPriceCents: 2350,
-      lineTotalCents: 2350,
-      components: [],
-      modifications: [],
-    },
-  ],
-});
-
 const paidReady = order({
   id: 'r',
   dailyNumber: 7,
@@ -306,6 +287,5 @@ describe('KitchenPage', () => {
       expect(text(fixture)).toContain('N° 7 remise au client');
       expect(column('kds-ready')).not.toContain('Inès');
     });
-
   });
 });

@@ -1,11 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideFakeHub } from '../../../core/realtime/testing';
-import { envelope } from '../../testing';
 import { AdminLayout } from './admin-layout';
 
 @Component({ template: '<h1>Page</h1>' })
@@ -80,18 +79,5 @@ describe('AdminLayout', () => {
     const current = [...root.querySelectorAll('[aria-current=page]')];
 
     expect(current.map((link) => link.textContent?.trim())).toEqual(['Produits']);
-  });
-
-  it('affiche le nombre de commandes à valider sur le lien des écrans de service', async () => {
-    const root = await render('/gestion');
-    const http = TestBed.inject(HttpTestingController);
-    http
-      .expectOne((request) => request.url === '/manage/orders')
-      .flush(envelope([{ id: 'o1' }, { id: 'o2' }]));
-    await new Promise((resolve) => setTimeout(resolve));
-    harness.detectChanges();
-
-    const link = root.querySelector('a[href="/service"]');
-    expect(link?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Écrans de service 2 à valider');
   });
 });

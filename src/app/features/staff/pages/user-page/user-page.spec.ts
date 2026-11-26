@@ -73,7 +73,6 @@ describe('UserPage', () => {
     await open();
     expect(text(fixture)).toContain('Léa Martin');
     expect(text(fixture)).toContain('Actif');
-    expect(text(fixture)).toContain('Aucune non-venue');
     expect(text(fixture)).toContain('N° 7');
     expect(buttons()).toEqual(['Bannir']);
   });

@@ -1,11 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideFakeHub } from '../../../core/realtime/testing';
-import { envelope } from '../../testing';
 import { ServiceLayout } from './service-layout';
 
 @Component({ template: '<h1>Page</h1>' })
@@ -21,7 +20,6 @@ describe('ServiceLayout', () => {
             component: ServiceLayout,
             children: [
               { path: 'cuisine', component: Blank },
-              { path: 'comptoir', component: Blank },
               { path: 'commandes', component: Blank },
             ],
           },
@@ -45,30 +43,19 @@ describe('ServiceLayout', () => {
       link.textContent?.replace(/\s+/g, ' ').trim(),
     );
 
-  it('propose les trois écrans de service en haut, sans menu à gauche', async () => {
+  it('propose les écrans de service en haut, sans comptoir ni menu à gauche', async () => {
     const root = await render('/service/cuisine');
 
-    expect(tabs(root)).toEqual(['Cuisine', 'Comptoir', 'Commandes']);
+    expect(tabs(root)).toEqual(['Cuisine', 'Commandes']);
     expect(root.querySelector('.admin__nav')).toBeNull();
     expect(root.querySelector('a[href="/gestion"]')?.textContent).toContain('Gestion');
+    expect(root.textContent).not.toContain('à valider');
   });
 
   it("signale l'écran courant, et lui seul", async () => {
-    const root = await render('/service/comptoir');
+    const root = await render('/service/commandes');
     const current = [...root.querySelectorAll('[aria-current=page]')];
 
-    expect(current.map((link) => link.textContent?.trim())).toEqual(['Comptoir']);
-  });
-
-  it('affiche le nombre de commandes à valider sur la touche Commandes', async () => {
-    const root = await render('/service/cuisine');
-    const http = TestBed.inject(HttpTestingController);
-    http
-      .expectOne((request) => request.url === '/manage/orders')
-      .flush(envelope([{ id: 'o1' }, { id: 'o2' }]));
-    await new Promise((resolve) => setTimeout(resolve));
-    harness.detectChanges();
-
-    expect(tabs(root)).toEqual(['Cuisine', 'Comptoir', 'Commandes 2 à valider']);
+    expect(current.map((link) => link.textContent?.trim())).toEqual(['Commandes']);
   });
 });
