@@ -84,7 +84,8 @@ describe('SiteTopbar', () => {
     expect(document.activeElement).toBe(account);
   });
 
-  it('change le thème et n’ouvre qu’un menu à la fois', async () => {
+  // Réactiver avec SHOW_THEME_MENU dans site-topbar.ts.
+  it.skip('change le thème et n’ouvre qu’un menu à la fois', async () => {
     const { el, button, click } = await setup();
     click(button('topbar-account'));
     click(button('topbar-theme'));

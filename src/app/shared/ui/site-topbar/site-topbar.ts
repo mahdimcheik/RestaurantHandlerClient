@@ -9,6 +9,9 @@ import { PublicStore } from '../../services/public-store.service';
 import { formatDateTime } from '../../utils/restaurant-time';
 import { Icon, IconName } from '../icon/icon';
 
+/** Choix du thème masqué pour l'instant : l'application suit le thème de l'appareil. */
+const SHOW_THEME_MENU = false;
+
 type MenuName = 'nav' | 'notifications' | 'account' | 'theme';
 
 const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }[] = [
@@ -212,35 +215,37 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
           }
         </div>
 
-        <div class="topbar__menu">
-          <button
-            type="button"
-            class="topbar__btn"
-            aria-controls="topbar-theme"
-            [attr.aria-expanded]="open() === 'theme'"
-            (click)="toggle('theme', $event)"
-          >
-            <app-icon [name]="currentTheme().icon" />
-            <span class="visually-hidden">Thème : {{ currentTheme().label }}</span>
-          </button>
-          @if (open() === 'theme') {
-            <ul id="topbar-theme" class="topbar__panel topbar__panel--end topbar__links">
-              @for (option of themes; track option.value) {
-                <li>
-                  <button
-                    type="button"
-                    class="topbar__item"
-                    [attr.aria-pressed]="theme.preference() === option.value"
-                    (click)="chooseTheme(option.value)"
-                  >
-                    <app-icon [name]="option.icon" />
-                    {{ option.label }}
-                  </button>
-                </li>
-              }
-            </ul>
-          }
-        </div>
+        @if (showThemeMenu) {
+          <div class="topbar__menu">
+            <button
+              type="button"
+              class="topbar__btn"
+              aria-controls="topbar-theme"
+              [attr.aria-expanded]="open() === 'theme'"
+              (click)="toggle('theme', $event)"
+            >
+              <app-icon [name]="currentTheme().icon" />
+              <span class="visually-hidden">Thème : {{ currentTheme().label }}</span>
+            </button>
+            @if (open() === 'theme') {
+              <ul id="topbar-theme" class="topbar__panel topbar__panel--end topbar__links">
+                @for (option of themes; track option.value) {
+                  <li>
+                    <button
+                      type="button"
+                      class="topbar__item"
+                      [attr.aria-pressed]="theme.preference() === option.value"
+                      (click)="chooseTheme(option.value)"
+                    >
+                      <app-icon [name]="option.icon" />
+                      {{ option.label }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
       </div>
     </header>
   `,
@@ -254,6 +259,7 @@ export class SiteTopbar {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly themes = THEMES;
+  protected readonly showThemeMenu = SHOW_THEME_MENU;
   protected readonly open = signal<MenuName | null>(null);
   /** Bouton qui a ouvert le panneau, pour lui rendre le focus à la fermeture par Échap. */
   private trigger: HTMLElement | null = null;
