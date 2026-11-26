@@ -25,6 +25,9 @@
   @if (board.message()) {
     <p class="alert alert--error" role="alert">{{ board.message() }}</p>
   }
+  @if (board.readyError()) {
+    <p class="alert alert--error" role="alert">{{ board.readyError() }}</p>
+  }
   @if (board.approvalsError()) {
     <p class="alert alert--error" role="alert">{{ board.approvalsError() }}</p>
   }
@@ -49,6 +52,7 @@
             [busy]="board.pending() === order.id"
             (accept)="board.accept(order)"
             (refuse)="askReason(order)"
+            (details)="board.openDetails(order.id)"
           />
         </li>
       }
@@ -72,6 +76,7 @@
               [order]="order"
               [busy]="board.pending() === order.id"
               (advance)="board.advance(order)"
+              (details)="board.openDetails(order.id)"
             />
           </li>
         } @empty {
@@ -91,10 +96,50 @@
               [order]="order"
               [busy]="board.pending() === order.id"
               (advance)="board.advance(order)"
+              (details)="board.openDetails(order.id)"
             />
           </li>
         } @empty {
           <li class="kds__empty">Aucune commande en préparation.</li>
+        }
+      </ol>
+    </section>
+    <section class="kds__column" aria-labelledby="kds-ready">
+      <h2 class="kds__heading" id="kds-ready">
+        <span>Prêtes</span>
+        <span class="kds__count">{{ board.ready().length }}</span>
+      </h2>
+      <ol class="kds__list">
+        @for (order of board.ready(); track order.id) {
+          <li>
+            <button type="button" class="kds-ready" (click)="board.openDetails(order.id)">
+              <span class="kds-ready__number">
+                <span class="visually-hidden">Détails et prix de la commande n°</span>
+                {{ order.dailyNumber }}
+              </span>
+              <span class="kds-ready__meta">
+                <span class="kds-ticket__time">
+                  <app-icon name="clock" />
+                  {{ order.pickupAt | restaurantTime }}
+                </span>
+                @if (order.customerLabel) {
+                  <span>{{ order.customerLabel }}</span>
+                }
+              </span>
+              <span class="kds-ready__pay" [class.kds-ready__pay--due]="!order.isPaid">
+                @if (order.isPaid) {
+                  <app-icon name="check" />
+                  <span>Payée</span>
+                } @else {
+                  <app-icon name="cash" />
+                  <span>À encaisser</span>
+                }
+                <span>{{ order.totalCents | euros }}</span>
+              </span>
+            </button>
+          </li>
+        } @empty {
+          <li class="kds__empty">Aucune commande en attente de retrait.</li>
         }
       </ol>
     </section>
@@ -123,3 +168,27 @@
     Commande n° {{ order.dailyNumber }} : le client est prévenu et voit le motif.
   }
 </app-reason-dialog>
+
+<app-modal-dialog
+  #detailsDialog
+  [wide]="true"
+  [title]="detailsTitle()"
+  (closed)="board.closeDetails()"
+>
+  @if (board.detail(); as order) {
+    <app-kitchen-order-details
+      [order]="order"
+      [busy]="board.pending() === order.id"
+      (complete)="complete(order)"
+    />
+  } @else if (board.detailError()) {
+    <p class="alert alert--error" role="alert">{{ board.detailError() }}</p>
+  } @else if (board.detailLoading()) {
+    <p>Chargement de la commande…</p>
+  }
+  <div class="form__actions">
+    <button type="button" class="btn btn--outline kds-details__close" (click)="closeDetails()">
+      Fermer
+    </button>
+  </div>
+</app-modal-dialog>

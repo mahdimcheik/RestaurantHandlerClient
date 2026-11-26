@@ -54,6 +54,11 @@
   @media (min-width: 56rem) {
     grid-template-columns: 1fr 1fr;
   }
+
+  // Prêtes : colonne plus étroite, ses cartes sont courtes.
+  @media (min-width: 80rem) {
+    grid-template-columns: 1fr 1fr minmax(16rem, 0.6fr);
+  }
 }
 
 // Commandes à payer au retrait en attente de validation, au-dessus des colonnes.
@@ -245,6 +250,170 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
+}
+
+// Le numéro du bon ouvre le détail avec les prix.
+.kds-ticket__open {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-2);
+  margin-left: calc(-1 * var(--space-2));
+  border: var(--border-width) solid transparent;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  .icon,
+  .icon svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .icon {
+    color: var(--color-ink-soft);
+  }
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+// Commande prête : carte courte, toute la carte ouvre le détail.
+.kds-ready {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  width: 100%;
+  min-height: calc(var(--tap-min) * 1.5);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-strong);
+  background: var(--surface-raised);
+  color: var(--color-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-sunken);
+  }
+}
+
+.kds-ready__number {
+  grid-row: span 2;
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--leading-tight);
+}
+
+.kds-ready__meta,
+.kds-ready__pay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.kds-ready__pay {
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+// Reste à encaisser : signalé par le libellé et l'icône, la couleur ne fait que souligner.
+.kds-ready__pay--due {
+  color: var(--color-warning);
+}
+
+// Détail d'une commande, dans la fenêtre ouverte par-dessus l'écran.
+.kds-details {
+  display: grid;
+  gap: var(--space-4);
+  font-size: var(--text-lg);
+}
+
+.kds-details__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.kds-details__lines {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) 0 0;
+  border-top: var(--border-soft);
+  list-style: none;
+}
+
+.kds-details__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.kds-details__amount {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.kds-details__unit {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.kds-details__totals {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: var(--border-strong);
+  font-variant-numeric: tabular-nums;
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dd {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+.kds-details__row--total {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+
+.kds-details__row--due {
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+  text-decoration-thickness: var(--border-width-strong);
+  text-underline-offset: 0.2em;
+}
+
+.kds-details__hint {
+  margin: 0;
+  padding: var(--space-3);
+  border: var(--border-strong);
+  background: var(--surface-sunken);
+  font-weight: var(--weight-medium);
+}
+
+.kds-details__close {
+  min-height: calc(var(--tap-min) * 1.25);
+  font-size: var(--text-lg);
 }
 
 // Dernier geste, annulable quelques secondes (erreur de doigt).

@@ -27,7 +27,8 @@ function line(item: OrderItemDto): LineView {
 
 /**
  * Bon de cuisine : numéro, heure, canal, lignes et personnalisations mises en évidence. En mode
- * `approval`, une commande à payer au retrait : total et touches Accepter / Refuser.
+ * `approval`, une commande à payer au retrait : total et touches Accepter / Refuser. Le numéro
+ * ouvre le détail avec les prix.
  */
 @Component({
   selector: 'app-kitchen-ticket',
@@ -36,8 +37,11 @@ function line(item: OrderItemDto): LineView {
   template: `
     <div class="kds-ticket__head">
       <h3 class="kds-ticket__number">
-        <span class="visually-hidden">Commande n°</span>
-        {{ order().dailyNumber }}
+        <button type="button" class="kds-ticket__open" (click)="details.emit()">
+          <span class="visually-hidden">Détails et prix de la commande n°</span>
+          {{ order().dailyNumber }}
+          <app-icon name="info" />
+        </button>
       </h3>
       <p class="kds-ticket__meta">
         <span class="kds-ticket__time">
@@ -153,6 +157,8 @@ export class KitchenTicket {
   readonly advance = output<void>();
   readonly accept = output<void>();
   readonly refuse = output<void>();
+  /** Ouvre le détail avec les prix, sans quitter l'écran. */
+  readonly details = output<void>();
 
   protected readonly channel = computed(() => channelLabel(this.order().channel));
   protected readonly lines = computed(() => this.order().items.map(line));

@@ -1,4 +1,9 @@
-import { ModificationType, OrderDetails, OrderModificationDto } from '../../core/api/generated';
+import {
+  ModificationType,
+  OrderDetails,
+  OrderModificationDto,
+  OrderSummary,
+} from '../../core/api/generated';
 import { IconName } from '../../shared/ui/icon/icon';
 
 export interface KitchenColumns {
@@ -14,6 +19,11 @@ export function splitColumns(orders: readonly OrderDetails[]): KitchenColumns {
     todo: orders.filter((order) => order.status === 'Confirmed'),
     cooking: orders.filter((order) => order.status === 'InPreparation'),
   };
+}
+
+/** Commandes triées par heure de retrait (la plus proche d'abord), sans modifier la liste. */
+export function byPickup<T extends Pick<OrderSummary, 'pickupAt'>>(orders: readonly T[]): T[] {
+  return [...orders].sort((a, b) => Date.parse(a.pickupAt) - Date.parse(b.pickupAt));
 }
 
 /** Commandes de `current` jamais vues auparavant. */

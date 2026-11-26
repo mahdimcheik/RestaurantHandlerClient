@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { OrderDetails } from '../../../../core/api/generated';
 import { fakeRealtime } from '../../../../core/realtime/testing';
 import { APPROVAL_SOUND } from '../../../../shared/services/approval-alert.service';
-import { envelope, order, polyfillDialog, text } from '../../../../shared/testing';
+import { envelope, order, polyfillDialog, summary, text } from '../../../../shared/testing';
 import { KITCHEN_SOUND, UNDO_WINDOW_MS } from '../../data-access/kitchen-board';
 import { KitchenPage } from './kitchen-page';
 
@@ -55,6 +55,19 @@ const kebab = order({
   ],
 });
 
+const paidReady = order({
+  id: 'r',
+  dailyNumber: 7,
+  status: 'Ready',
+  channel: 'Online',
+  paymentChoice: 'Online',
+  customerLabel: 'Inès',
+  isPaid: true,
+  paidCents: 1850,
+  payments: [{ id: 'p1', method: 'SumupOnline', status: 'Successful', amountCents: 1850 }],
+});
+const unpaidReady = order({ id: 's', dailyNumber: 8, status: 'Ready', totalCents: 1200 });
+
 describe('KitchenPage', () => {
   let fixture: ComponentFixture<KitchenPage>;
   let http: HttpTestingController;
@@ -63,6 +76,8 @@ describe('KitchenPage', () => {
   let approvalSound: ReturnType<typeof vi.fn>;
   /** Commandes à valider renvoyées par l'API. */
   let waiting: OrderDetails[];
+  /** Commandes prêtes renvoyées par l'API. */
+  let ready: OrderDetails[];
 
   beforeAll(polyfillDialog);
 
@@ -79,11 +94,32 @@ describe('KitchenPage', () => {
     button.click();
   };
   const band = () => root().querySelector('[aria-labelledby="kds-approval"]')?.textContent ?? '';
+  const dialog = () => root().querySelector('dialog[open]') as HTMLDialogElement | null;
+  const openDetails = (dailyNumber: number) => {
+    const button = [...root().querySelectorAll('button')].find((b) =>
+      (b.textContent ?? '').replace(/\s+/g, ' ').includes(`de la commande n° ${dailyNumber} `),
+    );
+    if (!button) {
+      throw new Error(`Commande n° ${dailyNumber} introuvable.`);
+    }
+    button.click();
+  };
+  /** Répond aux relectures d'une commande ouverte en détail. */
+  const answerDetail = async (details: OrderDetails) => {
+    TestBed.tick();
+    http.expectOne(`/manage/orders/${details.id}`).flush(envelope(details));
+    await settle();
+  };
   const answerApprovals = async () => {
     TestBed.tick();
     for (const request of http.match((r) => r.url === '/manage/orders')) {
-      expect(request.request.params.get('Status')).toBe('AwaitingApproval');
-      request.flush(envelope(waiting.map(({ id, pickupAt }) => ({ id, pickupAt }))));
+      const status = request.request.params.get('Status');
+      if (status === 'Ready') {
+        request.flush(envelope(ready.map((details) => summary(details))));
+      } else {
+        expect(status).toBe('AwaitingApproval');
+        request.flush(envelope(waiting.map(({ id, pickupAt }) => ({ id, pickupAt }))));
+      }
     }
     await settle();
     for (const pending of waiting) {
@@ -109,6 +145,7 @@ describe('KitchenPage', () => {
     sound = vi.fn();
     approvalSound = vi.fn();
     waiting = [];
+    ready = [];
     TestBed.configureTestingModule({
       imports: [KitchenPage],
       providers: [
@@ -293,6 +330,82 @@ describe('KitchenPage', () => {
       await answer([burger, pizza]);
       expect(text(fixture)).toContain('La commande a changé sur un autre écran');
       expect(band()).toBe('');
+    });
+  });
+
+  describe('détail avec les prix', () => {
+    it("s'ouvre au toucher du numéro, par-dessus l'écran, et se referme", async () => {
+      openDetails(12);
+      await settle();
+      expect(dialog()?.textContent).toContain('Commande n° 12');
+      await answerDetail(burger);
+
+      const shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
+      expect(shown).toContain('2× Burger');
+      expect(shown).toMatch(/18,00\s€/);
+      expect(shown).toMatch(/9,00\s€ l'unité/);
+      expect(shown).toMatch(/Bacon ×2 \+ 3,00\s€/);
+      expect(shown).toContain('Bien cuit');
+      expect(shown).toMatch(/Total\s*18,50\s€/);
+      expect(shown).toMatch(/Reste à encaisser 18,50\s€/);
+      expect(shown).not.toContain('Remis au client');
+      expect(column('kds-todo')).toContain('Burger');
+
+      press('Fermer');
+      await settle();
+      expect(dialog()).toBeNull();
+    });
+
+    it("montre la commande déjà à l'écran si la relecture échoue (hors ligne)", async () => {
+      openDetails(9);
+      await settle();
+      http.expectOne('/manage/orders/b').error(new ProgressEvent('error'));
+      await settle();
+      expect(dialog()?.textContent).toContain('Commande n° 9');
+      expect(dialog()?.textContent).toContain('Total');
+    });
+  });
+
+  describe('commandes prêtes', () => {
+    beforeEach(async () => {
+      ready = [paidReady, unpaidReady];
+      realtime.emit('OrderStatusChanged', {});
+      await answer([burger, pizza]);
+    });
+
+    it('restent visibles avec leur état de paiement', () => {
+      const shown = column('kds-ready').replace(/\s+/g, ' ');
+      expect(shown).toMatch(/Prêtes\s*2/);
+      expect(shown).toContain('Inès');
+      expect(shown).toMatch(/Payée\s*18,50\s€/);
+      expect(shown).toMatch(/À encaisser\s*12,00\s€/);
+    });
+
+    it('se remettent au client depuis le détail quand elles sont payées', async () => {
+      openDetails(7);
+      await answerDetail(paidReady);
+      expect(dialog()?.textContent).toContain('En ligne');
+
+      press('Remis au client');
+      TestBed.tick();
+      const complete = http.expectOne('/manage/orders/r/complete');
+      expect(complete.request.method).toBe('POST');
+      ready = [unpaidReady];
+      complete.flush(envelope({ ...paidReady, status: 'Completed' }));
+      await answer([burger, pizza]);
+
+      expect(dialog()).toBeNull();
+      expect(text(fixture)).toContain('N° 7 remise au client');
+      expect(column('kds-ready')).not.toContain('Inès');
+    });
+
+    it('renvoient au back-office pour encaisser une commande non payée', async () => {
+      openDetails(8);
+      await answerDetail(unpaidReady);
+      const shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
+      expect(shown).toMatch(/Reste à encaisser 12,00\s€/);
+      expect(shown).toContain('À encaisser avant la remise');
+      expect(shown).not.toContain('Remis au client');
     });
   });
 });
