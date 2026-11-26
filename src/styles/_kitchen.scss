@@ -1,31 +1,20 @@
-// Écran cuisine (KDS) : plein écran, lisible à 2 m, utilisable au doigt.
+// Écran cuisine (KDS), dans la coquille Service : lisible à 2 m, utilisable au doigt.
 // Contraste maximal (encre sur papier, bordures fortes) ; statut et personnalisations portés
 // par un libellé ou une icône, jamais par la couleur seule.
 
 .kds {
   display: grid;
   align-content: start;
-  min-height: 100dvh;
   padding-bottom: var(--space-10);
   font-size: var(--text-lg);
 }
 
+// Outils propres à la cuisine (son des nouvelles commandes), au-dessus des colonnes ; la barre
+// de navigation et l'état de connexion sont portés par la coquille Service.
 .kds__bar {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-5);
-  padding-block: var(--space-3);
-  border-bottom: var(--border);
-}
-
-.kds__title {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  font-size: var(--text-xl);
+  justify-content: flex-end;
+  padding-top: var(--space-3);
 }
 
 .kds__tools {

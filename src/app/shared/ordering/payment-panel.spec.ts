@@ -1,9 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OrderDetails } from '../../../core/api/generated';
-import { clickButton, envelope, fill, submitForm, text } from '../../../shared/testing';
-import { order } from '../testing';
+import { OrderDetails } from '../../core/api/generated';
+import { clickButton, envelope, fill, order, submitForm, text } from '../testing';
 import { PaymentPanel } from './payment-panel';
 
 describe('PaymentPanel', () => {

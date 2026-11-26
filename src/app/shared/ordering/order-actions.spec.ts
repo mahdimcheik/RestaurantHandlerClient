@@ -1,6 +1,6 @@
 import { OrderDetails, OrderStatus } from '../../core/api/generated';
 import { availableActions } from './order-actions';
-import { order, PICKUP } from './testing';
+import { order, PICKUP } from '../testing';
 
 const pickup = new Date(PICKUP).getTime();
 

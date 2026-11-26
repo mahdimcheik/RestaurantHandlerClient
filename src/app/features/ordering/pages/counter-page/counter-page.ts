@@ -14,7 +14,7 @@ import { Icon } from '../../../../shared/ui/icon/icon';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { MenuComposer } from '../../components/menu-composer';
-import { PaymentPanel } from '../../components/payment-panel';
+import { PaymentPanel } from '../../../../shared/ordering/payment-panel';
 import { ProductCustomizer } from '../../components/product-customizer';
 import { CounterCart } from '../../data-access/counter-cart';
 import { Customization, lineLabels, MenuChoice, OrderLine } from '../../../../shared/ordering/cart';

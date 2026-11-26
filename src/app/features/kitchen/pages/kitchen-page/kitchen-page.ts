@@ -1,16 +1,9 @@
 import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { OrderDetails } from '../../../../core/api/generated';
-import { RealtimeService } from '../../../../core/realtime/realtime.service';
-import {
-  ConnectionBanner,
-  ConnectionStatus,
-} from '../../../../shared/ui/connection-status/connection-status';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { ModalDialog } from '../../../../shared/ui/modal-dialog/modal-dialog';
 import { statusLabel } from '../../../../shared/ui/order-status/order-status';
 import { ReasonDialog } from '../../../../shared/ui/reason-dialog/reason-dialog';
-import { ThemeSwitcher } from '../../../../shared/ui/theme-switcher/theme-switcher';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { RestaurantTimePipe } from '../../../../shared/utils/restaurant-time';
 import { KitchenOrderDetails } from '../../components/kitchen-order-details';
@@ -20,19 +13,15 @@ import { KitchenBoard } from '../../data-access/kitchen-board';
 /**
  * Écran cuisine (E07) : commandes à commencer, en préparation et prêtes, en colonnes triées par
  * heure de retrait ; une touche par étape, dernier geste annulable ; bandeau rouge si la
- * connexion manque. Au-dessus, les commandes à payer au retrait à accepter ou refuser. Toucher
- * un numéro ouvre le détail avec les prix, par-dessus l'écran ; une commande prête et payée se
- * remet de là.
+ * connexion manque (bandeau et barre portés par la coquille Service). Au-dessus, les commandes à payer au retrait à accepter ou refuser. Toucher
+ * un numéro ouvre le détail avec les prix, par-dessus l'écran ; on y encaisse une commande non
+ * payée et on remet une commande prête et payée.
  */
 @Component({
   selector: 'app-kitchen-page',
   host: { class: 'kds' },
   imports: [
-    RouterLink,
     Icon,
-    ConnectionStatus,
-    ConnectionBanner,
-    ThemeSwitcher,
     KitchenTicket,
     KitchenOrderDetails,
     ModalDialog,
@@ -56,7 +45,6 @@ export class KitchenPage {
   });
 
   constructor() {
-    inject(RealtimeService).start();
     let open = false;
     effect(() => {
       const wanted = this.board.detailRequested();

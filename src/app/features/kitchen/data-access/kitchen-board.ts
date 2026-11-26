@@ -231,6 +231,18 @@ export class KitchenBoard {
     });
   }
 
+  /** Encaissement enregistré depuis le détail : la version renvoyée s'affiche aussitôt. */
+  paid(order: OrderDetails): void {
+    this.detailResource.set(order);
+    this.notice.set(`N° ${order.dailyNumber} : encaissement enregistré`);
+    this.refresh();
+  }
+
+  /** L'encaissement a été refusé (409) : la commande a changé ailleurs, tout est relu. */
+  conflict(): void {
+    this.reload();
+  }
+
   /** Revient sur le dernier geste (erreur de doigt) ; le serveur refuse après 10 s. */
   undo(): void {
     const gesture = this.lastGesture();

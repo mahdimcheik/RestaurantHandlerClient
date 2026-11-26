@@ -5,7 +5,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { filter, map } from 'rxjs';
 
 /** Pages où un rechargement ferait perdre une saisie en cours : on attend d'en sortir. */
-const BUSY_PAGES = ['/commander/valider', '/gestion/comptoir'];
+const BUSY_PAGES = ['/commander/valider', '/service/comptoir'];
 
 /**
  * Nouvelle version de l'application prête (service worker) : proposée, jamais imposée. Rien

@@ -145,7 +145,7 @@ export class AdminLayout {
 
   protected readonly name = computed(() => this.store.info.value()?.tradeName || 'Greenadine');
 
-  protected readonly ordersPath = '/gestion/commandes';
+  protected readonly ordersPath = '/service';
   protected readonly toApprove = this.approvals.count;
   /** Annonce aux lecteurs d'écran, seulement quand le nombre à valider augmente. */
   protected readonly approvalNotice = linkedSignal<number, string>({
@@ -173,9 +173,7 @@ export class AdminLayout {
       label: 'Service',
       links: [
         { path: '/gestion', icon: 'dashboard', label: 'Tableau de bord', exact: true },
-        { path: '/gestion/comptoir', icon: 'counter', label: 'Comptoir', exact: false },
-        { path: '/gestion/commandes', icon: 'orders', label: 'Commandes', exact: false },
-        { path: '/cuisine', icon: 'flame', label: 'Cuisine', exact: false },
+        { path: '/service', icon: 'flame', label: 'Écrans de service', exact: false },
         { path: '/gestion/statistiques', icon: 'chart', label: 'Statistiques', exact: false },
       ],
     },

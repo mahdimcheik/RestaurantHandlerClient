@@ -45,9 +45,7 @@ describe('AdminLayout', () => {
 
     expect(links.map((link) => link.textContent?.trim())).toEqual([
       'Tableau de bord',
-      'Comptoir',
-      'Commandes',
-      'Cuisine',
+      'Écrans de service',
       'Statistiques',
       'Catégories',
       'Produits',
@@ -84,7 +82,7 @@ describe('AdminLayout', () => {
     expect(current.map((link) => link.textContent?.trim())).toEqual(['Produits']);
   });
 
-  it('affiche le nombre de commandes à valider sur le lien Commandes', async () => {
+  it('affiche le nombre de commandes à valider sur le lien des écrans de service', async () => {
     const root = await render('/gestion');
     const http = TestBed.inject(HttpTestingController);
     http
@@ -93,7 +91,7 @@ describe('AdminLayout', () => {
     await new Promise((resolve) => setTimeout(resolve));
     harness.detectChanges();
 
-    const link = root.querySelector('a[href="/gestion/commandes"]');
-    expect(link?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Commandes 2 à valider');
+    const link = root.querySelector('a[href="/service"]');
+    expect(link?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Écrans de service 2 à valider');
   });
 });

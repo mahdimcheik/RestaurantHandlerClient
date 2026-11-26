@@ -1,5 +1,5 @@
 import { OrderDetails, OrderStatus } from '../../core/api/generated';
-import { FINAL_STATUSES } from '../../shared/ui/order-status/order-status';
+import { FINAL_STATUSES } from '../ui/order-status/order-status';
 
 /** Statuts d'une commande acceptée et pas encore remise : annulable par le Manager. */
 const ACTIVE: readonly OrderStatus[] = ['Confirmed', 'InPreparation', 'Ready'];

@@ -1,15 +1,15 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { form, submit, validate } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
-import { OrderDetails, PaymentMethod } from '../../../core/api/generated';
-import { apiErrorMessage } from '../../../core/http/api-error';
-import { eurosRule, focusFirstInvalid } from '../../../shared/forms/validation';
-import { ManageOrdersService } from '../../../shared/services/manage-orders.service';
-import { Icon, IconName } from '../../../shared/ui/icon/icon';
-import { paymentMethodLabel } from '../../../shared/ui/order-status/order-status';
-import { TextField } from '../../../shared/ui/text-field/text-field';
-import { EurosPipe, parseEuros } from '../../../shared/utils/money';
-import { isConflict } from '../../../shared/utils/conflict';
+import { OrderDetails, PaymentMethod } from '../../core/api/generated';
+import { apiErrorMessage } from '../../core/http/api-error';
+import { eurosRule, focusFirstInvalid } from '../forms/validation';
+import { ManageOrdersService } from '../services/manage-orders.service';
+import { Icon, IconName } from '../ui/icon/icon';
+import { paymentMethodLabel } from '../ui/order-status/order-status';
+import { TextField } from '../ui/text-field/text-field';
+import { EurosPipe, parseEuros } from '../utils/money';
+import { isConflict } from '../utils/conflict';
 
 type OnSiteMethod = Extract<PaymentMethod, 'OnSiteCard' | 'OnSiteCash' | 'OnSiteOther'>;
 

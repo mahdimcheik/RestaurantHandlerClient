@@ -1,8 +1,5 @@
 <div class="kds__bar gutter">
-  <h1 class="kds__title">
-    <app-icon name="flame" />
-    <span>Cuisine</span>
-  </h1>
+  <h1 class="visually-hidden">Cuisine</h1>
   <div class="kds__tools">
     <button
       type="button"
@@ -14,14 +11,10 @@
       <app-icon [name]="board.muted() ? 'bellOff' : 'bell'" />
       <span class="visually-hidden">Son des nouvelles commandes</span>
     </button>
-    <app-connection-status />
-    <app-theme-switcher />
-    <a class="btn btn--outline" routerLink="/gestion">Gestion</a>
   </div>
 </div>
 
 <div class="kds__alerts gutter">
-  <app-connection-banner />
   @if (board.message()) {
     <p class="alert alert--error" role="alert">{{ board.message() }}</p>
   }
@@ -180,6 +173,8 @@
       [order]="order"
       [busy]="board.pending() === order.id"
       (complete)="complete(order)"
+      (paid)="board.paid($event)"
+      (conflict)="board.conflict()"
     />
   } @else if (board.detailError()) {
     <p class="alert alert--error" role="alert">{{ board.detailError() }}</p>

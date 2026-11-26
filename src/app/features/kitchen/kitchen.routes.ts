@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-/** Écran cuisine plein écran (KDS), sous `/cuisine`. */
+/** Écran cuisine (KDS), sous `/service/cuisine`. */
 export const KITCHEN_ROUTES: Routes = [
   {
     path: '',

@@ -1,7 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { OrderDetails } from '../../../core/api/generated';
+import { availableActions } from '../../../shared/ordering/order-actions';
+import { PaymentPanel } from '../../../shared/ordering/payment-panel';
 import { Icon } from '../../../shared/ui/icon/icon';
 import {
   channelLabel,
@@ -14,12 +15,12 @@ import { modificationView } from '../kitchen-format';
 
 /**
  * Détail d'une commande consulté depuis l'écran cuisine, sans le quitter : lignes avec leurs
- * prix, suppléments chiffrés, note, total, déjà payé et reste à encaisser. Une commande `Prête`
- * et payée se remet d'ici ; non payée, l'encaissement reste au back-office.
+ * prix, suppléments chiffrés, note, total, déjà payé et reste à encaisser. Une commande acceptée
+ * et non payée s'encaisse d'ici (déclaratif, ADR-0006) ; prête et payée, elle se remet d'ici.
  */
 @Component({
   selector: 'app-kitchen-order-details',
-  imports: [NgTemplateOutlet, RouterLink, Icon, OrderStatusBadge, EurosPipe, RestaurantTimePipe],
+  imports: [NgTemplateOutlet, Icon, PaymentPanel, OrderStatusBadge, EurosPipe, RestaurantTimePipe],
   host: { class: 'kds-details' },
   template: `
     <p class="kds-details__meta">
@@ -57,7 +58,7 @@ import { modificationView } from '../kitchen-format';
         <dt>Total</dt>
         <dd>{{ order().totalCents | euros }}</dd>
       </div>
-      @for (payment of paid(); track payment.id) {
+      @for (payment of payments(); track payment.id) {
         <div class="kds-details__row">
           <dt>Payé · {{ methodLabel(payment.method) }}</dt>
           <dd>{{ payment.amountCents | euros }}</dd>
@@ -75,25 +76,26 @@ import { modificationView } from '../kitchen-format';
       </div>
     </dl>
 
-    @if (order().status === 'Ready') {
-      @if (order().isPaid) {
-        <button
-          type="button"
-          class="btn kds-ticket__action"
-          [disabled]="busy()"
-          [attr.aria-busy]="busy()"
-          (click)="complete.emit()"
-        >
-          <app-icon name="done" />
-          <span>Remis au client</span>
-          <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
-        </button>
-      } @else {
-        <p class="kds-details__hint">
-          À encaisser avant la remise :
-          <a [routerLink]="['/gestion/commandes', order().id]">ouvrir au back-office</a>
-        </p>
-      }
+    @if (actions().collect) {
+      <app-payment-panel
+        [order]="order()"
+        (paid)="paid.emit($event)"
+        (conflict)="conflict.emit()"
+      />
+    }
+
+    @if (actions().complete) {
+      <button
+        type="button"
+        class="btn kds-ticket__action"
+        [disabled]="busy()"
+        [attr.aria-busy]="busy()"
+        (click)="complete.emit()"
+      >
+        <app-icon name="done" />
+        <span>Remis au client</span>
+        <span class="visually-hidden">n° {{ order().dailyNumber }}</span>
+      </button>
     }
 
     <ng-template #lineView let-item let-priced="priced">
@@ -147,9 +149,16 @@ export class KitchenOrderDetails {
   readonly order = input.required<OrderDetails>();
   readonly busy = input(false);
   readonly complete = output<void>();
+  /** Commande à jour après un encaissement. */
+  readonly paid = output<OrderDetails>();
+  /** 409 à l'encaissement : la commande a changé, le parent la relit. */
+  readonly conflict = output<void>();
+
+  /** Seuls l'encaissement et la remise servent ici : ni l'heure ni le délai de grâce. */
+  protected readonly actions = computed(() => availableActions(this.order(), Date.now(), 0));
 
   protected readonly channel = computed(() => channelLabel(this.order().channel));
-  protected readonly paid = computed(() =>
+  protected readonly payments = computed(() =>
     this.order().payments.filter((payment) => payment.status === 'Successful'),
   );
   protected readonly due = computed(() =>

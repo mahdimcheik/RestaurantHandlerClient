@@ -50,11 +50,9 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
-      {
-        path: '',
-        loadChildren: () =>
-          import('./features/ordering/ordering.routes').then((m) => m.ORDERING_ROUTES),
-      },
+      { path: 'comptoir', redirectTo: '/service/comptoir' },
+      { path: 'commandes', redirectTo: '/service/commandes' },
+      { path: 'commandes/:id', redirectTo: '/service/commandes/:id' },
       {
         path: '',
         loadChildren: () =>
@@ -67,10 +65,25 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'cuisine',
+    path: 'service',
+    loadComponent: () =>
+      import('./shared/ui/service-layout/service-layout').then((m) => m.ServiceLayout),
     canActivate: [managerGuard],
     data: { bare: true },
-    loadChildren: () => import('./features/kitchen/kitchen.routes').then((m) => m.KITCHEN_ROUTES),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'cuisine' },
+      {
+        path: 'cuisine',
+        loadChildren: () =>
+          import('./features/kitchen/kitchen.routes').then((m) => m.KITCHEN_ROUTES),
+      },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/ordering/ordering.routes').then((m) => m.ORDERING_ROUTES),
+      },
+    ],
   },
+  { path: 'cuisine', redirectTo: '/service/cuisine' },
   { path: '**', redirectTo: '' },
 ];

@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 
-const suffix = ' — Gestion';
+const suffix = ' — Service';
 
-/** Comptoir et commandes du jour, sous `/gestion`. */
+/** Comptoir et commandes du jour, sous `/service`. */
 export const ORDERING_ROUTES: Routes = [
   {
     path: 'comptoir',

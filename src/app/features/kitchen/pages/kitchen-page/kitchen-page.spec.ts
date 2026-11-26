@@ -399,13 +399,42 @@ describe('KitchenPage', () => {
       expect(column('kds-ready')).not.toContain('Inès');
     });
 
-    it('renvoient au back-office pour encaisser une commande non payée', async () => {
+    it("s'encaissent depuis le détail, puis se remettent au client", async () => {
       openDetails(8);
       await answerDetail(unpaidReady);
-      const shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
+      let shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
       expect(shown).toMatch(/Reste à encaisser 12,00\s€/);
-      expect(shown).toContain('À encaisser avant la remise');
+      expect(shown).toContain('Encaissement');
       expect(shown).not.toContain('Remis au client');
+
+      press('Espèces');
+      TestBed.tick();
+      const payment = http.expectOne('/manage/orders/s/payments');
+      expect(payment.request.body).toEqual({ method: 'OnSiteCash' });
+      const paidNow: OrderDetails = {
+        ...unpaidReady,
+        isPaid: true,
+        paidCents: 1200,
+        payments: [{ id: 'p2', method: 'OnSiteCash', status: 'Successful', amountCents: 1200 }],
+      };
+      ready = [paidReady, paidNow];
+      payment.flush(envelope(paidNow));
+      await settle();
+      TestBed.tick();
+      http.expectOne('/manage/orders/kitchen').flush(envelope([burger, pizza]));
+      await answerApprovals();
+      await answerDetail(paidNow);
+
+      shown = (dialog()?.textContent ?? '').replace(/\s+/g, ' ');
+      expect(shown).not.toContain('Encaissement');
+      expect(shown).toContain('Remis au client');
+      expect(column('kds-ready').replace(/\s+/g, ' ')).not.toContain('À encaisser');
+    });
+
+    it("ne propose pas l'encaissement d'une commande déjà payée", async () => {
+      openDetails(7);
+      await answerDetail(paidReady);
+      expect(dialog()?.textContent).not.toContain('Encaissement');
     });
   });
 });
