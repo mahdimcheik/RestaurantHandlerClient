@@ -25,11 +25,36 @@
   @if (board.message()) {
     <p class="alert alert--error" role="alert">{{ board.message() }}</p>
   }
+  @if (board.approvalsError()) {
+    <p class="alert alert--error" role="alert">{{ board.approvalsError() }}</p>
+  }
   @if (board.loadError()) {
     <p class="alert alert--error" role="alert">{{ board.loadError() }}</p>
   }
   <p class="visually-hidden" aria-live="polite">{{ board.notice() }}</p>
 </div>
+
+@if (board.approvals().length > 0) {
+  <section class="kds__approvals gutter" aria-labelledby="kds-approval">
+    <h2 class="kds__heading" id="kds-approval">
+      <span>À valider</span>
+      <span class="kds__count">{{ board.approvals().length }}</span>
+    </h2>
+    <ol class="kds__list">
+      @for (order of board.approvals(); track order.id) {
+        <li>
+          <app-kitchen-ticket
+            mode="approval"
+            [order]="order"
+            [busy]="board.pending() === order.id"
+            (accept)="board.accept(order)"
+            (refuse)="askReason(order)"
+          />
+        </li>
+      }
+    </ol>
+  </section>
+}
 
 @if (board.loading()) {
   <p class="kds__empty gutter">Chargement des commandes…</p>
@@ -87,3 +112,14 @@
     </button>
   </div>
 }
+
+<app-reason-dialog
+  #refuseDialog
+  title="Refuser la commande"
+  confirmLabel="Refuser"
+  (confirmed)="refuse($event)"
+>
+  @if (refusing(); as order) {
+    Commande n° {{ order.dailyNumber }} : le client est prévenu et voit le motif.
+  }
+</app-reason-dialog>

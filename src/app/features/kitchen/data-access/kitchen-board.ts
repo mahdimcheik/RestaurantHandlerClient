@@ -11,11 +11,12 @@ import {
   untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { merge, Observable } from 'rxjs';
+import { forkJoin, merge, Observable, of } from 'rxjs';
 import { OrderDetails, OrderStatus } from '../../../core/api/generated';
 import { apiErrorMessage } from '../../../core/http/api-error';
 import { ORDER_EVENT_NAMES } from '../../../core/realtime/realtime-events';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
+import { ApprovalAlertService } from '../../../shared/services/approval-alert.service';
 import { ManageOrdersService } from '../../../shared/services/manage-orders.service';
 import { soundSetting, webAudioChime } from '../../../shared/utils/chime';
 import { newcomers, splitColumns } from '../kitchen-format';
@@ -47,13 +48,16 @@ export interface LastGesture {
 /**
  * État de l'écran cuisine (US-E07-1 à 3) : file relue depuis l'API à chaque événement de
  * commande, à chaque `resync` et chaque minute ; gestes sans mise à jour optimiste ; dernier
- * geste annulable ; son à l'arrivée d'une commande. Fourni par la page.
+ * geste annulable ; son à l'arrivée d'une commande. S'y ajoutent les commandes « à payer au
+ * retrait » à valider (US-E06-3), acceptées ou refusées sans quitter l'écran ; leur liste et leur
+ * son viennent d'`ApprovalAlertService`, partagé avec le back-office. Fourni par la page.
  */
 @Injectable()
 export class KitchenBoard {
   private readonly orders = inject(ManageOrdersService);
   private readonly sound = inject(KITCHEN_SOUND);
   private readonly setting = soundSetting(SOUND_KEY);
+  private readonly alerts = inject(ApprovalAlertService);
 
   private readonly queue = rxResource({ stream: () => this.orders.kitchen() });
   /** Dernière file connue : une relecture en échec n'efface pas l'écran. */
@@ -61,7 +65,14 @@ export class KitchenBoard {
     source: () => (this.queue.hasValue() ? this.queue.value() : undefined),
     computation: (value, previous) => value ?? previous?.value ?? [],
   });
+  private readonly toApprove = rxResource({
+    params: () => this.alerts.ids(),
+    stream: ({ params: ids }) =>
+      ids.length > 0 ? forkJoin(ids.map((id) => this.orders.get(id))) : of([]),
+  });
   private readonly now = signal(Date.now());
+  /** Commandes déjà vues dans la file : seules les autres font sonner. */
+  private seen: Set<string> | null = null;
 
   readonly muted = this.setting.muted;
   readonly loading = computed(() => this.queue.status() === 'loading');
@@ -69,6 +80,14 @@ export class KitchenBoard {
     this.queue.error() ? apiErrorMessage(this.queue.error()) : '',
   );
   readonly columns = computed(() => splitColumns(this.list()));
+  /** Commandes à valider, détaillées ; la dernière liste connue reste si une relecture échoue. */
+  readonly approvals = linkedSignal<OrderDetails[] | undefined, OrderDetails[]>({
+    source: () => (this.toApprove.hasValue() ? this.toApprove.value() : undefined),
+    computation: (value, previous) => value ?? previous?.value ?? [],
+  });
+  readonly approvalsError = computed(() =>
+    this.toApprove.error() ? apiErrorMessage(this.toApprove.error()) : '',
+  );
   /** Commande dont un geste est en cours d'envoi. */
   readonly pending = signal<string | null>(null);
   /** Échec d'un geste, toujours affiché : jamais perdu en silence. */
@@ -82,6 +101,7 @@ export class KitchenBoard {
   });
 
   constructor() {
+    this.alerts.start();
     const realtime = inject(RealtimeService);
     merge(...ORDER_EVENT_NAMES.map((name) => realtime.on(name)), realtime.resync)
       .pipe(takeUntilDestroyed())
@@ -90,15 +110,14 @@ export class KitchenBoard {
     const refresh = setInterval(() => this.queue.reload(), REFRESH_MS);
     inject(DestroyRef).onDestroy(() => clearInterval(refresh));
 
-    let seen: Set<string> | null = null;
     effect(() => {
       if (!this.queue.hasValue()) {
         return;
       }
       const current = this.queue.value();
       untracked(() => {
-        const arrived = seen ? newcomers(seen, current) : [];
-        seen = new Set([...(seen ?? []), ...current.map((order) => order.id)]);
+        const arrived = this.seen ? newcomers(this.seen, current) : [];
+        this.seen = new Set([...(this.seen ?? []), ...current.map((order) => order.id)]);
         if (arrived.length > 0) {
           this.announce(arrived);
         }
@@ -136,6 +155,21 @@ export class KitchenBoard {
     );
   }
 
+  /** Accepte une commande à valider : elle part dans « À préparer », sans carillon. */
+  accept(order: OrderDetails): void {
+    this.send(order.id, this.orders.accept(order.id), (updated) => {
+      this.seen?.add(updated.id);
+      this.notice.set(`N° ${updated.dailyNumber} acceptée`);
+    });
+  }
+
+  /** Refuse une commande à valider ; le motif est communiqué au client. */
+  refuse(order: OrderDetails, reason: string): void {
+    this.send(order.id, this.orders.refuse(order.id, { reason }), (updated) =>
+      this.notice.set(`N° ${updated.dailyNumber} refusée`),
+    );
+  }
+
   /** Revient sur le dernier geste (erreur de doigt) ; le serveur refuse après 10 s. */
   undo(): void {
     const gesture = this.lastGesture();
@@ -165,14 +199,19 @@ export class KitchenBoard {
       next: (order) => {
         this.pending.set(null);
         done(order);
-        this.queue.reload();
+        this.reload();
       },
       error: (error: unknown) => {
         this.pending.set(null);
         this.message.set(gestureError(error, serverMessage));
-        this.queue.reload();
+        this.reload();
       },
     });
+  }
+
+  private reload(): void {
+    this.queue.reload();
+    this.alerts.reload();
   }
 
   private announce(arrived: OrderDetails[]): void {

@@ -22,7 +22,7 @@ import {
   RestaurantTimePipe,
 } from '../../../../shared/utils/restaurant-time';
 import { PaymentPanel } from '../../components/payment-panel';
-import { ReasonDialog } from '../../components/reason-dialog';
+import { ReasonDialog } from '../../../../shared/ui/reason-dialog/reason-dialog';
 import { CONFLICT_MESSAGE, isConflict } from '../../../../shared/utils/conflict';
 import { availableActions } from '../../order-actions';
 

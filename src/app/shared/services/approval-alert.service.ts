@@ -34,6 +34,14 @@ export class ApprovalAlertService {
   readonly count = computed(() =>
     this.resource.hasValue() ? this.resource.value().items.length : 0,
   );
+  /** Identifiants des commandes à valider, par heure de retrait (`undefined` tant qu'inconnus). */
+  readonly ids = computed(() =>
+    this.resource.hasValue()
+      ? [...this.resource.value().items]
+          .sort((a, b) => Date.parse(a.pickupAt) - Date.parse(b.pickupAt))
+          .map((order) => order.id)
+      : undefined,
+  );
   private readonly setting = soundSetting(MUTE_KEY);
   readonly muted = this.setting.muted;
 

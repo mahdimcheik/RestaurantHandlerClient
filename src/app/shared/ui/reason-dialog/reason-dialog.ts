@@ -1,7 +1,7 @@
 import { Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { form, submit } from '@angular/forms/signals';
-import { focusFirstInvalid, lengthRule, requiredRule } from '../../../shared/forms/validation';
-import { TextareaField } from '../../../shared/ui/textarea-field/textarea-field';
+import { focusFirstInvalid, lengthRule, requiredRule } from '../../forms/validation';
+import { TextareaField } from '../textarea-field/textarea-field';
 
 let nextId = 0;
 
