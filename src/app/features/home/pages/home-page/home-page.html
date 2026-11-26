@@ -69,12 +69,14 @@
             </dd>
           </div>
         }
-        <div>
-          <dt class="visit__title">Commander</dt>
-          <dd>
-            <a class="btn-brand btn-brand--solid" routerLink="/commander">Commander en ligne</a>
-          </dd>
-        </div>
+        @if (!session.isManager()) {
+          <div>
+            <dt class="visit__title">Commander</dt>
+            <dd>
+              <a class="btn-brand btn-brand--solid" routerLink="/commander">Commander en ligne</a>
+            </dd>
+          </div>
+        }
       </dl>
     </div>
   </div>

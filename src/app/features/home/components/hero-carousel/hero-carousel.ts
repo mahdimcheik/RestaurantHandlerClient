@@ -13,6 +13,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SessionService } from '../../../../core/auth/session.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { HERO_FLAVOURS, PROPS_IMAGE, RING_IMAGE } from '../../hero-flavours';
 import {
@@ -49,6 +50,7 @@ export class HeroCarousel {
   readonly title = input.required<string>();
 
   private readonly injector = inject(Injector);
+  protected readonly session = inject(SessionService);
   private readonly section = viewChild.required<ElementRef<HTMLElement>>('section');
   private readonly titleEl = viewChild.required<ElementRef<HTMLElement>>('titleEl');
 

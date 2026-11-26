@@ -93,13 +93,15 @@
       <span>{{ flavour().lines[0] }} /</span>
       <span>{{ flavour().lines[1] }}</span>
     </p>
-    <a
-      class="showcase__cta btn-brand"
-      routerLink="/commander"
-      [style.left.px]="ctaSlot().left"
-      [style.top.px]="ctaSlot().top"
-      >Commander</a
-    >
+    @if (!session.isManager()) {
+      <a
+        class="showcase__cta btn-brand"
+        routerLink="/commander"
+        [style.left.px]="ctaSlot().left"
+        [style.top.px]="ctaSlot().top"
+        >Commander</a
+      >
+    }
   </div>
 
   <!-- <div class="showcase__vignette" aria-hidden="true"></div> -->

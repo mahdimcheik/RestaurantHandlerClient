@@ -57,9 +57,11 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
               <li>
                 <a routerLink="/a-propos" (click)="close()">À propos</a>
               </li>
-              <li>
-                <a routerLink="/commander" (click)="close()">Commander</a>
-              </li>
+              @if (!session.isManager()) {
+                <li>
+                  <a routerLink="/commander" (click)="close()">Commander</a>
+                </li>
+              }
             </ul>
           }
         </div>
@@ -91,10 +93,12 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
       </nav>
 
       <div class="topbar__end">
-        <a class="topbar__btn topbar__btn--text" routerLink="/commander">Commander</a>
-        <a class="topbar__btn" routerLink="/panier" aria-label="Panier">
-          <app-icon name="cart" />
-        </a>
+        @if (!session.isManager()) {
+          <a class="topbar__btn topbar__btn--text" routerLink="/commander">Commander</a>
+          <a class="topbar__btn" routerLink="/panier" aria-label="Panier">
+            <app-icon name="cart" />
+          </a>
+        }
 
         @if (notifications.enabled()) {
           <div class="topbar__menu">

@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Provider, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { SessionService } from '../../../core/auth/session.service';
 import { fakeRealtime } from '../../../core/realtime/testing';
 import { envelope } from '../../testing';
 import { NotificationCenter } from '../../services/notification-center.service';
@@ -50,6 +51,21 @@ describe('SiteTopbar', () => {
       'Commander',
     );
     expect(el.querySelector('a[href="/panier"]')?.getAttribute('aria-label')).toBe('Panier');
+  });
+
+  it('cache Commander et le panier au Manager', async () => {
+    const { el } = await setup([
+      {
+        provide: SessionService,
+        useValue: {
+          user: signal({ id: 'm1', firstName: 'Mia', roles: [{ name: 'Manager' }] }),
+          isManager: signal(true),
+          isAuthenticated: signal(true),
+        },
+      },
+    ]);
+    expect(el.querySelector('a[href="/commander"]')).toBeNull();
+    expect(el.querySelector('a[href="/panier"]')).toBeNull();
   });
 
   it('propose la connexion à un visiteur, puis ferme le menu avec Échap', async () => {

@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SessionService } from '../../../../core/auth/session.service';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import {
   describeOpening,
@@ -31,6 +32,7 @@ interface ContactChannel {
 })
 export class HomePage {
   private readonly store = inject(PublicStore);
+  protected readonly session = inject(SessionService);
   private readonly opening = inject(OpeningStateService);
 
   protected readonly info = this.store.info.value;
