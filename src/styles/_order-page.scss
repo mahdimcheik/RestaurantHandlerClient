@@ -255,6 +255,198 @@
   }
 }
 
+// Carte à consulter : grandes cartes, deux par ligne sur grand écran, une sur mobile.
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Article détaillé : visuel à gauche et tout le détail à droite ; en pile quand la carte est étroite.
+// Le lien du nom est étiré sur toute la carte (pseudo-élément), d'où la position relative.
+.board-card {
+  position: relative;
+  container-type: inline-size;
+  border: max(1px, 1.5px) solid currentColor;
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-glaze);
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 12px 28px var(--brand-shade);
+  }
+
+  &:has(.board-card__link:focus-visible) {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.board-card__media {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: grid;
+  place-items: center;
+  width: 40%;
+  background: var(--brand-shade-light);
+  overflow: hidden;
+
+  .icon {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.board-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.board-card__body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-height: 16rem;
+  margin-inline-start: 40%;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+@container (width < 30rem) {
+  .board-card__media {
+    position: static;
+    width: 100%;
+    height: 12rem;
+  }
+
+  .board-card__body {
+    min-height: 0;
+    margin-inline-start: 0;
+  }
+}
+
+.board-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.board-card__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: inherit;
+  line-height: 1.15;
+}
+
+.board-card__link {
+  color: inherit;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.board-card__price {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.board-card__description {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.board-card__detail {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.board-card__label {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+// Liste en ligne séparée par des points médians.
+.board-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  list-style: none;
+}
+
+.board-card__tag {
+  &:not(:last-child)::after {
+    content: '·';
+    margin-inline: var(--space-2);
+  }
+}
+
+.board-card__tag-extra,
+.board-card__tag-status {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.board-card__tag-status {
+  font-style: italic;
+}
+
+.board-card__tag--out .board-card__tag-name {
+  text-decoration: line-through;
+}
+
+// Indisponible : bordure pointillée, visuel éteint, libellé à la place du prix.
+.board-card--unavailable {
+  border-style: dashed;
+  background: transparent;
+
+  .board-card__image {
+    filter: grayscale(1);
+    opacity: 0.6;
+  }
+
+  .board-card__price {
+    font-style: italic;
+  }
+}
+
 .dish-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));

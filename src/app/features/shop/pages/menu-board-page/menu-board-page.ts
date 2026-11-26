@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
@@ -6,23 +6,21 @@ import { OpeningStateService } from '../../../../shared/services/opening-state.s
 import { PublicStore } from '../../../../shared/services/public-store.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
-import { DishCard } from '../../components/dish-card/dish-card';
-import { IngredientsInfo } from '../../components/ingredients-info/ingredients-info';
-import { OrderDialog } from '../../components/order-dialog/order-dialog';
-import { cardSections, Dish } from '../../data-access/card-sections';
+import { BoardCard } from '../../components/board-card/board-card';
+import { cardSections } from '../../data-access/card-sections';
 import { customerOpeningText } from '../../opening-text';
 
 /** Ancre d'une rubrique dans la page. */
 export const sectionAnchor = (sectionId: string) => `rubrique-${sectionId}`;
 
 /**
- * Carte du restaurant à consulter : toutes les rubriques à la suite, avec les mêmes cartes produit
- * que la page de commande. Une barre collante mène à chaque rubrique ; un article ouvre sa fiche
- * de commande, le bouton info ses ingrédients sur place. Relue en temps réel (ruptures).
+ * Carte du restaurant à consulter : toutes les rubriques à la suite, en grandes cartes qui montrent
+ * tout le détail (description, ingrédients, options, composition des menus). Une barre collante
+ * mène à chaque rubrique ; un article ouvre sa fiche de commande. Relue en temps réel (ruptures).
  */
 @Component({
   selector: 'app-menu-board-page',
-  imports: [RouterLink, Icon, SiteTopbar, DishCard, IngredientsInfo, OrderDialog],
+  imports: [RouterLink, Icon, SiteTopbar, BoardCard],
   templateUrl: './menu-board-page.html',
 })
 export class MenuBoardPage {
@@ -45,18 +43,9 @@ export class MenuBoardPage {
   protected readonly sections = computed(() => cardSections(this.card()));
   protected readonly anchor = sectionAnchor;
 
-  /** Produit dont les ingrédients sont affichés dans le dialogue. */
-  protected readonly ingredientsOf = signal<Dish | null>(null);
-  protected readonly ingredientsOpen = signal(false);
-
   constructor() {
     inject(RealtimeService).start();
     this.store.card.load();
     this.opening.load();
-  }
-
-  protected showIngredients(dish: Dish): void {
-    this.ingredientsOf.set(dish);
-    this.ingredientsOpen.set(true);
   }
 }

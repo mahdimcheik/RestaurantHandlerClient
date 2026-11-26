@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { fakeRealtime } from '../../../../core/realtime/testing';
 import { envelope } from '../../../../shared/testing';
@@ -53,7 +53,7 @@ describe('MenuBoardPage', () => {
   it('affiche toutes les rubriques à la suite avec leurs articles', () => {
     const sections = [...root().querySelectorAll('.menu-board__section')].map((section) => ({
       title: section.querySelector('h2')?.textContent?.trim(),
-      dishes: [...section.querySelectorAll('.dish-card__name')].map((name) =>
+      dishes: [...section.querySelectorAll('.board-card__name')].map((name) =>
         name.textContent?.trim(),
       ),
     }));
@@ -74,7 +74,9 @@ describe('MenuBoardPage', () => {
   });
 
   it('ouvre la fiche de commande d’un article', () => {
-    const hrefs = [...root().querySelectorAll('a.dish-card')].map((a) => a.getAttribute('href'));
+    const hrefs = [...root().querySelectorAll('a.board-card__link')].map((a) =>
+      a.getAttribute('href'),
+    );
     expect(hrefs).toEqual([
       '/commander/menu/midi',
       '/commander/produit/burger',
@@ -83,15 +85,27 @@ describe('MenuBoardPage', () => {
     expect(root().querySelector('.order-page__head a[href="/commander"]')).not.toBeNull();
   });
 
-  it('affiche les ingrédients sur place depuis le bouton info', async () => {
-    [...root().querySelectorAll<HTMLButtonElement>('.dish-tile__info')]
-      .find((button) => button.textContent?.includes('Informations : Burger'))!
-      .click();
-    await settle();
-
-    const info = root().querySelector<HTMLDialogElement>('[aria-labelledby="ingredients-title"]')!;
-    expect(info.open).toBe(true);
-    expect(info.querySelector('#ingredients-title')?.textContent?.trim()).toBe('Burger');
-    expect(TestBed.inject(Router).url).toBe('/carte');
+  it('affiche sur chaque carte ingrédients, options et composition du menu', () => {
+    const details = (name: string) => {
+      const card = [...root().querySelectorAll('.board-card')].find(
+        (item) => item.querySelector('.board-card__name')?.textContent?.trim() === name,
+      )!;
+      return [...card.querySelectorAll('.board-card__detail')].map((detail) => [
+        detail.querySelector('.board-card__label')?.textContent?.trim(),
+        [...detail.querySelectorAll('.board-card__tag')].map((tag) =>
+          tag.textContent?.replace(/\s+/g, ' ').trim(),
+        ),
+      ]);
+    };
+    expect(details('Burger')).toEqual([
+      ['Ingrédients', ['Oignon', 'Cheddar']],
+      ['Taille', ['Petite', 'Grande + 2,00 €']],
+    ]);
+    expect(details('Menu midi')).toEqual([
+      ['Plat', ['Burger']],
+      ['Boisson', ['Cola']],
+    ]);
+    expect(details('Cola')).toEqual([]);
+    expect(root().querySelector('.dish-tile__info, dialog')).toBeNull();
   });
 });

@@ -52,9 +52,9 @@
             @if (section.description) {
               <p class="order-dishes__lead">{{ section.description }}</p>
             }
-            <ul class="dish-grid">
+            <ul class="board-grid">
               @for (dish of section.dishes; track dish.id) {
-                <li app-dish-card [dish]="dish" (info)="showIngredients(dish)"></li>
+                <li app-board-card [dish]="dish"></li>
               } @empty {
                 <li class="empty">Rien dans cette rubrique pour le moment.</li>
               }
@@ -68,11 +68,5 @@
         </p>
       </div>
     }
-
-    <app-order-dialog labelledBy="ingredients-title" [(open)]="ingredientsOpen">
-      @if (ingredientsOf(); as dish) {
-        <app-ingredients-info [dish]="dish" titleId="ingredients-title" />
-      }
-    </app-order-dialog>
   </div>
 </div>

@@ -1,4 +1,9 @@
-import { PublicCard, PublicIngredient, PublicMenuSlot } from '../../../core/api/generated';
+import {
+  PublicCard,
+  PublicIngredient,
+  PublicMenuSlot,
+  PublicOptionGroup,
+} from '../../../core/api/generated';
 
 /** Article de la carte (produit ou menu) tel qu'affiché dans une rubrique. */
 export interface Dish {
@@ -15,6 +20,8 @@ export interface Dish {
   ingredients: PublicIngredient[];
   /** Rubriques d'un menu et leurs produits au choix (absent pour un produit). */
   slots?: PublicMenuSlot[];
+  /** Groupes d'options d'un produit (absent pour un menu). */
+  optionGroups?: PublicOptionGroup[];
   link: string[];
 }
 
@@ -75,6 +82,7 @@ export function cardSections(card: PublicCard | null | undefined): CardSection[]
         isMenu: false,
         hasOptions: product.optionGroups.length > 0,
         ingredients: product.ingredients,
+        optionGroups: product.optionGroups,
         link: ['/commander/produit', product.id],
       })),
     })),
