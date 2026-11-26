@@ -9,7 +9,8 @@ export interface RealtimeEvents {
   OrderStatusChanged: OrderSummary;
   PaymentAnomaly: { orderId: string; dailyNumber: number; issue: string | null };
   AvailabilityChanged: { scope: 'catalog' | 'opening' };
-  Notification: { type: string; message: string };
+  /** Notification enregistrée pour l'utilisateur ; `icon` vaut `bell` pour une commande prête. */
+  Notification: { id: string; type: string; message: string; link: string | null; icon: string };
 }
 
 export type RealtimeEventName = keyof RealtimeEvents;

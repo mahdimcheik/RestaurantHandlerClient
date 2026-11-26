@@ -3,9 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { ActivationBanner } from './shared/ui/activation-banner/activation-banner';
-import { CurrentOrderBanner } from './shared/ui/current-order-banner/current-order-banner';
 import { UpdateBanner } from './shared/ui/update-banner/update-banner';
 import { SiteFooter } from './shared/ui/site-footer/site-footer';
+import { ToastStack } from './shared/ui/toast-stack/toast-stack';
 
 /** Valeur de `data[key]` pour la route la plus profonde de la chaîne affichée qui la définit. */
 function routeFlag(route: ActivatedRouteSnapshot, key: string): unknown {
@@ -19,7 +19,7 @@ function routeFlag(route: ActivatedRouteSnapshot, key: string): unknown {
 }
 
 @Component({
-  imports: [RouterOutlet, SiteFooter, ActivationBanner, CurrentOrderBanner, UpdateBanner],
+  imports: [RouterOutlet, SiteFooter, ActivationBanner, ToastStack, UpdateBanner],
   selector: 'app-root',
   templateUrl: './app.html',
 })

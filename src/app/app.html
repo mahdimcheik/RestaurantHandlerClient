@@ -2,11 +2,11 @@
 @if (!bare()) {
   <a class="skip-link" href="#contenu">Aller au contenu</a>
   <app-activation-banner />
-  <app-current-order-banner />
 }
 <main id="contenu" tabindex="-1">
   <router-outlet />
 </main>
 @if (!bare()) {
   <app-site-footer />
+  <app-toast-stack />
 }

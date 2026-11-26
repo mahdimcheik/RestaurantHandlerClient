@@ -516,48 +516,6 @@
   }
 }
 
-// Bandeau « commande en cours », au-dessus de toutes les pages client : encre et fond de la
-// surface du nouveau design (déclarés ici, le bandeau est hors de `.brand`).
-.current-order {
-  --brand-bg: var(--flavour-bg);
-  --brand-ink: var(--flavour-ink);
-
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  min-height: var(--tap-min);
-  padding-block: var(--space-2);
-  border-bottom: var(--border-width) solid var(--brand-ink);
-  background: var(--brand-bg);
-  color: var(--brand-ink);
-  font-weight: var(--weight-bold);
-  text-decoration: none;
-  color-scheme: light;
-
-  > span {
-    flex: 1;
-  }
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--brand-ink);
-    outline-offset: -4px;
-  }
-}
-
-// « Prête » : inversé ; l'icône cloche et le libellé portent aussi l'information.
-.current-order--ready {
-  background: var(--brand-ink);
-  color: var(--brand-bg);
-
-  &:focus-visible {
-    outline-color: var(--brand-bg);
-  }
-}
-
 // Historique des commandes.
 .history-list {
   display: grid;
@@ -648,7 +606,6 @@
   .skip-link,
   .banner,
   .site-footer,
-  .current-order,
   .waves,
   .no-print {
     display: none !important;

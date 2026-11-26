@@ -1,5 +1,7 @@
 import { OrderDetails, OrderSummary } from '../core/api/generated';
+import { Provider, signal } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
+import { NotificationCenter } from './services/notification-center.service';
 
 const root = (fixture: ComponentFixture<unknown>) => fixture.nativeElement as HTMLElement;
 
@@ -109,5 +111,21 @@ export function summary(extra: Partial<OrderSummary> = {}): OrderSummary {
     isPaid: true,
     totalCents: 1850,
     ...extra,
+  };
+}
+
+/** Centre de notifications inerte : pour les pages dont la barre du haut ne fait pas l'objet du test. */
+export function provideNoNotifications(): Provider {
+  return {
+    provide: NotificationCenter,
+    useValue: {
+      enabled: signal(false),
+      unread: signal(0),
+      items: signal([]),
+      toasts: signal([]),
+      dismiss: () => {},
+      markSeen: () => {},
+      markAllSeen: () => {},
+    },
   };
 }

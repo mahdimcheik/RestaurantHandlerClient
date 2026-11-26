@@ -3,10 +3,13 @@ import { Component, computed, ElementRef, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SessionService } from '../../../core/auth/session.service';
 import { ThemePreference, ThemeService } from '../../../core/theme/theme.service';
+import { NotificationDetails } from '../../../core/api/generated';
+import { NotificationCenter } from '../../services/notification-center.service';
 import { PublicStore } from '../../services/public-store.service';
+import { formatDateTime } from '../../utils/restaurant-time';
 import { Icon, IconName } from '../icon/icon';
 
-type MenuName = 'nav' | 'account' | 'theme';
+type MenuName = 'nav' | 'notifications' | 'account' | 'theme';
 
 const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }[] = [
   { value: 'system', label: 'Système', icon: 'monitor' },
@@ -16,8 +19,8 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
 
 /**
  * Barre du haut du nouveau design. À gauche le logo du restaurant, au milieu la navigation
- * (repliée dans un bouton Menu sur écran étroit), à droite Commander, le panier, le compte et le
- * thème. Posée par-dessus un bloc plein écran, elle en reprend l'encre (`--brand-ink`).
+ * (repliée dans un bouton Menu sur écran étroit), à droite Commander, le panier, la cloche des
+ * notifications (client connecté), le compte et le thème. Posée par-dessus un bloc plein écran, elle en reprend l'encre (`--brand-ink`).
  */
 @Component({
   selector: 'app-site-topbar',
@@ -92,6 +95,73 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
         <a class="topbar__btn" routerLink="/panier" aria-label="Panier">
           <app-icon name="cart" />
         </a>
+
+        @if (notifications.enabled()) {
+          <div class="topbar__menu">
+            <button
+              type="button"
+              class="topbar__btn topbar__bell"
+              aria-controls="topbar-notifications"
+              [attr.aria-expanded]="open() === 'notifications'"
+              (click)="toggle('notifications', $event)"
+            >
+              <app-icon name="bell" />
+              @if (notifications.unread(); as unread) {
+                <span class="topbar__badge" aria-hidden="true">{{
+                  unread > 9 ? '9+' : unread
+                }}</span>
+              }
+              <span class="visually-hidden">{{ bellLabel() }}</span>
+            </button>
+            @if (open() === 'notifications') {
+              <div id="topbar-notifications" class="topbar__panel topbar__panel--end notif-panel">
+                <div class="notif-panel__head">
+                  <p class="notif-panel__title">Notifications</p>
+                  @if (notifications.unread()) {
+                    <button
+                      type="button"
+                      class="notif-panel__all"
+                      (click)="notifications.markAllSeen()"
+                    >
+                      Tout marquer comme lu
+                    </button>
+                  }
+                </div>
+                @if (notifications.items().length) {
+                  <ul class="notif-list">
+                    @for (item of notifications.items(); track item.id) {
+                      <li>
+                        <a
+                          class="notif-list__item"
+                          [class.notif-list__item--unread]="!item.isSeen"
+                          [routerLink]="item.link || '/commandes'"
+                          (click)="openNotification(item)"
+                        >
+                          <span class="notif-list__message">
+                            @if (!item.isSeen) {
+                              <span class="visually-hidden">Non lue : </span>
+                            }
+                            {{ item.message }}
+                          </span>
+                          @if (item.createdAt) {
+                            <time class="notif-list__time" [attr.datetime]="item.createdAt">{{
+                              when(item.createdAt)
+                            }}</time>
+                          }
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="notif-panel__empty">Aucune notification.</p>
+                }
+                <a class="notif-panel__orders" routerLink="/commandes" (click)="close()"
+                  >Mes commandes</a
+                >
+              </div>
+            }
+          </div>
+        }
 
         <div class="topbar__menu">
           <button
@@ -173,6 +243,7 @@ const THEMES: readonly { value: ThemePreference; label: string; icon: IconName }
 })
 export class SiteTopbar {
   protected readonly session = inject(SessionService);
+  protected readonly notifications = inject(NotificationCenter);
   protected readonly theme = inject(ThemeService);
   private readonly store = inject(PublicStore);
   private readonly router = inject(Router);
@@ -189,8 +260,24 @@ export class SiteTopbar {
     () => THEMES.find((option) => option.value === this.theme.preference()) ?? THEMES[0],
   );
 
+  protected readonly bellLabel = computed(() => {
+    const unread = this.notifications.unread();
+    if (!unread) {
+      return 'Notifications';
+    }
+    return unread === 1 ? 'Notifications, 1 non lue' : `Notifications, ${unread} non lues`;
+  });
+  protected readonly when = formatDateTime;
+
   constructor() {
     this.store.info.load();
+  }
+
+  protected openNotification(item: NotificationDetails): void {
+    if (item.id) {
+      this.notifications.markSeen(item.id);
+    }
+    this.close();
   }
 
   protected toggle(menu: MenuName, event: MouseEvent): void {

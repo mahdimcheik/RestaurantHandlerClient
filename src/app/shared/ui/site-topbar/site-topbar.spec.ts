@@ -1,9 +1,11 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Provider, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { fakeRealtime } from '../../../core/realtime/testing';
 import { envelope } from '../../testing';
+import { NotificationCenter } from '../../services/notification-center.service';
 import { SiteTopbar } from './site-topbar';
 
 describe('SiteTopbar', () => {
@@ -12,14 +14,15 @@ describe('SiteTopbar', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
-  async function setup() {
+  async function setup(providers: Provider[] = []) {
     TestBed.configureTestingModule({
       imports: [SiteTopbar],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([]),
+        provideRouter([{ path: '**', children: [] }]),
         fakeRealtime().provider,
+        ...providers,
       ],
     });
     const fixture = TestBed.createComponent(SiteTopbar);
@@ -81,5 +84,41 @@ describe('SiteTopbar', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
     expect(el.querySelector('#topbar-theme')).toBeNull();
     expect(button('topbar-theme').textContent).toContain('Sombre');
+  });
+
+  it('n’affiche pas la cloche à un visiteur', async () => {
+    const { button } = await setup();
+    expect(button('topbar-notifications')).toBeNull();
+  });
+
+  it('affiche la cloche du client avec ses non-lues, et marque lue celle qu’il ouvre', async () => {
+    const center = {
+      enabled: signal(true),
+      unread: signal(2),
+      items: signal([
+        { id: 'n1', message: 'Commande n° 42 prête.', isSeen: false, link: '/commandes/o1' },
+        { id: 'n2', message: 'Commande n° 41 en préparation.', isSeen: true, link: null },
+      ]),
+      markSeen: vi.fn(),
+      markAllSeen: vi.fn(),
+    };
+    const { el, button, click } = await setup([{ provide: NotificationCenter, useValue: center }]);
+    const bell = button('topbar-notifications');
+    expect(bell.textContent).toContain('Notifications, 2 non lues');
+    expect(el.querySelector('.topbar__badge')?.textContent?.trim()).toBe('2');
+
+    click(bell);
+    const items = el.querySelectorAll<HTMLAnchorElement>('.notif-list__item');
+    expect(items[0].classList).toContain('notif-list__item--unread');
+    expect(items[0].textContent).toContain('Non lue');
+    expect(items[0].getAttribute('href')).toBe('/commandes/o1');
+    expect(items[1].getAttribute('href')).toBe('/commandes');
+
+    click([...el.querySelectorAll<HTMLButtonElement>('.notif-panel__all')][0]);
+    expect(center.markAllSeen).toHaveBeenCalled();
+
+    click(items[0]);
+    expect(center.markSeen).toHaveBeenCalledWith('n1');
+    expect(el.querySelector('#topbar-notifications')).toBeNull();
   });
 });

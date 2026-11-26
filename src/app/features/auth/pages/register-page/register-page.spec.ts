@@ -9,6 +9,7 @@ import { fakeRealtime } from '../../../../core/realtime/testing';
 import { GoogleSignIn } from '../../components/google-sign-in';
 import { flushRestaurantInfo, submitForm, text, typeInto } from '../../testing';
 import { RegisterPage } from './register-page';
+import { provideNoNotifications } from '../../../../shared/testing';
 
 describe('RegisterPage', () => {
   let fixture: ComponentFixture<RegisterPage>;
@@ -34,6 +35,7 @@ describe('RegisterPage', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         fakeRealtime().provider,
+        provideNoNotifications(),
         {
           provide: GoogleIdentityService,
           useValue: { enabled: true, renderButton: () => Promise.resolve() },

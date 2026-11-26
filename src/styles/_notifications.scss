@@ -1,0 +1,222 @@
+// Notifications du client : toasts en surimpression et cloche de la barre du haut.
+
+// Toasts : hors flux, ils ne décalent jamais la page. En bas sur téléphone (à portée du pouce),
+// en haut à droite sur grand écran, sous la barre du haut. Encre et fond de la surface du nouveau
+// design, déclarés ici : la pile est hors de `.brand`.
+.toast-stack {
+  --brand-bg: var(--flavour-bg);
+  --brand-ink: var(--flavour-ink);
+
+  position: fixed;
+  inset-inline: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 40;
+  display: grid;
+  gap: var(--space-2);
+  pointer-events: none;
+  color-scheme: light;
+
+  @media (min-width: 40rem) {
+    inset-inline: auto var(--space-5);
+    top: calc(var(--tap-min) + var(--space-6));
+    bottom: auto;
+    width: min(24rem, calc(100vw - 2 * var(--space-5)));
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border: var(--border-width-strong) solid var(--brand-ink);
+  border-radius: var(--brand-radius-lg);
+  background: var(--brand-bg);
+  box-shadow: 0 12px 28px var(--brand-shade);
+  color: var(--brand-ink);
+  pointer-events: auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: toast-in 0.25s ease-out;
+  }
+}
+
+// « Prête » : inversé ; l'icône cloche et le texte (« prête ») portent aussi l'information.
+.toast--ready {
+  background: var(--brand-ink);
+  color: var(--brand-bg);
+}
+
+.toast__message {
+  flex: 1;
+  margin: 0;
+  font-weight: var(--weight-bold);
+}
+
+.toast__action,
+.toast__close {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--brand-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--weight-bold);
+
+  &:hover {
+    background: var(--brand-shade-light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
+.toast__action {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+// Cloche : pastille du nombre de non-lues dans le coin du bouton (le nombre est aussi dans le
+// libellé accessible du bouton).
+.topbar__bell {
+  position: relative;
+}
+
+.topbar__badge {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.3rem;
+  border: 2px solid var(--brand-bg, var(--surface-page));
+  border-radius: 999px;
+  background: var(--brand-ink, var(--color-ink));
+  color: var(--brand-bg, var(--surface-page));
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+}
+
+.notif-panel {
+  width: min(22rem, calc(100vw - 2 * var(--space-4)));
+}
+
+.notif-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid currentColor;
+}
+
+.notif-panel__title {
+  margin: 0;
+  font-weight: var(--weight-bold);
+}
+
+.notif-panel__all,
+.notif-panel__orders {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--brand-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+
+  &:hover {
+    background: var(--brand-shade-light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
+.notif-panel__orders {
+  display: flex;
+  margin-top: var(--space-1);
+  border-top: var(--border-width) solid currentColor;
+  border-radius: 0;
+}
+
+.notif-panel__empty {
+  margin: 0;
+  padding: var(--space-4) var(--space-3);
+}
+
+.notif-list {
+  display: grid;
+  max-height: min(24rem, 60vh);
+  margin: 0;
+  padding: var(--space-1) 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.notif-list__item {
+  display: grid;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 0.75rem);
+  border-radius: var(--brand-radius);
+  color: inherit;
+  font-size: var(--text-sm);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--brand-shade-light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
+// Non lue : en gras avec une pastille (et « Non lue » pour les lecteurs d'écran).
+.notif-list__item--unread {
+  position: relative;
+  font-weight: var(--weight-bold);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--space-2) + 0.4em);
+    left: var(--space-3);
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.notif-list__time {
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
