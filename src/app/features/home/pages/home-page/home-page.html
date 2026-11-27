@@ -1,6 +1,12 @@
-<app-hero-carousel [title]="title()">
-  <app-site-topbar />
-</app-hero-carousel>
+@if (hero === 'slider') {
+  <app-hero-slider [title]="title()">
+    <app-site-topbar />
+  </app-hero-slider>
+} @else {
+  <app-hero-carousel [title]="title()">
+    <app-site-topbar />
+  </app-hero-carousel>
+}
 
 <section id="infos" class="brand visit" aria-labelledby="infos-title">
   <div class="waves" aria-hidden="true"></div>

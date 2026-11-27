@@ -13,6 +13,8 @@ import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { formatLocal, restaurantDay } from '../../../../shared/utils/restaurant-time';
 import { DAY_NAMES, WEEK } from '../../../../shared/utils/week';
 import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
+import { HeroSlider } from '../../components/hero-slider/hero-slider';
+import { HOME_HERO } from '../../home-hero';
 import { weeklyHours } from '../../home-format';
 
 /** Moyen de joindre le restaurant, affiché en carte cliquable dans la section Contact. */
@@ -24,15 +26,16 @@ interface ContactChannel {
   external: boolean;
 }
 
-/** Accueil : carrousel (nom, accès à la carte), état d'ouverture en direct, infos pratiques de l'API. */
+/** Accueil : carrousel ou diapositives selon `HOME_HERO` (nom, accès à la carte), état d'ouverture en direct, infos pratiques de l'API. */
 @Component({
   selector: 'app-home-page',
-  imports: [HeroCarousel, SiteTopbar, Icon, RouterLink],
+  imports: [HeroCarousel, HeroSlider, SiteTopbar, Icon, RouterLink],
   templateUrl: './home-page.html',
 })
 export class HomePage {
   private readonly store = inject(PublicStore);
   protected readonly session = inject(SessionService);
+  protected readonly hero = inject(HOME_HERO);
   private readonly opening = inject(OpeningStateService);
 
   protected readonly info = this.store.info.value;
