@@ -19,19 +19,27 @@
         />
         <div class="form__actions">
           @if (editing.product.groups.length > 0) {
-            <button type="button" class="btn" aria-haspopup="dialog" (click)="wizardOpen.set(true)">
-              Choisir les options
-            </button>
-          } @else {
             <button
               type="button"
-              class="btn"
-              [disabled]="editMissing().length > 0"
-              (click)="applyCustomization()"
+              class="btn btn--outline"
+              aria-haspopup="dialog"
+              (click)="wizardOpen.set(true)"
             >
-              Valider ces choix
+              @if (editMissing().length > 0) {
+                Choisir les options
+              } @else {
+                Modifier les options
+              }
             </button>
           }
+          <button
+            type="button"
+            class="btn"
+            [disabled]="editMissing().length > 0"
+            (click)="applyCustomization()"
+          >
+            Valider ces choix
+          </button>
           <button type="button" class="btn btn--outline" (click)="cancelCustomization()">
             Annuler
           </button>
@@ -47,8 +55,8 @@
               [product]="editing.product"
               [(state)]="editState"
               [withNote]="false"
-              submitLabel="Valider ces choix"
-              (submit)="applyCustomization()"
+              submitLabel="Valider les options"
+              (submit)="optionsDone()"
               (back)="onWizardClosed()"
             />
           }

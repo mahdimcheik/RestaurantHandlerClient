@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { NO_CUSTOMIZATION, ProductLine } from '../../../../shared/ordering/cart';
 import {
+  chosenLabels,
   CustomizationState,
   EMPTY_STATE,
   missingGroups,
@@ -11,6 +12,7 @@ import {
   toCustomization,
 } from '../../../../shared/ordering/customization';
 import { LineNote } from '../../../../shared/ordering/line-note';
+import { ChoiceGroup } from '../../../../shared/ordering/model';
 import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
@@ -79,13 +81,14 @@ export class ProductPage {
     return product ? missingGroups(product, this.state()) : [];
   });
   /**
-   * Assistant des groupes d'options, par-dessus la fiche : ouvert d'office dès qu'un produit
-   * commandable à options s'affiche (pas de nouveau à une relecture de la carte).
+   * Assistant des groupes d'options, par-dessus la fiche : ouvert d'office dès qu'un nouveau
+   * produit commandable à options s'affiche (pas à la retouche d'une ligne, ni à une relecture
+   * de la carte). Il se referme sur la fiche, où l'on remplace un ingrédient et ajoute au panier.
    */
   protected readonly wizardOpen = linkedSignal<string, boolean>({
     source: () => {
       const product = this.product();
-      const ready = !!product?.isAvailable && product.groups.length > 0;
+      const ready = !this.ligne() && !!product?.isAvailable && product.groups.length > 0;
       return `${this.id()}|${this.ligne() ?? ''}|${ready}`;
     },
     computation: (key) => key.endsWith('|true'),
@@ -109,6 +112,10 @@ export class ProductPage {
     const { modifications, optionChoices } = this.customization();
     return [{ productId: product.id, quantity: this.quantity(), modifications, optionChoices }];
   });
+  protected chosen(group: ChoiceGroup): string[] {
+    return chosenLabels(group, this.state());
+  }
+
   protected readonly issue = computed(() => this.quote.issues()[0]?.message ?? this.quote.error());
 
   constructor() {

@@ -48,9 +48,8 @@ describe('ProductPage', () => {
 
   afterEach(() => http.verify());
 
-  it('ouvre d’office le choix des options, pas à pas, puis ajoute la ligne personnalisée au prix du devis', async () => {
+  it('ouvre d’office le choix des options, pas à pas, revient à la fiche puis ajoute la ligne au prix du devis', async () => {
     expect(text(fixture)).toContain('Burger');
-    expect(buttonWith('Ajouter au panier')).toBeUndefined();
 
     const dialog = (fixture.nativeElement as HTMLElement).querySelector('dialog')!;
     expect(dialog.open).toBe(true);
@@ -85,12 +84,16 @@ describe('ProductPage', () => {
       }),
     );
     await settle();
+    expect(buttonWith('Valider les options')!.textContent).toContain('12,00');
+    buttonWith('Valider les options')!.click();
+    await settle();
+    expect(dialog.open).toBe(false);
+    expect(text(fixture)).toContain('Grande');
     expect(addButton().disabled).toBe(false);
     expect(addButton().textContent).toContain('12,00');
-    expect(fixture.nativeElement.querySelector('.wizard')).not.toBeNull();
 
     const note = (fixture.nativeElement as HTMLElement).querySelector<HTMLTextAreaElement>(
-      '.wizard textarea',
+      '.sheet textarea',
     )!;
     note.value = 'Bien cuit';
     note.dispatchEvent(new Event('input'));

@@ -162,6 +162,13 @@ export class MenuPage {
     this.editing.set(null);
   }
 
+  /** Options choisies : retour à la composition du produit (remplacements), puis « Valider ». */
+  protected optionsDone(): void {
+    this.editing.update((editing) => (editing ? { ...editing, quick: false } : editing));
+    this.wizardOpen.set(false);
+    queueMicrotask(() => this.heading()?.nativeElement.focus());
+  }
+
   /** Assistant refermé sans valider : retour à la composition, ou au menu s'il s'est ouvert seul. */
   protected onWizardClosed(): void {
     if (this.editing()?.quick) {

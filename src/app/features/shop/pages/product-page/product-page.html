@@ -32,55 +32,71 @@
           [(state)]="state"
         />
 
-        @if (product.groups.length === 0) {
-          <app-line-note [(note)]="note" />
-        }
-        <div class="sheet__order">
-          @if (product.groups.length > 0) {
+        @if (product.groups.length > 0) {
+          <fieldset class="picker" [class.picker--missing]="missing().length > 0">
+            <legend class="picker__legend">Options</legend>
+            <ul class="picker__rows">
+              @for (group of product.groups; track group.id) {
+                <li class="picker__row">
+                  <span>{{ group.label }}</span>
+                  <span class="picker__name">
+                    @if (chosen(group).length > 0) {
+                      {{ chosen(group).join(', ') }}
+                    } @else if (group.min > 0) {
+                      <span class="badge badge--danger">À choisir</span>
+                    } @else {
+                      Aucun
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
             <button
               type="button"
-              class="btn-brand btn-brand--solid sheet__add"
+              class="btn btn--outline"
               aria-haspopup="dialog"
               (click)="wizardOpen.set(true)"
             >
-              @if (line()) {
-                Modifier les options
-              } @else {
+              @if (missing().length > 0) {
                 Choisir les options
-              }
-            </button>
-          } @else {
-            <button
-              type="button"
-              class="btn-brand btn-brand--solid sheet__add"
-              [disabled]="!canAdd()"
-              (click)="add()"
-            >
-              @if (line()) {
-                Mettre à jour
               } @else {
-                Ajouter au panier
-              }
-              @if (quote.total() !== null) {
-                <span aria-live="polite"> · {{ quote.total() | euros }}</span>
+                Modifier les options
               }
             </button>
-          }
-        </div>
-        @if (issue() && product.groups.length === 0) {
+          </fieldset>
+        }
+        <app-line-note [(note)]="note" />
+        @if (issue()) {
           <p class="alert alert--error" role="alert">{{ issue() }}</p>
         }
+        <div class="sheet__order">
+          <button
+            type="button"
+            class="btn-brand btn-brand--solid sheet__add"
+            [disabled]="!canAdd()"
+            (click)="add()"
+          >
+            @if (line()) {
+              Mettre à jour
+            } @else {
+              Ajouter au panier
+            }
+            @if (quote.total() !== null) {
+              <span aria-live="polite">&nbsp;· {{ quote.total() | euros }}</span>
+            }
+          </button>
+        </div>
 
         <app-order-dialog labelledBy="wizard-title" [(open)]="wizardOpen">
           @if (wizardOpen()) {
             <app-options-wizard
               [product]="product"
               [(state)]="state"
-              [(note)]="note"
+              [withNote]="false"
               [total]="quote.total()"
               [issue]="issue()"
-              [submitLabel]="line() ? 'Mettre à jour' : 'Ajouter au panier'"
-              (submit)="add()"
+              submitLabel="Valider les options"
+              (submit)="wizardOpen.set(false)"
               (back)="wizardOpen.set(false)"
             />
           }
