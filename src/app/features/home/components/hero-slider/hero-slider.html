@@ -1,0 +1,173 @@
+<section
+  #section
+  class="brand brand-slider"
+  [class.brand-slider--mobile]="scale().mobile"
+  [class.brand-slider--intro]="intro()"
+  [class.brand-slider--still]="reducedMotion()"
+  [style.--brand-bg]="'var(--slide-' + activeTone() + '-bg)'"
+  [style.--brand-ink]="'var(--slide-' + activeTone() + '-ink)'"
+  aria-labelledby="hero-title"
+  (keydown)="onKeydown($event)"
+>
+  <h1 id="hero-title" class="visually-hidden">{{ title() }}</h1>
+
+  <div
+    #stage
+    class="brand-slider__stage"
+    aria-hidden="true"
+    [style.--su.px]="scale().u"
+    [style.--fy.px]="scale().offsetY"
+    (pointerdown)="onPointerDown($event)"
+  >
+    @for (view of slides(); track view.slide.tone; let first = $first) {
+      <div
+        class="brand-slider__slide"
+        [class.brand-slider__slide--hidden]="!view.visible"
+        [style.z-index]="view.z"
+        [style.clip-path]="view.clip"
+        [style.background-color]="'var(--slide-' + view.slide.tone + '-bg)'"
+      >
+        <div class="brand-slider__frame">
+          <div
+            class="brand-slider__layer"
+            data-layer="word"
+            [style.translate]="view.translate.word"
+          >
+            <p
+              class="brand-slider__word"
+              [style.--fs]="view.word.size"
+              [style.--top]="view.word.top"
+              [style.letter-spacing]="view.word.spacing"
+            >
+              {{ view.slide.word }}
+            </p>
+          </div>
+
+          <div
+            class="brand-slider__layer"
+            data-layer="shadow"
+            [style.translate]="view.translate.shadow"
+          >
+            <div
+              class="brand-slider__shadow"
+              [style.--x]="view.shadow.x"
+              [style.--y]="view.shadow.y"
+              [style.--w]="view.shadow.width"
+              [style.--h]="view.shadow.height"
+            ></div>
+          </div>
+
+          <div
+            class="brand-slider__layer"
+            data-layer="dish"
+            [style.translate]="view.translate.dish"
+          >
+            <img
+              class="brand-slider__dish"
+              [ngSrc]="view.slide.dish.image"
+              [width]="view.slide.dish.width"
+              [height]="view.slide.dish.height"
+              [priority]="first"
+              disableOptimizedSrcset
+              alt=""
+              [style.--x]="view.dish.x"
+              [style.--y]="view.dish.y"
+              [style.--w]="view.dish.width"
+              [style.--h]="view.dish.height"
+            />
+          </div>
+
+          @for (layer of ['fruit', 'corner']; track layer) {
+            <div
+              class="brand-slider__layer"
+              [class.brand-slider__layer--corner]="layer === 'corner'"
+              [attr.data-layer]="layer"
+              [style.translate]="layer === 'fruit' ? view.translate.fruit : view.translate.corner"
+            >
+              @for (piece of layer === 'fruit' ? view.fruit : view.corner; track $index) {
+                <div
+                  class="brand-slider__piece"
+                  [class.brand-slider__piece--mirror]="piece.mirror"
+                  [style.--x]="piece.x"
+                  [style.--y]="piece.y"
+                  [style.--w]="piece.size"
+                  [style.--h]="piece.size"
+                >
+                  <div
+                    class="brand-slider__piece-inner"
+                    [style.background-image]="piece.image"
+                    [style.--rot]="piece.rotate"
+                    [style.animation-duration]="piece.duration"
+                    [style.animation-delay]="piece.delay"
+                  ></div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <ng-content />
+
+  <div class="brand-slider__tabs" role="group" aria-label="Choisir un plat" data-rise="330">
+    @for (slide of data; track slide.tone; let i = $index) {
+      <button
+        #tab
+        type="button"
+        class="brand-slider__tab"
+        [attr.aria-current]="i === active() ? 'true' : null"
+        (click)="select(i)"
+      >
+        {{ slide.word }}
+      </button>
+    }
+    <span
+      class="brand-slider__underline"
+      aria-hidden="true"
+      [style.width.px]="underline().width"
+      [style.transform]="'translateX(' + underline().x + 'px)'"
+    ></span>
+  </div>
+
+  <button
+    type="button"
+    class="brand-slider__arrow brand-slider__arrow--prev"
+    aria-label="Plat précédent"
+    data-rise="490"
+    (click)="previous()"
+  >
+    <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+      <path d="M24 14H4 M12 6l-8 8 8 8" />
+    </svg>
+  </button>
+
+  @if (session.isManager()) {
+    <a class="brand-slider__cta" routerLink="/carte" data-rise="570">Voir la carte</a>
+  } @else {
+    <a class="brand-slider__cta" routerLink="/commander" data-rise="570">Commander</a>
+  }
+
+  <button type="button" class="brand-slider__pause" data-rise="650" (click)="togglePlaying()">
+    @if (playing()) {
+      <app-icon name="pause" />
+      <span class="visually-hidden">Arrêter le défilement</span>
+    } @else {
+      <app-icon name="play" />
+      <span class="visually-hidden">Relancer le défilement</span>
+    }
+  </button>
+
+  <button
+    type="button"
+    class="brand-slider__arrow brand-slider__arrow--next"
+    aria-label="Plat suivant"
+    data-rise="650"
+    (click)="next()"
+  >
+    <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+      <path d="M4 14h20 M16 6l8 8-8 8" />
+    </svg>
+  </button>
+</section>

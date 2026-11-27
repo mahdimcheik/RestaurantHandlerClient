@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { RestaurantInfo } from '../../../../core/api/generated';
 import { fakeRealtime } from '../../../../core/realtime/testing';
 import { envelope, text } from '../../../../shared/testing';
+import { HOME_HERO, HomeHero } from '../../home-hero';
 import { HomePage } from './home-page';
 
 const info: RestaurantInfo = {
@@ -22,17 +23,22 @@ const info: RestaurantInfo = {
   ],
 };
 
+function configure(hero: HomeHero) {
+  TestBed.configureTestingModule({
+    imports: [HomePage],
+    providers: [
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      provideRouter([]),
+      fakeRealtime().provider,
+      { provide: HOME_HERO, useValue: hero },
+    ],
+  });
+}
+
 describe('HomePage', () => {
   it('affiche le carrousel au nom du restaurant, son état d’ouverture et les infos pratiques', async () => {
-    TestBed.configureTestingModule({
-      imports: [HomePage],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideRouter([]),
-        fakeRealtime().provider,
-      ],
-    });
+    configure('carousel');
     const fixture = TestBed.createComponent(HomePage);
     const http = TestBed.inject(HttpTestingController);
     TestBed.tick();
@@ -64,6 +70,26 @@ describe('HomePage', () => {
     expect(cards[1].getAttribute('href')).toContain(encodeURIComponent('3 place du Marché'));
     expect(cards[1].getAttribute('target')).toBe('_blank');
     expect(el.querySelector('#contact a[href^="mailto:"]')).toBeNull();
+    http.verify();
+  });
+
+  it('affiche les diapositives quand HOME_HERO vaut « slider »', async () => {
+    configure('slider');
+    const fixture = TestBed.createComponent(HomePage);
+    const http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    http.expectOne('/restaurant/info').flush(envelope(info));
+    http
+      .expectOne('/restaurant/status')
+      .flush(envelope({ status: 'Open', closesAt: '2026-11-23T13:30:00Z', asapDelayMinutes: 15 }));
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('.showcase')).toBeNull();
+    expect(el.querySelectorAll('h1').length).toBe(1);
+    expect(el.querySelector('.brand-slider h1')?.textContent).toContain('Chez Nino');
+    expect(el.querySelector('.brand-slider .topbar')).not.toBeNull();
+    expect(el.querySelector('#infos')).not.toBeNull();
     http.verify();
   });
 });

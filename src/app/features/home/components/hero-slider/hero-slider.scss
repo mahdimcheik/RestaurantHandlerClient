@@ -1,0 +1,294 @@
+// Bloc d'accueil « diapositives » (`HOME_HERO = 'slider'`). Exception aux styles globaux : ce
+// bloc est facultatif ; ses classes (BEM, sans encapsulation) et la police Poppins ne sont
+// chargées qu'avec lui, dans le chunk paresseux de l'accueil, plutôt que dans le bundle initial.
+@use '@fontsource/poppins/latin-500.css';
+@use '@fontsource/poppins/latin-600.css';
+@use '@fontsource/poppins/latin-700.css';
+
+// Deux unités : `--su`, pixel de la maquette 1440 × 900 (scène, calculée par le composant), et
+// `--n`, pixel des commandes posées sur les bords de l'écran. Positions et tailles en pixels de
+// maquette dans `--x`, `--y`, `--w`, `--h` (posées par le composant). Morceaux flottants : une
+// image d'ingrédient par morceau, ajustée dans une boîte carrée.
+
+.brand-slider {
+  --n: clamp(0.5px, min(100vw / 1440, 100vh / 900), 1.3px);
+  // Unité de la barre du haut projetée.
+  --u: var(--n);
+  --slider-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --slider-bottom: var(--tabbar-space, 0px);
+  --slider-arrow: max(var(--tap-min), calc(52 * var(--n)));
+
+  height: 100svh;
+  // Téléphone en paysage : tout doit tenir dans la hauteur de l'écran.
+  min-height: 18rem;
+  overflow: hidden;
+  font-family: var(--font-slider);
+  touch-action: pan-y;
+  transition: color 0.6s var(--slider-ease);
+}
+
+.brand-slider__stage {
+  position: absolute;
+  inset: 0 0 var(--slider-bottom) 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+.brand-slider__slide {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.brand-slider__slide--hidden {
+  visibility: hidden;
+}
+
+.brand-slider__frame {
+  position: absolute;
+  top: calc(50% - 450 * var(--su) + var(--fy));
+  left: calc(50% - 720 * var(--su));
+  width: calc(1440 * var(--su));
+  height: calc(900 * var(--su));
+}
+
+.brand-slider__layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.brand-slider__layer--corner {
+  filter: blur(calc(9 * var(--su)));
+}
+
+.brand-slider__word {
+  position: absolute;
+  top: calc(var(--top) * var(--su));
+  right: 0;
+  left: 0;
+  margin: 0;
+  color: var(--slide-word);
+  font-size: calc(var(--fs) * var(--su));
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+}
+
+.brand-slider__shadow,
+.brand-slider__dish,
+.brand-slider__piece {
+  position: absolute;
+  top: calc(var(--y) * var(--su));
+  left: calc(var(--x) * var(--su));
+  width: calc(var(--w) * var(--su));
+  height: calc(var(--h) * var(--su));
+}
+
+.brand-slider__shadow {
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--slide-shadow), transparent);
+  filter: blur(calc(4 * var(--su)));
+}
+
+.brand-slider__dish {
+  max-width: none;
+  object-fit: contain;
+}
+
+.brand-slider__piece--mirror {
+  transform: scaleX(-1);
+}
+
+.brand-slider__piece-inner {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  animation: slider-bob 4s ease-in-out infinite alternate;
+}
+
+@keyframes slider-bob {
+  from {
+    transform: translateY(calc(-7 * var(--su))) rotate(calc(var(--rot) - 3deg));
+  }
+
+  to {
+    transform: translateY(calc(7 * var(--su))) rotate(calc(var(--rot) + 3deg));
+  }
+}
+
+// Commandes, posées sur les bords de l'écran (unité `--n`).
+.brand-slider__tabs,
+.brand-slider__cta,
+.brand-slider__arrow,
+.brand-slider__pause {
+  position: absolute;
+  z-index: 10;
+}
+
+.brand-slider__tabs {
+  top: calc(110 * var(--n));
+  left: 50%;
+  display: flex;
+  gap: calc(88 * var(--n));
+  font-size: max(0.875rem, calc(21 * var(--n)));
+  font-weight: 500;
+  transform: translateX(-50%);
+}
+
+.brand-slider__tab,
+.brand-slider__arrow,
+.brand-slider__pause {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.brand-slider__tab {
+  min-width: 0;
+  min-height: var(--tap-min);
+  padding: calc(6 * var(--n)) 0;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.brand-slider__underline {
+  position: absolute;
+  bottom: calc(-2 * var(--n));
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.6s var(--slider-ease),
+    width 0.6s var(--slider-ease);
+}
+
+.brand-slider__cta {
+  bottom: calc(36 * var(--n) + var(--slider-bottom));
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: calc(10 * var(--n)) calc(16 * var(--n));
+  color: inherit;
+  font-size: max(0.875rem, calc(21 * var(--n)));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.brand-slider__arrow,
+.brand-slider__pause {
+  bottom: calc(30 * var(--n) + var(--slider-bottom));
+  display: grid;
+  place-items: center;
+  width: var(--slider-arrow);
+  height: var(--slider-arrow);
+  padding: 0;
+}
+
+.brand-slider__arrow svg {
+  width: max(1.5rem, calc(28 * var(--n)));
+  height: max(1.5rem, calc(28 * var(--n)));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-slider__arrow--prev {
+  left: calc(36 * var(--n));
+}
+
+.brand-slider__arrow--next {
+  right: calc(36 * var(--n));
+}
+
+.brand-slider__pause {
+  right: calc(36 * var(--n) + var(--slider-arrow));
+}
+
+// Avant l'ouverture : rien ne s'affiche tant que la police n'est pas là.
+.brand-slider--intro {
+  [data-layer],
+  [data-rise] {
+    opacity: 0;
+  }
+}
+
+// Téléphone et tablette en portrait (classe posée par le composant, même seuil que la scène).
+.brand-slider--mobile {
+  --n: 1px;
+  --slider-arrow: 48px;
+
+  .brand-slider__tabs {
+    top: 72px;
+    gap: clamp(10px, 4vw, 22px);
+    font-size: 0.9375rem;
+  }
+
+  .brand-slider__cta {
+    bottom: calc(14px + var(--slider-bottom));
+    font-size: 0.9375rem;
+  }
+
+  .brand-slider__arrow,
+  .brand-slider__pause {
+    bottom: calc(12px + var(--slider-bottom));
+  }
+
+  .brand-slider__arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .brand-slider__arrow--prev {
+    left: 8px;
+  }
+
+  .brand-slider__arrow--next {
+    right: 8px;
+  }
+
+  .brand-slider__pause {
+    right: calc(8px + var(--slider-arrow));
+  }
+}
+
+// Mouvement réduit : pas de balancement ni de glissé du soulignement.
+.brand-slider--still {
+  .brand-slider__piece-inner {
+    animation: none;
+    transform: rotate(var(--rot));
+  }
+
+  .brand-slider__underline {
+    transition: none;
+  }
+}
