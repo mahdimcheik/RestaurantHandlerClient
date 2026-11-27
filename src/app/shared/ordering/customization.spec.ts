@@ -8,7 +8,11 @@ import {
   stateOf,
   stepChoice,
   toCustomization,
+  unavailableMessage,
+  withForcedRemovals,
+  lineWithForcedRemovals,
 } from './customization';
+import { OrderLine } from './cart';
 import { fromManageProduct, fromPublicProduct, replacementSurcharge } from './model';
 
 const manageProduct = (id: string, name: string, extra: Partial<ProductDetails> = {}) =>
@@ -153,5 +157,80 @@ describe('customization', () => {
       150,
     );
     expect(replacementSurcharge(cheddar, { id: 'tomate', name: 'Tomate', priceCents: 50 })).toBe(0);
+  });
+});
+
+describe('rupture d’un ingrédient retirable', () => {
+  const pizza = manageProduct('p2', 'Reine', {
+    composition: {
+      ingredients: [
+        { ingredientId: 'tomate', name: 'Tomate', isRemovable: true, isAvailable: false },
+        { ingredientId: 'jambon', name: 'Jambon', isRemovable: true, isAvailable: true },
+      ],
+    },
+  });
+  const products = new Map([[pizza.id, pizza]]);
+  const plain = { modifications: [], optionChoices: [], labels: [] };
+
+  it('retire d’office l’ingrédient en rupture sur la fiche', () => {
+    const result = toCustomization(pizza, { ingredients: {}, choices: {} }, () => '');
+    expect(result.modifications).toEqual([{ type: 'Remove', ingredientId: 'tomate' }]);
+    expect(result.labels).toEqual(['Sans Tomate (rupture)']);
+  });
+
+  it('garde le remplacement choisi à la place du retrait', () => {
+    const state = {
+      ingredients: { tomate: { removed: false, replacementId: 'chevre' } },
+      choices: {},
+    };
+    const result = toCustomization(pizza, state, () => 'Chèvre');
+    expect(result.modifications).toEqual([
+      { type: 'Replace', ingredientId: 'tomate', substituteIngredientId: 'chevre' },
+    ]);
+  });
+
+  it('ajoute le retrait à une ligne nue du panier, une seule fois', () => {
+    const forced = withForcedRemovals(plain, pizza);
+    expect(forced.modifications).toEqual([{ type: 'Remove', ingredientId: 'tomate' }]);
+    expect(withForcedRemovals(forced, pizza)).toBe(forced);
+  });
+
+  it('ne touche pas une ligne qui remplace déjà l’ingrédient', () => {
+    const replaced = {
+      ...plain,
+      modifications: [
+        { type: 'Replace' as const, ingredientId: 'tomate', substituteIngredientId: 'chevre' },
+      ],
+    };
+    expect(withForcedRemovals(replaced, pizza)).toBe(replaced);
+  });
+
+  it('applique le retrait aux produits d’un menu', () => {
+    const line: OrderLine = {
+      kind: 'menu',
+      key: 'k',
+      menuId: 'm1',
+      name: 'Menu midi',
+      quantity: 1,
+      choices: [{ slotId: 's1', productId: 'p2', productName: 'Reine', customization: plain }],
+    };
+    const served = lineWithForcedRemovals(line, products);
+    expect(served.kind === 'menu' && served.choices[0].customization.modifications).toEqual([
+      { type: 'Remove', ingredientId: 'tomate' },
+    ]);
+  });
+
+  it('signale une ligne dont le produit n’est plus disponible', () => {
+    const line: OrderLine = {
+      kind: 'product',
+      key: 'k',
+      productId: 'p2',
+      name: 'Reine',
+      quantity: 1,
+      customization: plain,
+    };
+    expect(unavailableMessage(line, products)).toBeNull();
+    const gone = new Map([[pizza.id, { ...pizza, isAvailable: false }]]);
+    expect(unavailableMessage(line, gone)).toBe("Reine n'est plus disponible.");
   });
 });

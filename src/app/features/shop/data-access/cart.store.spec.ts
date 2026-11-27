@@ -85,4 +85,34 @@ describe('CartStore', () => {
     expect(cart.lines().map((line) => line.name)).toEqual(['Burger']);
     expect(cart.removed()).toEqual(['Wrap']);
   });
+
+  it('envoie le retrait imposé d’un ingrédient en rupture et signale un produit indisponible', async () => {
+    const cart = setup();
+    cart.addProduct({ id: 'p1', name: 'Reine' });
+    cart.addProduct({ id: 'p2', name: 'Calzone' });
+
+    const ruptured = card(['p1', 'p2']);
+    const [reine, calzone] = ruptured.categories[0].products;
+    reine.ingredients = [
+      {
+        ingredientId: 'tomate',
+        name: 'Tomate',
+        isRemovable: true,
+        isForcedRemoved: true,
+        priceCents: 50,
+      },
+    ];
+    calzone.isAvailable = false;
+    TestBed.inject(PublicStore).card.load();
+    TestBed.tick();
+    TestBed.inject(HttpTestingController).expectOne('/menu').flush(envelope(ruptured));
+    await new Promise((resolve) => setTimeout(resolve));
+    TestBed.tick();
+
+    expect(cart.cartLines()[0].modifications).toEqual([{ type: 'Remove', ingredientId: 'tomate' }]);
+    expect(cart.labelsOf(cart.lines()[0])).toEqual(['Sans Tomate (rupture)']);
+    const stored = cart.lines()[0];
+    expect(stored.kind === 'product' ? stored.customization.modifications : null).toEqual([]);
+    expect(cart.unavailable()).toEqual([{ lineIndex: 1, message: "p2 n'est plus disponible." }]);
+  });
 });

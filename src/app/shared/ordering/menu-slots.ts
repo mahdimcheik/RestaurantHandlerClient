@@ -1,7 +1,14 @@
 import { Component, input, model, output } from '@angular/core';
 import { EurosPipe } from '../utils/money';
 import { MenuChoice, NO_CUSTOMIZATION } from './cart';
-import { isCustomizable, missingGroups, requiresChoice, ruleText, stateOf } from './customization';
+import {
+  isCustomizable,
+  missingGroups,
+  requiresChoice,
+  ruleText,
+  stateOf,
+  withForcedRemovals,
+} from './customization';
 import { ComposableMenu, CustomizableProduct, MenuOption, MenuSlot } from './model';
 
 /** Demande de personnalisation d'un produit choisi ; `quick` à l'ajout d'un choix obligatoire. */
@@ -37,7 +44,11 @@ export function menuComplete(
 ): boolean {
   return (
     menu.slots.every((slot) => slotComplete(choices, slot)) &&
-    !choices.some((choice) => choiceNeedsOptions(choice, products))
+    !choices.some(
+      (choice) =>
+        choiceNeedsOptions(choice, products) ||
+        products.get(choice.productId)?.isAvailable === false,
+    )
   );
 }
 
@@ -74,7 +85,7 @@ export function prefilledChoices(menu: ComposableMenu): MenuChoice[] {
               type="button"
               class="tile"
               [attr.aria-pressed]="isChosen(slot, option)"
-              [disabled]="!option.isAvailable"
+              [disabled]="!option.isAvailable && !isChosen(slot, option)"
               (click)="toggle(slot, option)"
             >
               <span class="tile__name">{{ option.name }}</span>
@@ -92,8 +103,9 @@ export function prefilledChoices(menu: ComposableMenu): MenuChoice[] {
               <p class="picker__chosen">
                 <span>
                   {{ choice.productName }}
-                  @if (choice.customization.labels.length > 0) {
-                    — {{ choice.customization.labels.join(', ') }}
+                  @let labels = labelsOf(choice, product);
+                  @if (labels.length > 0) {
+                    — {{ labels.join(', ') }}
                   }
                   @if (needsOptions(choice)) {
                     <span class="badge badge--danger">Choix à faire</span>
@@ -121,6 +133,10 @@ export class MenuSlots {
   readonly customize = output<CustomizeRequest>();
 
   protected readonly canCustomize = isCustomizable;
+
+  protected labelsOf(choice: MenuChoice, product: CustomizableProduct): string[] {
+    return withForcedRemovals(choice.customization, product).labels;
+  }
 
   protected slotChoices(slot: MenuSlot): MenuChoice[] {
     return choicesOf(this.choices(), slot);

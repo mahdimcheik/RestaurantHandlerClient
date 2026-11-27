@@ -1,6 +1,7 @@
-import { DOCUMENT, effect, inject, Service, signal, untracked } from '@angular/core';
+import { computed, DOCUMENT, effect, inject, Service, signal, untracked } from '@angular/core';
 import { CartIssueDto } from '../../../core/api/generated';
-import { Cart, OrderLine } from '../../../shared/ordering/cart';
+import { Cart, lineLabels, OrderLine, toCartLines } from '../../../shared/ordering/cart';
+import { lineWithForcedRemovals, unavailableMessage } from '../../../shared/ordering/customization';
 import { PublicStore } from '../../../shared/services/public-store.service';
 
 export const CART_STORAGE_KEY = 'cart.v1';
@@ -40,6 +41,26 @@ export class CartStore extends Cart {
   readonly issues = signal<CartIssueDto[]>([]);
   /** Lignes retirées car absentes de la carte, à annoncer. */
   readonly removed = signal<string[]>([]);
+
+  /** Lignes telles qu'elles seront servies : ingrédients en rupture retirés d'office (R7). */
+  private readonly served = computed(() => {
+    const products = this.publicStore.products();
+    return this.lines().map((line) => lineWithForcedRemovals(line, products));
+  });
+  override readonly cartLines = computed(() => toCartLines(this.served()));
+  /** Lignes dont un produit est en rupture d'après la carte, sans attendre le devis. */
+  readonly unavailable = computed<CartIssueDto[]>(() => {
+    const products = this.publicStore.products();
+    return this.lines().flatMap((line, lineIndex) => {
+      const message = unavailableMessage(line, products);
+      return message ? [{ lineIndex, message }] : [];
+    });
+  });
+
+  /** Personnalisations d'une ligne en clair, retraits imposés compris (ticket, récapitulatif). */
+  labelsOf(line: OrderLine): string[] {
+    return lineLabels(lineWithForcedRemovals(line, this.publicStore.products()));
+  }
 
   constructor() {
     super();

@@ -127,6 +127,6 @@ describe('ProductPage', () => {
     const options = [...(fixture.nativeElement as HTMLElement).querySelectorAll('option')].map(
       (option) => option.textContent?.replace(/\s+/g, ' ').trim(),
     );
-    expect(options).toContain('Remplacer par Chèvre (+ 1,50 €)');
+    expect(options).toContain('Chèvre (+ 1,50 €)');
   });
 });

@@ -90,7 +90,9 @@
       <p class="ticket__total" aria-live="polite">
         <span>Total TTC</span>
         <span class="ticket__total-value">
-          @if (quote.total() === null && !quoteError() && !blocked()) {
+          @if (blocked() || quoteError()) {
+            Prix indisponible
+          } @else if (quote.total() === null) {
             Calcul…
           } @else {
             {{ quote.total() | euros }}

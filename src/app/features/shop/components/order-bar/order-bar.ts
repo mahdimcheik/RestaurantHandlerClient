@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { CartQuote } from '../../data-access/cart-quote';
@@ -27,7 +27,9 @@ import { CartStore } from '../../data-access/cart.store';
         }
       </span>
       <span class="order-bar__total">
-        @if (quote.total() === null) {
+        @if (blocked()) {
+          À corriger
+        } @else if (quote.total() === null) {
           Calcul…
         } @else {
           {{ quote.total() | euros }}
@@ -40,6 +42,14 @@ import { CartStore } from '../../data-access/cart.store';
 export class OrderBar {
   protected readonly cart = inject(CartStore);
   protected readonly quote = inject(CartQuote).quote;
+  /** Devis refusé ou impossible : pas de total à attendre, le détail dit quoi corriger. */
+  protected readonly blocked = computed(
+    () =>
+      this.quote.issues().length > 0 ||
+      this.cart.issues().length > 0 ||
+      this.cart.unavailable().length > 0 ||
+      !!this.quote.error(),
+  );
 
   /** Détail de la commande ouvert. */
   readonly expanded = input(false);

@@ -36,6 +36,9 @@ import { Dish } from '../../data-access/card-sections';
         @if (item.description) {
           <span class="dish-card__description">{{ item.description }}</span>
         }
+        @if (item.isAvailable && forcedRemovals()) {
+          <span class="dish-card__notice">Servi sans {{ forcedRemovals() }} (rupture)</span>
+        }
         @if (item.isAvailable) {
           <span class="dish-card__price">{{ item.priceCents | euros }}</span>
         } @else if (item.isMenu) {
@@ -75,6 +78,13 @@ import { Dish } from '../../data-access/card-sections';
 })
 export class DishCard {
   readonly dish = input.required<Dish>();
+  /** Ingrédients en rupture retirés d'office (« tomate, oignon »), vide sinon. */
+  protected readonly forcedRemovals = computed(() =>
+    this.dish()
+      .ingredients.filter((ingredient) => ingredient.isForcedRemoved)
+      .map((ingredient) => ingredient.name.toLowerCase())
+      .join(', '),
+  );
   /** Quantité au panier ; absent (carte à consulter) : pas de compteur. */
   readonly count = input<number | null>(null);
   readonly increment = output<void>();

@@ -25,26 +25,31 @@ import { OptionGroup } from './option-group';
         <ul class="picker__rows">
           @for (ingredient of removable(); track ingredient.id) {
             <li class="picker__row">
-              <button
-                type="button"
-                class="chip"
-                [attr.aria-pressed]="isRemoved(ingredient.id)"
-                (click)="toggleRemove(ingredient.id)"
-              >
-                Sans {{ ingredient.name }}
-              </button>
-              @if (!ingredient.isAvailable) {
-                <span class="badge badge--danger">Rupture</span>
-              }
+              <span class="picker__name">
+                <button
+                  type="button"
+                  class="chip"
+                  [attr.aria-pressed]="isRemoved(ingredient)"
+                  [disabled]="!ingredient.isAvailable"
+                  (click)="toggleRemove(ingredient.id)"
+                >
+                  Sans {{ ingredient.name }}
+                </button>
+                @if (!ingredient.isAvailable) {
+                  <span class="badge badge--danger">Rupture</span>
+                }
+              </span>
               @if (candidates(ingredient).length > 0) {
                 <label class="picker__replace">
-                  <span class="visually-hidden">Remplacer {{ ingredient.name }} par</span>
+                  <span>Remplacer {{ ingredient.name }} par</span>
                   <select
                     #replace
                     [value]="replacementOf(ingredient.id)"
                     (change)="setReplacement(ingredient.id, replace.value)"
                   >
-                    <option value="">Pas de remplacement</option>
+                    <option value="">
+                      {{ ingredient.isAvailable ? 'Pas de remplacement' : 'Rien (servi sans)' }}
+                    </option>
                     @for (candidate of candidates(ingredient); track candidate.id) {
                       <option
                         [value]="candidate.id"
@@ -95,13 +100,13 @@ export class ProductOptions {
 
   protected replaceText(ingredient: ProductIngredient, candidate: ReplacementOption): string {
     const extra = replacementSurcharge(ingredient, candidate);
-    return extra
-      ? `Remplacer par ${candidate.name} (+ ${formatEuros(extra)})`
-      : `Remplacer par ${candidate.name}`;
+    return extra ? `${candidate.name} (+ ${formatEuros(extra)})` : candidate.name;
   }
 
-  protected isRemoved(ingredientId: string): boolean {
-    return this.state().ingredients[ingredientId]?.removed ?? false;
+  /** Retiré par le client, ou d'office (rupture) tant qu'il n'est pas remplacé. */
+  protected isRemoved(ingredient: ProductIngredient): boolean {
+    const change = this.state().ingredients[ingredient.id];
+    return change?.replacementId ? false : (change?.removed ?? false) || !ingredient.isAvailable;
   }
 
   protected replacementOf(ingredientId: string): string {
@@ -109,7 +114,7 @@ export class ProductOptions {
   }
 
   protected toggleRemove(ingredientId: string): void {
-    const removed = !this.isRemoved(ingredientId);
+    const removed = !(this.state().ingredients[ingredientId]?.removed ?? false);
     this.state.update((state) =>
       setIngredient(state, ingredientId, { removed, replacementId: null }),
     );

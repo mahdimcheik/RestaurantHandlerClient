@@ -73,5 +73,6 @@ describe('CartSummary', () => {
       'button.ticket__send',
     );
     expect(send?.disabled).toBe(true);
+    expect(text(fixture)).toContain('Prix indisponible');
   });
 });

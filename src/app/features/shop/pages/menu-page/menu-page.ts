@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { MenuChoice, MenuLine, toCartLines } from '../../../../shared/ordering/cart';
 import {
+  lineWithForcedRemovals,
   CustomizationState,
   EMPTY_STATE,
   missingGroups,
@@ -111,16 +112,15 @@ export class MenuPage {
     if (!menu || !this.complete()) {
       return undefined;
     }
-    return toCartLines([
-      {
-        kind: 'menu',
-        key: '',
-        menuId: menu.id,
-        name: menu.name,
-        quantity: this.quantity(),
-        choices: this.choices(),
-      },
-    ]);
+    const line: MenuLine = {
+      kind: 'menu',
+      key: '',
+      menuId: menu.id,
+      name: menu.name,
+      quantity: this.quantity(),
+      choices: this.choices(),
+    };
+    return toCartLines([lineWithForcedRemovals(line, this.products())]);
   });
   protected readonly issue = computed(() => this.quote.issues()[0]?.message ?? this.quote.error());
 

@@ -1,5 +1,5 @@
-import { Customization } from './cart';
-import { ChoiceGroup, ChoiceOption, CustomizableProduct } from './model';
+import { Customization, MenuChoice, OrderLine } from './cart';
+import { ChoiceGroup, ChoiceOption, CustomizableProduct, ProductIngredient } from './model';
 
 /** Groupe à choix unique : une touche sélectionne (et remplace le choix précédent). */
 export function isSingleChoice(group: ChoiceGroup): boolean {
@@ -141,13 +141,13 @@ export function toCustomization(
   const result: Customization = { modifications: [], optionChoices: [], labels: [] };
   for (const ingredient of product.ingredients) {
     const change = state.ingredients[ingredient.id];
-    if (!ingredient.isRemovable || !change) {
+    if (!ingredient.isRemovable) {
       continue;
     }
-    if (change.removed) {
+    if (!change?.replacementId && (change?.removed || !ingredient.isAvailable)) {
       result.modifications.push({ type: 'Remove', ingredientId: ingredient.id });
-      result.labels.push(`Sans ${ingredient.name}`);
-    } else if (change.replacementId) {
+      result.labels.push(removalLabel(ingredient));
+    } else if (change?.replacementId) {
       result.modifications.push({
         type: 'Replace',
         ingredientId: ingredient.id,
@@ -166,4 +166,69 @@ export function toCustomization(
     }
   }
   return result;
+}
+
+function removalLabel(ingredient: ProductIngredient): string {
+  return ingredient.isAvailable ? `Sans ${ingredient.name}` : `Sans ${ingredient.name} (rupture)`;
+}
+
+/**
+ * Retrait imposé des ingrédients retirables en rupture (R7) : le serveur refuse une ligne qui ne
+ * les retire ni ne les remplace. Ajouté à l'envoi, sans toucher au panier stocké, pour qu'un
+ * ingrédient revenu en stock soit de nouveau servi.
+ */
+export function withForcedRemovals(
+  customization: Customization,
+  product: CustomizableProduct | undefined,
+): Customization {
+  const handled = new Set(
+    customization.modifications
+      .filter((m) => m.type === 'Remove' || m.type === 'Replace')
+      .map((m) => m.ingredientId),
+  );
+  const forced = (product?.ingredients ?? []).filter(
+    (i) => i.isRemovable && !i.isAvailable && !handled.has(i.id),
+  );
+  if (forced.length === 0) {
+    return customization;
+  }
+  return {
+    ...customization,
+    modifications: [
+      ...customization.modifications,
+      ...forced.map((i) => ({ type: 'Remove' as const, ingredientId: i.id })),
+    ],
+    labels: [...customization.labels, ...forced.map(removalLabel)],
+  };
+}
+
+/** Ligne du panier telle qu'elle sera servie, retraits imposés compris. */
+export function lineWithForcedRemovals(
+  line: OrderLine,
+  products: ReadonlyMap<string, CustomizableProduct>,
+): OrderLine {
+  if (line.kind === 'product') {
+    const customization = withForcedRemovals(line.customization, products.get(line.productId));
+    return customization === line.customization ? line : { ...line, customization };
+  }
+  let changed = false;
+  const choices = line.choices.map((choice): MenuChoice => {
+    const customization = withForcedRemovals(choice.customization, products.get(choice.productId));
+    changed ||= customization !== choice.customization;
+    return customization === choice.customization ? choice : { ...choice, customization };
+  });
+  return changed ? { ...line, choices } : line;
+}
+
+/** Message d'une ligne dont un produit n'est plus commandable (même texte que le serveur). */
+export function unavailableMessage(
+  line: OrderLine,
+  products: ReadonlyMap<string, CustomizableProduct>,
+): string | null {
+  if (line.kind === 'product') {
+    const product = products.get(line.productId);
+    return product && !product.isAvailable ? `${product.name} n'est plus disponible.` : null;
+  }
+  const choice = line.choices.find((c) => products.get(c.productId)?.isAvailable === false);
+  return choice ? `${line.name} : ${choice.productName} n'est plus disponible.` : null;
 }

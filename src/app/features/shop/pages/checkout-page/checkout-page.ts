@@ -8,8 +8,8 @@ import { SessionService } from '../../../../core/auth/session.service';
 import { apiErrorMessage, cartIssues } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { focusFirstInvalid, lengthRule } from '../../../../shared/forms/validation';
+import { OrderLine } from '../../../../shared/ordering/cart';
 import { BusinessProfileService } from '../../../../shared/services/business-profile.service';
-import { lineLabels } from '../../../../shared/ordering/cart';
 import { OpeningStateService } from '../../../../shared/services/opening-state.service';
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { PublicService } from '../../../../shared/services/public.service';
@@ -48,7 +48,7 @@ export class CheckoutPage {
 
   protected readonly asap = ASAP;
   protected readonly isManager = this.session.isManager;
-  protected readonly labelsOf = lineLabels;
+  protected readonly labelsOf = (line: OrderLine) => this.cart.labelsOf(line);
 
   protected readonly state = this.opening.state;
   protected readonly status = computed(() => this.state()?.status);
