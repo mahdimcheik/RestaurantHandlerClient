@@ -52,4 +52,27 @@ describe('ImageField', () => {
     await fixture.whenStable();
     expect(removeButton()).toBeUndefined();
   });
+
+  const pick = (file: File) => {
+    const input = fixture.nativeElement.querySelector('input[type=file]') as HTMLInputElement;
+    Object.defineProperty(input, 'files', { value: [file], configurable: true });
+    input.dispatchEvent(new Event('change'));
+  };
+
+  it('envoie la photo choisie et propose de la changer', async () => {
+    expect(fixture.nativeElement.textContent).toContain('Changer la photo');
+    pick(new File(['x'], 'a.png', { type: 'image/png' }));
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.upload).toHaveBeenCalledOnce();
+    expect(fixture.nativeElement.textContent).toContain('Photo enregistrée.');
+  });
+
+  it('refuse un format non pris en charge sans envoyer', async () => {
+    pick(new File(['x'], 'a.gif', { type: 'image/gif' }));
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.upload).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('Format non pris en charge');
+  });
 });
