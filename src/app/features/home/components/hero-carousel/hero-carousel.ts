@@ -59,7 +59,7 @@ export class HeroCarousel {
   protected readonly propsImage = `url("${PROPS_IMAGE}")`;
 
   private readonly size = signal({ width: 1440, height: 900 });
-  /** Position du carrousel : 0 à 5, fractionnaire pendant un quart de tour. */
+  /** Position du carrousel : 0 à `COUPE_COUNT`, fractionnaire pendant un quart de tour. */
   private readonly position = signal(0);
   private readonly reducedMotion = signal(prefersReducedMotion());
   /** Largeur du titre divisée par sa taille de police. */

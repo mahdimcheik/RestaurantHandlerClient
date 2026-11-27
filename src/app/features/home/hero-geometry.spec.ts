@@ -1,4 +1,4 @@
-import { coupeFrame, easeInOut, flavourAt, heroLayout } from './hero-geometry';
+import { COUPE_COUNT, coupeFrame, easeInOut, flavourAt, heroLayout } from './hero-geometry';
 
 describe('heroLayout', () => {
   it('passe en portrait sous un rapport largeur / hauteur de 0,9', () => {
@@ -29,7 +29,7 @@ describe('coupeFrame', () => {
 
   it('réduit les coupes voisines au rapport petit / grand, puis les suivantes', () => {
     expect(coupeFrame(1, 0, layout).scale).toBeCloseTo(layout.small / layout.big);
-    expect(coupeFrame(4, 0, layout).scale).toBeCloseTo(layout.small / layout.big);
+    expect(coupeFrame(COUPE_COUNT - 1, 0, layout).scale).toBeCloseTo(layout.small / layout.big);
     expect(coupeFrame(2, 0, layout).scale).toBeLessThan(layout.small / layout.big);
   });
 
@@ -56,6 +56,6 @@ describe('flavourAt', () => {
   });
 
   it('revient au premier parfum après le dernier', () => {
-    expect(flavourAt(4.5)).toMatchObject({ current: 4, next: 0 });
+    expect(flavourAt(3.5)).toMatchObject({ current: 3, next: 0 });
   });
 });

@@ -34,12 +34,6 @@ export const HERO_FLAVOURS: readonly HeroFlavour[] = [
     width: 602,
     height: 541,
   },
-  {
-    lines: ['Pâtes', 'Fraîches'],
-    image: 'https://ik.imagekit.io/accompagnement/pasta.png',
-    width: 515,
-    height: 518,
-  },
 ];
 
 export const RING_IMAGE = '/images/home/ring.webp';

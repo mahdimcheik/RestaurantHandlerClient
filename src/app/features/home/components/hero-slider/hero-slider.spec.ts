@@ -59,7 +59,7 @@ describe('HeroSlider', () => {
     click('.brand-slider__arrow--prev');
     click('.brand-slider__arrow--prev');
     click('.brand-slider__arrow--prev');
-    expect(activeTab()?.textContent?.trim()).toBe('Pâtes');
+    expect(activeTab()?.textContent?.trim()).toBe('Kebab');
 
     click('.brand-slider__arrow--next');
     expect(activeTab()?.textContent?.trim()).toBe('Pizza');

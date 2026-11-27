@@ -3,7 +3,7 @@
 
 import { HERO_FLAVOURS, HeroFlavour } from './hero-flavours';
 
-export type SlideTone = 'pizza' | 'tiramisu' | 'salade' | 'kebab' | 'pates';
+export type SlideTone = 'pizza' | 'tiramisu' | 'salade' | 'kebab';
 
 /** Trois ingrédients détourés (PNG ou WebP à fond transparent, à peu près carrés) par plat. */
 export type Ingredients = readonly [string, string, string];
@@ -29,8 +29,11 @@ const INGREDIENTS: Record<SlideTone, Ingredients | null> = {
     'https://ik.imagekit.io/accompagnement/avocat_196052669.png?updatedAt=1795794445875',
     'https://ik.imagekit.io/accompagnement/pexels-fotios-photos-1433487-removebg-preview.png?updatedAt=1795794445900',
   ],
-  kebab: null,
-  pates: null,
+  kebab: [
+    'https://ik.imagekit.io/accompagnement/tomate-cerise-grappe-extra5_m-removebg-preview.png?updatedAt=1795794445881',
+    'https://ik.imagekit.io/accompagnement/e6521fa0-05b3-11ed-93ba-314ede9cd985.jpg-removebg-preview.png',
+    'https://ik.imagekit.io/accompagnement/salade-laitue-removebg-preview.png',
+  ],
 };
 
 /**
@@ -82,7 +85,7 @@ export interface HeroSlide {
 const DISH_WIDTH = 500;
 /** Centre vertical du plat dans le cadre, un peu sous la ligne médiane du mot (403,5). */
 const DISH_CENTER_Y = 430;
-const TONES: readonly SlideTone[] = ['pizza', 'tiramisu', 'salade', 'kebab', 'pates'];
+const TONES: readonly SlideTone[] = ['pizza', 'tiramisu', 'salade', 'kebab'];
 
 export const HERO_SLIDES: readonly HeroSlide[] = HERO_FLAVOURS.map((dish, i) => ({
   dish,

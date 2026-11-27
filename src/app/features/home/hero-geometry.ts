@@ -1,8 +1,10 @@
 // Géométrie du carrousel d'accueil : calculs purs, en unités de scène (`u` = 1 px de la maquette
 // 1440 × 900 en paysage, 390 × 760 en portrait), convertis en pixels à l'affichage.
 
+import { HERO_FLAVOURS } from './hero-flavours';
+
 /** Nombre de coupes sur l'anneau. */
-export const COUPE_COUNT = 5;
+export const COUPE_COUNT = HERO_FLAVOURS.length;
 /** Angle entre deux coupes. */
 const STEP_DEG = 360 / COUPE_COUNT;
 
@@ -195,7 +197,7 @@ function placeProps(
   });
 }
 
-/** Position d'une coupe sur l'anneau, pour une position de carrousel `p` (0 à 5, fractionnaire). */
+/** Position d'une coupe sur l'anneau, pour une position de carrousel `p` (0 à `COUPE_COUNT`, fractionnaire). */
 export interface CoupeFrame {
   /** Coin haut-gauche de l'image, en unités. */
   x: number;
@@ -208,7 +210,7 @@ export interface CoupeFrame {
   zIndex: number;
 }
 
-/** Écart signé entre la coupe `i` et la position `p`, ramené dans [-2,5 ; 2,5[. */
+/** Écart signé entre la coupe `i` et la position `p`, ramené dans [-COUPE_COUNT/2 ; COUPE_COUNT/2[. */
 function offset(i: number, p: number): number {
   const diff = (((i - p) % COUPE_COUNT) + COUPE_COUNT) % COUPE_COUNT;
   return diff >= COUPE_COUNT / 2 ? diff - COUPE_COUNT : diff;
@@ -256,7 +258,7 @@ export function easeInOut(t: number): number {
 
 /** Parfum affiché pour la position `p` : libellé en fondu. */
 export interface FlavourFrame {
-  /** Parfum courant et suivant (indices 0 à 4). */
+  /** Parfum courant et suivant (indices 0 à `COUPE_COUNT - 1`). */
   current: number;
   next: number;
   /** Avancement de la transition, 0 à 1. */
