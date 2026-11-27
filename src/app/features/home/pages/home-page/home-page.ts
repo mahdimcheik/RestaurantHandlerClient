@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionService } from '../../../../core/auth/session.service';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
@@ -14,6 +14,7 @@ import { formatLocal, restaurantDay } from '../../../../shared/utils/restaurant-
 import { DAY_NAMES, WEEK } from '../../../../shared/utils/week';
 import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { HeroSlider } from '../../components/hero-slider/hero-slider';
+import { HERO_SLIDES, SlideTone } from '../../hero-slides';
 import { HOME_HERO } from '../../home-hero';
 import { weeklyHours } from '../../home-format';
 
@@ -36,6 +37,8 @@ export class HomePage {
   private readonly store = inject(PublicStore);
   protected readonly session = inject(SessionService);
   protected readonly hero = inject(HOME_HERO);
+  /** Plat du bloc « diapositives », dont la couleur ouvre en dégradé la section Horaires. */
+  protected readonly heroTone = signal<SlideTone>(HERO_SLIDES[0].tone);
   private readonly opening = inject(OpeningStateService);
 
   protected readonly info = this.store.info.value;

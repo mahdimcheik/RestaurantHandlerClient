@@ -65,6 +65,16 @@ describe('HeroSlider', () => {
     expect(activeTab()?.textContent?.trim()).toBe('Pizza');
   });
 
+  it('annonce le plat mis en avant dès le changement, pas en restant sur le même', () => {
+    const { tabs, click, fixture } = setup({ reducedMotion: true });
+    const tones: string[] = [];
+    fixture.componentInstance.toneChange.subscribe((tone) => tones.push(tone));
+
+    tabs()[0].click();
+    click('.brand-slider__arrow--next');
+    expect(tones).toEqual([HERO_SLIDES[1].tone]);
+  });
+
   it('répond aux flèches du clavier', () => {
     const { el, activeTab, fixture } = setup({ reducedMotion: true });
     const section = el.querySelector('section')!;
