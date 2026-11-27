@@ -9,6 +9,7 @@ import {
   ElementRef,
   inject,
   input,
+  output,
   signal,
   viewChild,
   viewChildren,
@@ -40,6 +41,7 @@ import {
   HeroSlide,
   MOBILE_PIECES,
   PiecePlacement,
+  SlideTone,
 } from '../../hero-slides';
 
 /** Défilement automatique, et pause après une action de la personne, en millisecondes. */
@@ -83,6 +85,8 @@ interface Transition {
 })
 export class HeroSlider {
   readonly title = input.required<string>();
+  /** Plat mis en avant dès le début d'un changement, pour la section qui suit le bloc. */
+  readonly toneChange = output<SlideTone>();
 
   protected readonly session = inject(SessionService);
   private readonly section = viewChild.required<ElementRef<HTMLElement>>('section');
@@ -269,6 +273,7 @@ export class HeroSlider {
     if (this.transition() || to === this.current()) {
       return;
     }
+    this.toneChange.emit(this.data[to].tone);
     if (this.reducedMotion()) {
       this.current.set(to);
       return;

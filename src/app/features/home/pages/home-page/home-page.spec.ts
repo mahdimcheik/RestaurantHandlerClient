@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { RestaurantInfo } from '../../../../core/api/generated';
 import { fakeRealtime } from '../../../../core/realtime/testing';
 import { envelope, text } from '../../../../shared/testing';
+import { HERO_SLIDES } from '../../hero-slides';
 import { HOME_HERO, HomeHero } from '../../home-hero';
 import { HomePage } from './home-page';
 
@@ -70,6 +71,7 @@ describe('HomePage', () => {
     expect(cards[1].getAttribute('href')).toContain(encodeURIComponent('3 place du Marché'));
     expect(cards[1].getAttribute('target')).toBe('_blank');
     expect(el.querySelector('#contact a[href^="mailto:"]')).toBeNull();
+    expect(el.querySelector('#infos')?.classList).not.toContain('brand-fade');
     http.verify();
   });
 
@@ -89,7 +91,15 @@ describe('HomePage', () => {
     expect(el.querySelectorAll('h1').length).toBe(1);
     expect(el.querySelector('.brand-slider h1')?.textContent).toContain('Chez Nino');
     expect(el.querySelector('.brand-slider .topbar')).not.toBeNull();
-    expect(el.querySelector('#infos')).not.toBeNull();
+    // Le haut de la section Horaires part de la couleur du plat affiché, et la suit.
+    const infos = el.querySelector<HTMLElement>('#infos')!;
+    expect(infos.classList).toContain('brand-fade');
+    expect(infos.style.getPropertyValue('--fade-from')).toBe('var(--slide-pizza-bg)');
+    el.querySelector<HTMLElement>('.brand-slider__arrow--next')!.click();
+    await fixture.whenStable();
+    expect(infos.style.getPropertyValue('--fade-from')).toBe(
+      `var(--slide-${HERO_SLIDES[1].tone}-bg)`,
+    );
     http.verify();
   });
 });

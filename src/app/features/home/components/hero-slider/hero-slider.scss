@@ -292,3 +292,31 @@
     transition: none;
   }
 }
+
+// Section qui suit le bloc (Horaires) : son haut part de la couleur du plat et se fond dans la
+// surface, au rythme du balayage. `--fade-from` est posée par l'accueil.
+@property --fade-from {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+.brand-fade {
+  transition: --fade-from 0.97s cubic-bezier(0.65, 0, 0.35, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    height: clamp(6rem, 18vh, 12rem);
+    background: linear-gradient(to bottom, var(--fade-from), transparent);
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-fade {
+    transition: none;
+  }
+}
