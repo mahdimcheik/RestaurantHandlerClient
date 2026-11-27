@@ -36,6 +36,15 @@
             >
             <br /><ng-container>Payée le {{ receipt.paidAt | restaurantDateTime }}</ng-container>
           </p>
+          <p class="receipt__status">
+            <app-order-status [status]="receipt.status" [customer]="true" />
+            @if (isFinal()) {
+              <span>le {{ receipt.statusChangedAt | restaurantDateTime }}</span>
+            }
+            @if (refundedCents() > 0) {
+              <strong>Remboursée : {{ refundedCents() | euros }}</strong>
+            }
+          </p>
         </header>
 
         <ul class="ticket__lines">
@@ -83,6 +92,15 @@
                 >Réglé : {{ methodLabel(payment.method) }},
                 {{ payment.amountCents | euros }}</ng-container
               >
+              @if (payment.status === 'Refunded') {
+                <br /><ng-container
+                  >Remboursé
+                  @if (payment.refundedAt) {
+                    le {{ payment.refundedAt | restaurantDateTime }}
+                  }
+                  : {{ payment.amountCents | euros }}</ng-container
+                >
+              }
             </li>
           }
         </ul>

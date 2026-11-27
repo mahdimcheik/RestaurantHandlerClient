@@ -8,5 +8,6 @@ export interface OrderPaymentDto {
   completedAt?: string | null;
   id: string;
   method: PaymentMethod;
+  refundedAt?: string | null;
   status: PaymentStatus;
 }

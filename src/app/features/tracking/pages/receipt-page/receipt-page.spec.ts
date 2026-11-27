@@ -15,6 +15,8 @@ const receipt: OrderReceipt = {
   orderNumber: 1042,
   dailyNumber: 12,
   paidAt: '2026-11-23T12:05:00+01:00',
+  status: 'Confirmed',
+  statusChangedAt: '2026-11-23T12:05:00+01:00',
   totalCents: 1100,
   items: [
     {
@@ -34,7 +36,7 @@ const receipt: OrderReceipt = {
   ],
 };
 
-async function open(invoice: InvoiceRequestDetails | null) {
+async function open(invoice: InvoiceRequestDetails | null, data: OrderReceipt = receipt) {
   TestBed.configureTestingModule({
     imports: [ReceiptPage],
     providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
@@ -43,7 +45,7 @@ async function open(invoice: InvoiceRequestDetails | null) {
   fixture.componentRef.setInput('id', 'o1');
   TestBed.tick();
   const http = TestBed.inject(HttpTestingController);
-  http.expectOne('/orders/o1/receipt').flush(envelope(receipt));
+  http.expectOne('/orders/o1/receipt').flush(envelope(data));
   http.expectOne('/orders/o1/invoice-request').flush(envelope(invoice));
   for (const request of http.match('/restaurant/info')) {
     request.flush(envelope({}));
@@ -66,6 +68,49 @@ describe('ReceiptPage', () => {
     expect(compact).toContain('TVA10%sur10,00€1,00€');
     expect(compact).toContain('TotalTTC11,00€');
     expect(fixture.nativeElement.querySelectorAll('.receipt__payments li').length).toBe(1);
+  });
+
+  it('donne le statut de la commande en cours, sans date', async () => {
+    const fixture = await open(null);
+    const status = fixture.nativeElement.querySelector('.receipt__status').textContent;
+    expect(status).toContain('Confirmée');
+    expect(status).not.toContain('le ');
+  });
+
+  it('indique une commande retirée et sa date', async () => {
+    const fixture = await open(null, {
+      ...receipt,
+      status: 'Completed',
+      statusChangedAt: '2026-11-23T12:30:00+01:00',
+    });
+    const status = fixture.nativeElement.querySelector('.receipt__status').textContent;
+    expect(status).toContain('Retirée');
+    expect(status).toContain('le ');
+  });
+
+  it('indique une commande annulée et remboursée', async () => {
+    const fixture = await open(null, {
+      ...receipt,
+      status: 'Cancelled',
+      statusChangedAt: '2026-11-23T12:20:00+01:00',
+      payments: [
+        {
+          id: 'p1',
+          method: 'SumupOnline',
+          status: 'Refunded',
+          amountCents: 1100,
+          refundedAt: '2026-11-23T12:21:00+01:00',
+        },
+      ],
+    });
+    const status = fixture.nativeElement
+      .querySelector('.receipt__status')
+      .textContent.replace(/\s+/g, '');
+    expect(status).toContain('Annulée');
+    expect(status).toContain('Remboursée:11,00€');
+    const payments = fixture.nativeElement.querySelectorAll('.receipt__payments li');
+    expect(payments.length).toBe(1);
+    expect(payments[0].textContent.replace(/\s+/g, '')).toContain('Remboursé');
   });
 
   it('indique où en est la facture demandée par un client professionnel', async () => {

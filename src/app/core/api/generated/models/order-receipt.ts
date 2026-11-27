@@ -3,6 +3,7 @@
 
 import { OrderItemDto } from '../models/order-item-dto';
 import { OrderPaymentDto } from '../models/order-payment-dto';
+import { OrderStatus } from '../models/order-status';
 import { VatLineDto } from '../models/vat-line-dto';
 export interface OrderReceipt {
   address?: string | null;
@@ -13,6 +14,8 @@ export interface OrderReceipt {
   paidAt: string;
   payments: Array<OrderPaymentDto>;
   siret?: string | null;
+  status: OrderStatus;
+  statusChangedAt?: string | null;
   totalCents: number;
   tradeName: string;
   vat: Array<VatLineDto>;

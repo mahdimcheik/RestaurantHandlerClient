@@ -6311,6 +6311,11 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "refundedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -6322,6 +6327,7 @@
           "orderNumber",
           "paidAt",
           "payments",
+          "status",
           "totalCents",
           "tradeName",
           "vat"
@@ -6359,6 +6365,14 @@
           "paidAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "statusChangedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "items": {
             "type": "array",

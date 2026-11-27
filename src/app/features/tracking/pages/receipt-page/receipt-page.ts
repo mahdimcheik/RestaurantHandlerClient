@@ -8,7 +8,11 @@ import { InvoiceRequestsService } from '../../../../shared/services/invoice-requ
 import { OrdersService } from '../../../../shared/services/orders.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
-import { paymentMethodLabel } from '../../../../shared/ui/order-status/order-status';
+import {
+  FINAL_STATUSES,
+  OrderStatusBadge,
+  paymentMethodLabel,
+} from '../../../../shared/ui/order-status/order-status';
 import { EurosPipe, RatePipe } from '../../../../shared/utils/money';
 import { RestaurantDateTimePipe } from '../../../../shared/utils/restaurant-time';
 import { itemDetails } from '../../order-format';
@@ -17,12 +21,22 @@ import { itemDetails } from '../../order-format';
  * Justificatif d'une commande payée (US-E05-5) : restaurant (raison sociale, adresse, SIRET,
  * TVA), date, numéro, lignes, TVA par taux, total, moyen de paiement. Contenu provisoire, à
  * valider avec l'expert-comptable (question ouverte n° 2) ; ce n'est pas un ticket de caisse.
+ * Le statut de la commande (retirée, annulée…) et un éventuel remboursement y figurent : le reçu
+ * reste disponible après une annulation.
  * Pour un client professionnel, indique où en est la facture électronique demandée (US-E05-6).
  */
 @Component({
   selector: 'app-receipt-page',
   host: { class: 'shop' },
-  imports: [RouterLink, SiteTopbar, EurosPipe, RatePipe, RestaurantDateTimePipe, Icon],
+  imports: [
+    RouterLink,
+    SiteTopbar,
+    EurosPipe,
+    RatePipe,
+    RestaurantDateTimePipe,
+    Icon,
+    OrderStatusBadge,
+  ],
   templateUrl: './receipt-page.html',
 })
 export class ReceiptPage {
@@ -59,9 +73,23 @@ export class ReceiptPage {
   protected readonly netCents = computed(
     () => this.value()?.vat.reduce((sum, line) => sum + line.netCents, 0) ?? 0,
   );
+  /** Paiements encaissés, y compris ceux remboursés depuis. */
   protected readonly payments = computed(
-    () => this.value()?.payments.filter((payment) => payment.status === 'Successful') ?? [],
+    () =>
+      this.value()?.payments.filter(
+        (payment) => payment.status === 'Successful' || payment.status === 'Refunded',
+      ) ?? [],
   );
+  protected readonly refundedCents = computed(() =>
+    this.payments()
+      .filter((payment) => payment.status === 'Refunded')
+      .reduce((sum, payment) => sum + payment.amountCents, 0),
+  );
+  /** Statut définitif : on en donne la date (« Annulée le … »). */
+  protected readonly isFinal = computed(() => {
+    const receipt = this.value();
+    return !!receipt?.statusChangedAt && FINAL_STATUSES.includes(receipt.status);
+  });
   protected readonly itemDetails = itemDetails;
   protected readonly methodLabel = paymentMethodLabel;
 
