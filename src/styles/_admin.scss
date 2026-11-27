@@ -210,6 +210,11 @@
   gap: var(--space-6);
   width: 100%;
   padding-block: var(--space-6) var(--space-9);
+
+  // Hôtes sans boîte : sinon le bandeau vide et `<router-outlet>` prennent chacun un écart.
+  > :is(app-connection-banner, router-outlet) {
+    display: contents;
+  }
 }
 
 .icon {
