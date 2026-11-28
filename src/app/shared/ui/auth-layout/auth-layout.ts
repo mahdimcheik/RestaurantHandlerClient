@@ -21,7 +21,7 @@ import { SiteTopbar } from '../site-topbar/site-topbar';
           <div class="plate">
             <img
               class="plate__image"
-              ngSrc="https://ik.imagekit.io/accompagnement/margaritta.png"
+              ngSrc="https://ik.imagekit.io/accompagnement/margaritta_lBqWg32C-.png"
               width="525"
               height="526"
               priority

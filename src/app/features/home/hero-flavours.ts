@@ -12,19 +12,21 @@ export interface HeroFlavour {
 export const HERO_FLAVOURS: readonly HeroFlavour[] = [
   {
     lines: ['Pizza', 'Margherita'],
-    image: 'https://ik.imagekit.io/accompagnement/margaritta.png',
+    image: 'https://ik.imagekit.io/accompagnement/margaritta_lBqWg32C-.png',
     width: 525,
     height: 526,
   },
   {
-    lines: ['Tiramisu', 'Café'],
-    image: 'https://ik.imagekit.io/accompagnement/tiramisu.png',
+    lines: ['Desserts', 'Café'],
+    image:
+      'https://ik.imagekit.io/accompagnement/iffany-ai-generated-8673818_640-removebg-preview.png',
     width: 640,
     height: 640,
   },
   {
     lines: ['Salade', 'Composée'],
-    image: 'https://ik.imagekit.io/accompagnement/salade.png',
+    image:
+      'https://ik.imagekit.io/accompagnement/pexels-roman-odintsov-4958946_1_-removebg-preview.png',
     width: 550,
     height: 541,
   },

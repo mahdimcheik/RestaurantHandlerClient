@@ -3,7 +3,7 @@
 
 import { HERO_FLAVOURS, HeroFlavour } from './hero-flavours';
 
-export type SlideTone = 'pizza' | 'tiramisu' | 'salade' | 'kebab';
+export type SlideTone = 'pizza' | 'Desserts' | 'salade' | 'kebab';
 
 /** Trois ingrédients détourés (PNG ou WebP à fond transparent, à peu près carrés) par plat. */
 export type Ingredients = readonly [string, string, string];
@@ -19,7 +19,7 @@ const INGREDIENTS: Record<SlideTone, Ingredients | null> = {
     'https://ik.imagekit.io/accompagnement/spr.png',
     'https://ik.imagekit.io/accompagnement/spv.png',
   ],
-  tiramisu: [
+  Desserts: [
     'https://ik.imagekit.io/accompagnement/dsc2114-2-787x590-1-removebg-preview.png',
     'https://ik.imagekit.io/accompagnement/cacao-cru-bio-en-poudre-200g.png',
     'https://ik.imagekit.io/accompagnement/mascarpone-removebg-preview.png',
@@ -85,7 +85,7 @@ export interface HeroSlide {
 const DISH_WIDTH = 500;
 /** Centre vertical du plat dans le cadre, un peu sous la ligne médiane du mot (403,5). */
 const DISH_CENTER_Y = 430;
-const TONES: readonly SlideTone[] = ['pizza', 'tiramisu', 'salade', 'kebab'];
+const TONES: readonly SlideTone[] = ['pizza', 'Desserts', 'salade', 'kebab'];
 
 export const HERO_SLIDES: readonly HeroSlide[] = HERO_FLAVOURS.map((dish, i) => ({
   dish,

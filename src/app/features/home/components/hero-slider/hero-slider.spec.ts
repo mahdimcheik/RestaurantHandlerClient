@@ -81,7 +81,7 @@ describe('HeroSlider', () => {
 
     section.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     fixture.detectChanges();
-    expect(activeTab()?.textContent?.trim()).toBe('Tiramisu');
+    expect(activeTab()?.textContent?.trim()).toBe('Desserts');
   });
 
   it('balaie la diapositive sortante pendant la transition', () => {
@@ -96,7 +96,7 @@ describe('HeroSlider', () => {
     expect(slides[1].style.zIndex).toBe('1');
     // L'onglet et le soulignement partent dès le début de la transition.
     expect(el.querySelector('.brand-slider__tab[aria-current="true"]')?.textContent?.trim()).toBe(
-      'Tiramisu',
+      'Desserts',
     );
   });
 
