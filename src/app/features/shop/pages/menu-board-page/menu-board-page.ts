@@ -4,6 +4,7 @@ import { apiErrorMessage } from '../../../../core/http/api-error';
 import { RealtimeService } from '../../../../core/realtime/realtime.service';
 import { OpeningStateService } from '../../../../shared/services/opening-state.service';
 import { PublicStore } from '../../../../shared/services/public-store.service';
+import { ShareButtons } from '../../../../shared/ui/share-buttons/share-buttons';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
 import { BoardCard } from '../../components/board-card/board-card';
@@ -20,7 +21,7 @@ export const sectionAnchor = (sectionId: string) => `rubrique-${sectionId}`;
  */
 @Component({
   selector: 'app-menu-board-page',
-  imports: [RouterLink, Icon, SiteTopbar, BoardCard],
+  imports: [RouterLink, Icon, SiteTopbar, BoardCard, ShareButtons],
   templateUrl: './menu-board-page.html',
 })
 export class MenuBoardPage {
@@ -28,6 +29,9 @@ export class MenuBoardPage {
   private readonly opening = inject(OpeningStateService);
 
   protected readonly card = this.store.card.value;
+  protected readonly shareText = computed(
+    () => `La carte de ${this.store.info.value()?.tradeName || 'Greenadine'}`,
+  );
   protected readonly loading = computed(() => this.store.card.isLoading() && !this.card());
   protected readonly error = computed(() =>
     this.store.card.error() && !this.card() ? apiErrorMessage(this.store.card.error()) : '',

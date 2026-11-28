@@ -7,6 +7,7 @@ import {
   OpeningStateService,
 } from '../../../../shared/services/opening-state.service';
 import { PublicStore } from '../../../../shared/services/public-store.service';
+import { ShareButtons } from '../../../../shared/ui/share-buttons/share-buttons';
 import { SITE_DETAILS } from '../../../../shared/site-details';
 import { Icon, IconName } from '../../../../shared/ui/icon/icon';
 import { SiteTopbar } from '../../../../shared/ui/site-topbar/site-topbar';
@@ -30,7 +31,7 @@ interface ContactChannel {
 /** Accueil : carrousel ou diapositives selon `HOME_HERO` (nom, accès à la carte), état d'ouverture en direct, infos pratiques de l'API. */
 @Component({
   selector: 'app-home-page',
-  imports: [HeroCarousel, HeroSlider, SiteTopbar, Icon, RouterLink],
+  imports: [HeroCarousel, HeroSlider, SiteTopbar, Icon, RouterLink, ShareButtons],
   templateUrl: './home-page.html',
 })
 export class HomePage {

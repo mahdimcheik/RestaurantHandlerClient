@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { PublicStore } from '../../services/public-store.service';
 import { SITE_DETAILS } from '../../site-details';
 import { NgOptimizedImage } from '@angular/common';
+import { ShareButtons } from '../share-buttons/share-buttons';
 
 /**
  * Pied de page du nouveau design : nom, adresse et téléphone du restaurant, liens de
@@ -10,7 +11,7 @@ import { NgOptimizedImage } from '@angular/common';
  */
 @Component({
   selector: 'app-site-footer',
-  imports: [RouterLink, NgOptimizedImage],
+  imports: [RouterLink, NgOptimizedImage, ShareButtons],
   template: `
     <footer class="site-footer brand gutter">
       <div class="site-footer__grid">
@@ -58,6 +59,8 @@ import { NgOptimizedImage } from '@angular/common';
             }
           </ul>
         </nav>
+
+        <app-share-buttons heading="Partager le site" [text]="shareText()" />
       </div>
       <p class="site-footer__copy">© {{ year }} {{ name() }}</p>
     </footer>
@@ -71,6 +74,7 @@ export class SiteFooter {
   protected readonly phoneHref = computed(
     () => `tel:${(this.info()?.phone ?? '').replace(/\s/g, '')}`,
   );
+  protected readonly shareText = computed(() => `${this.name()} : commandez en ligne à emporter`);
   protected readonly year = new Date().getFullYear();
   protected readonly instagramUrl = SITE_DETAILS.instagramUrl;
   protected readonly logoUrl = computed(() => this.store.info.value()?.logoUrl ?? null);

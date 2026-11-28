@@ -16,6 +16,7 @@ import { ChoiceGroup } from '../../../../shared/ordering/model';
 import { OptionsWizard } from '../../../../shared/ordering/options-wizard';
 import { ProductOptions } from '../../../../shared/ordering/product-options';
 import { PublicStore } from '../../../../shared/services/public-store.service';
+import { ShareButtons } from '../../../../shared/ui/share-buttons/share-buttons';
 import { EurosPipe } from '../../../../shared/utils/money';
 import { OrderDialog } from '../../components/order-dialog/order-dialog';
 import { CartStore } from '../../data-access/cart.store';
@@ -37,6 +38,7 @@ import { quoteOf } from '../../data-access/quote';
     OptionsWizard,
     LineNote,
     OrderDialog,
+    ShareButtons,
   ],
   templateUrl: './product-page.html',
 })
@@ -49,6 +51,7 @@ export class ProductPage {
   readonly ligne = input<string>();
 
   protected readonly product = computed(() => this.store.products().get(this.id()));
+  protected readonly siteName = computed(() => this.store.info.value()?.tradeName || 'Greenadine');
   protected readonly replacements = this.store.replacements;
   protected readonly loading = computed(() => !this.store.card.value() && !this.store.card.error());
   /** Ligne du panier en cours de modification. */

@@ -21,6 +21,10 @@
       <a class="link-button sheet__allergens" routerLink="/allergenes"
         >Informations allergènes disponibles</a
       >
+      <app-share-buttons
+        [path]="'/commander/produit/' + product.id"
+        [text]="product.name + ' chez ' + siteName()"
+      />
 
       @if (!product.isAvailable) {
         <p class="alert alert--error" role="alert">Ce produit est en rupture pour le moment.</p>

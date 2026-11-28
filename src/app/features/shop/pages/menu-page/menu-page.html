@@ -81,6 +81,10 @@
           <p class="sheet__description">{{ menu.description }}</p>
         }
         <p class="sheet__price">{{ menu.priceCents | euros }}</p>
+        <app-share-buttons
+          [path]="'/commander/menu/' + menu.id"
+          [text]="menu.name + ' chez ' + siteName()"
+        />
 
         @if (!menu.isAvailable) {
           <p class="alert alert--error" role="alert">Ce menu est indisponible pour le moment.</p>

@@ -15,6 +15,7 @@
         </p>
       }
       <a class="btn-brand btn-brand--solid" routerLink="/commander">Commander</a>
+      <app-share-buttons path="/carte" [text]="shareText()" />
     </header>
 
     @if (error()) {

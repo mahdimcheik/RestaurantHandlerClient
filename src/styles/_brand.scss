@@ -685,3 +685,55 @@
 .auth__lead {
   line-height: 1.55;
 }
+
+// Partage d'une page (`app-share-buttons`) : touches compactes à l'encre du bloc parent.
+.share {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.share--center {
+  justify-items: center;
+  text-align: center;
+
+  .share__list {
+    justify-content: center;
+  }
+}
+
+.share__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.share__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.btn-brand.share__button {
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  letter-spacing: 0.08em;
+
+  .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.share__status {
+  min-height: 1.5em;
+  margin: 0;
+  font-weight: 500;
+
+  &:empty {
+    min-height: 0;
+  }
+}
