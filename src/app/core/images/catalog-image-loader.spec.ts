@@ -22,12 +22,8 @@ describe('catalogImageLoader', () => {
   it('ne touche ni aux photos à taille unique ni aux autres images', () => {
     const legacy = 'http://localhost:9000/bucket/catalog/2026/11/abc.webp';
     expect(catalogImageLoader({ src: legacy, width: 90 })).toBe(legacy);
-    expect(
-      catalogImageLoader({
-        src: 'https://ik.imagekit.io/accompagnement/margaritta_lBqWg32C-.png',
-        width: 90,
-      }),
-    ).toBe('https://ik.imagekit.io/x/margaritta.png');
+    const external = 'https://ik.imagekit.io/accompagnement/margaritta_lBqWg32C-.png';
+    expect(catalogImageLoader({ src: external, width: 90 })).toBe(external);
     expect(catalogImageLoader({ src: '/images/coupe.webp', width: 90 })).toBe('/images/coupe.webp');
   });
 });
